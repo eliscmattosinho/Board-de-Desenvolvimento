@@ -10,11 +10,15 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^4.2.4"
   },
+
+  "homepage": "https://eliscmattosinho.github.io/Skeelo-Skoob-Epics/",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build",
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -35,6 +39,7 @@
     ]
   },
   "devDependencies": {
-    "eslint-config-react-app": "^7.0.1"
+    "eslint-config-react-app": "^7.0.1",
+    "gh-pages": "^6.3.0"
   }
 }

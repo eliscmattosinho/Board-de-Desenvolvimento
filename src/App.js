@@ -5,7 +5,7 @@ import Boards from "./pages/Boards";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/Board-de-Desenvolvimento">
       <div className="App">
         <div id="main">
           <Routes>

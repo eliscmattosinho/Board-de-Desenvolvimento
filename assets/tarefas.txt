@@ -1,0 +1,79 @@
+Tarefa 1: Definir o Produto
+- Status: A Fazer
+Descrição: Criar a proposta do produto, destacando como ele irá aumentar o valor e o engajamento nas plataformas Skeelo e Skoob. Definir os épicos a serem implementados.
+
+Tarefa 2: Identificar as Dores do Usuário
+- Status: A Fazer
+Descrição: Analisar as dores dos usuários das plataformas, com base no case anterior, e propor soluções simples e objetivas.
+
+Tarefa 3: Definir as Personas
+- Status: A Fazer
+Descrição: Criar as personas para o produto (Skeelers, Skeelovers, Skoobers), incluindo hábitos, comportamentos e objetivos.
+
+Tarefa 4: Análise de Concorrência
+- Status: A Fazer
+Descrição: Investigar concorrentes diretos e indiretos, identificando forças e fraquezas no mercado.
+
+Tarefa 5: Definir a Vantagem Competitiva
+- Status: A Fazer
+Descrição: Diferenciar o produto da concorrência, com foco na proposta de épicos apresentada em formato de website.
+
+Tarefa 6: Levantar Requisitos Funcionais
+- Status: A Fazer
+Descrição: Especificar os requisitos funcionais do produto, incluindo a estrutura da landing page e os elementos principais a serem exibidos.
+
+Tarefa 7: Levantar Requisitos Não Funcionais
+- Status: A Fazer
+Descrição: Definir os requisitos de performance, segurança e escalabilidade para o produto.
+
+Tarefa 8: Medir o Sucesso do Produto
+- Status: A Fazer
+Descrição: Estabelecer métricas de sucesso para o produto, como engajamento, retenção e NPS.
+
+Tarefa 9: Desenhar a Jornada do Usuário
+- Status: A Fazer
+Descrição: Mapear o fluxo completo do usuário, incluindo os principais pontos da landing page, como "Sobre", "Épicos" e "Contato".
+
+Tarefa 10: Criar Wireframes e Protótipos
+- Status: A Fazer
+Descrição: Esboçar telas principais para validar o fluxo do usuário e garantir a usabilidade.
+
+Tarefa 11: Definir a Identidade Visual
+- Status: A Fazer
+Descrição: Estabelecer a paleta de cores, tipografia e estilo visual alinhado ao público-alvo.
+
+Tarefa 12: Validar o Design
+- Status: A Fazer
+Descrição: Conduzir testes de usabilidade com usuários reais e recolher feedback para refinamento do design.
+
+Tarefa 13: Implementar Requisitos Funcionais
+- Status: Backlog
+Descrição: Implementar os requisitos funcionais, como a exibição das informações sobre os épicos Skeelo e Skoob.
+
+Tarefa 14: Implementar Requisitos Não Funcionais
+- Status: Backlog
+Descrição: Implementar requisitos de performance e segurança, garantindo que a página carregue em menos de 3 segundos e seja acessível.
+
+Tarefa 15: Planejar o Desenvolvimento
+- Status: Sprint Backlog
+Descrição: Definir a stack tecnológica e planejar o desenvolvimento do projeto, dividindo-o em sprints com entregas claras.
+
+Tarefa 16: Configurar o Ambiente de Desenvolvimento
+- Status: Sprint Backlog
+Descrição: Estabelecer repositórios no GitHub/GitLab e configurar a integração e entrega contínua.
+
+Tarefa 17: Implementar Funcionalidades
+- Status: Revisão
+Descrição: Implementar as funcionalidades do produto conforme os requisitos definidos, com foco no uso de código limpo e documentação.
+
+Tarefa 18: Garantir a Qualidade do Código
+- Status: Em Progresso
+Descrição: Desenvolver testes automatizados (unitários, integração e end-to-end) e realizar code reviews.
+
+Tarefa 19: Monitorar e Otimizar o Produto
+- Status: Em Progresso
+Descrição: Integrar ferramentas de monitoramento de performance (ex.: Google Analytics, Sentry) e otimizar o produto com base nos dados.
+
+Tarefa 20: Preparar o Lançamento
+- Status: Concluído
+Descrição: Realizar testes de carga, validação final e garantir que o plano de rollback esteja pronto para eventuais falhas no lançamento.

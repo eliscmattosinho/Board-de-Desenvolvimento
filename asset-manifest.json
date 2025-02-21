@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/Skeelo-Skoob-Epics/static/css/main.ddab8fda.css",
+    "main.js": "/Skeelo-Skoob-Epics/static/js/main.d7d8cb70.js",
+    "static/js/488.ba0b806a.chunk.js": "/Skeelo-Skoob-Epics/static/js/488.ba0b806a.chunk.js",
+    "static/media/svg-board.svg": "/Skeelo-Skoob-Epics/static/media/svg-board.8a454da44a7237c3c697a4c23ffdbd77.svg",
+    "static/media/builder.svg": "/Skeelo-Skoob-Epics/static/media/builder.c66d9a902751ee0bf99cc061eeb12fd1.svg",
+    "index.html": "/Skeelo-Skoob-Epics/index.html",
+    "main.ddab8fda.css.map": "/Skeelo-Skoob-Epics/static/css/main.ddab8fda.css.map",
+    "main.d7d8cb70.js.map": "/Skeelo-Skoob-Epics/static/js/main.d7d8cb70.js.map",
+    "488.ba0b806a.chunk.js.map": "/Skeelo-Skoob-Epics/static/js/488.ba0b806a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ddab8fda.css",
+    "static/js/main.d7d8cb70.js"
+  ]
+}

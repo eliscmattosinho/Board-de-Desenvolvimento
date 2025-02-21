@@ -11,7 +11,7 @@
     "web-vitals": "^4.2.4"
   },
 
-  "homepage": "https://eliscmattosinho.github.io/Skeelo-Skoob-Epics/",
+  "homepage": "https://eliscmattosinho.github.io/Board-de-Desenvolvimento/",
   "scripts": {
   "predeploy": "npm run build",
   "deploy": "gh-pages -d build",

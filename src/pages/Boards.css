@@ -100,8 +100,8 @@ p.btn-title {
     width: 200px;
 }
 
-.kanban-items, .scrum-items, .board {
-    padding: 0 10px 10px 0;
+.board {
+    padding-bottom: 10px;
 }
 
 .board::-webkit-scrollbar {
@@ -175,6 +175,8 @@ p.btn-title {
 .col-items {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 1rem;
 }
 
@@ -193,6 +195,10 @@ p.btn-title {
     /* text-overflow: ellipsis; */
     /* overflow: hidden; */
     text-align: center;
+}
+
+.task-counter {
+    margin-left: 5px;
 }
 
 .board {

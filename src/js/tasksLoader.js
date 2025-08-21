@@ -65,15 +65,23 @@ function createTaskItems(tasks) {
     // Função para criar um card único
     function createTaskElement(task) {
         const taskElement = document.createElement('div');
+
         taskElement.classList.add('item', 'task-item');
         taskElement.setAttribute('draggable', 'true');
         taskElement.setAttribute('data-task-id', task.title);
         taskElement.addEventListener('dragstart', drag);
 
+        const taskDescription = document.createElement('p');
+
+        taskDescription.classList.add('item-description');
+        taskDescription.textContent = task.description || "Sem descrição.";
+
         const taskTitle = document.createElement('h3');
         taskTitle.classList.add('item-title');
         taskTitle.textContent = task.title;
+
         taskElement.appendChild(taskTitle);
+        taskElement.appendChild(taskDescription);
 
         // Adiciona evento de clique para abrir o modal
         taskElement.onclick = () => {

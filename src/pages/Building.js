@@ -24,7 +24,7 @@ function Building() {
             Acessar board
           </button>
 
-          <a id="sub-link" href="https://eliscmattosinho.github.io/Skeelo-Skoob-Epics/">projeto original</a>
+          <a id="sub-link" href="https://eliscmattosinho.github.io/Skeelo-Skoob-Epics/" target="_blank" rel="noopener noreferrer">projeto original</a>
         </div>
       </div>
     </div>

@@ -31,6 +31,7 @@ h2 {
 #block-p {
     max-width: 400px;
     text-align: center;
+    font-weight: 500;
 }
 
 #content-block {
@@ -39,6 +40,7 @@ h2 {
     align-items: center;
     justify-content: center;
     text-align: center;
+    padding: 60px;
 }
 
 .social-link {
@@ -50,7 +52,7 @@ h2 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 2rem;
 }
 
 .btn-p-state {
@@ -71,6 +73,17 @@ h2 {
 
 button:hover {
     transform: scale(1.1);
+}
+
+#sub-link {
+    font-size: 14px;
+    text-decoration: underline;
+    margin-top: -20px;
+}
+
+#sub-link:hover {
+    color: #939393;
+    transition: .3s;
 }
 
 @media (min-width: 400px) and (max-width: 768px) {

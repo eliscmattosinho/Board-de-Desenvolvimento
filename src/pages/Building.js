@@ -16,12 +16,15 @@ function Building() {
         </div>
         <div className="state-communicate">
           <p id="block-p">
-            Bem-vindo(a)! Fico muito feliz de te encontrar aqui, mas você chegou um pouco cedo, 
+            Bem-vindo(a)! Fico feliz de te encontrar aqui, mas você chegou um pouco cedo, 
             gostaria de ver o status atual do projeto?
           </p>
+
           <button id="p-state" className="btn-p-state" onClick={() => navigate("/boards")}>
             Acessar board
           </button>
+
+          <a id="sub-link" href="https://eliscmattosinho.github.io/Skeelo-Skoob-Epics/" target="_blank" rel="noopener noreferrer">projeto original</a>
         </div>
       </div>
     </div>

@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setupBoards } from "../js/boardsManipulation";
 import { loadTasks } from "../js/tasksLoader";
+import BoardSection from "../components/BoardSection";
+import { FaArrowCircleLeft } from "react-icons/fa";
 
-import "../assets/images/builder.svg";
 import "../App.css";
 import "./Boards.css";
 import svgBoard from "../assets/images/svg-board.svg";
-import { FaArrowCircleLeft } from "react-icons/fa";
 
 function Boards() {
     const navigate = useNavigate();
@@ -17,16 +17,27 @@ function Boards() {
         loadTasks();
     }, []);
 
-    const allowDrop = (event) => {
-        event.preventDefault();
-    };
-
+    const allowDrop = (event) => event.preventDefault();
     const handleDrop = (event) => {
         event.preventDefault();
         const data = event.dataTransfer.getData("text");
         const taskElement = document.getElementById(data);
         event.target.appendChild(taskElement);
     };
+
+    const kanbanColumns = [
+        { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
+        { id: "k-in-progress", title: "Em Progresso", className: "kanban-column progress" },
+        { id: "k-done", title: "Concluído", className: "kanban-column done" }
+    ];
+
+    const scrumColumns = [
+        { id: "backlog", title: "Backlog", className: "scrum-column backlog" },
+        { id: "sprint-backlog", title: "Sprint Backlog", className: "scrum-column todo" },
+        { id: "s-in-progress", title: "Em Progresso", className: "scrum-column progress" },
+        { id: "review", title: "Revisão", className: "scrum-column review" },
+        { id: "s-done", title: "Concluído", className: "scrum-column done" }
+    ];
 
     return (
         <div className="content-block">
@@ -60,99 +71,8 @@ function Boards() {
                 <div className="second-section-board">
                     <h3 id="h3-title">ExampleVar</h3>
                     <div className="tables-block">
-                        <div id="kanban" className="board kanban-board">
-                            <div className="col-board kanban-column" id="to-do">
-                                <div className="title-col-board">
-                                    <h4 className="col-title-board todo">A Fazer</h4>
-                                </div>
-                                <div
-                                    className="col-items kanban-items"
-                                    onDrop={handleDrop}
-                                    onDragOver={allowDrop}
-                                >
-                                </div>
-                            </div>
-                            <div className="col-board kanban-column" id="k-in-progress">
-                                <div className="title-col-board">
-                                    <h4 className="col-title-board progress">Em Progresso</h4>
-                                </div>
-                                <div
-                                    className="col-items kanban-items"
-                                    onDrop={handleDrop}
-                                    onDragOver={allowDrop}
-                                >
-                                </div>
-                            </div>
-                            <div className="col-board kanban-column" id="k-done">
-                                <div className="title-col-board">
-                                    <h4 className="col-title-board done">Concluído</h4>
-                                </div>
-                                <div
-                                    className="col-items kanban-items"
-                                    onDrop={handleDrop}
-                                    onDragOver={allowDrop}
-                                >
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="scrum" className="board scrum-board">
-                            <div className="col-board scrum-column" id="backlog">
-                                <div className="title-col-board">
-                                    <h4 className="col-title-board backlog">Backlog</h4>
-                                </div>
-                                <div
-                                    className="col-items scrum-items"
-                                    onDrop={handleDrop}
-                                    onDragOver={allowDrop}
-                                >
-                                </div>
-                            </div>
-                            <div className="col-board scrum-column" id="sprint-backlog">
-                                <div className="title-col-board">
-                                    <h4 className="col-title-board todo">Sprint Backlog</h4>
-                                </div>
-                                <div
-                                    className="col-items scrum-items"
-                                    onDrop={handleDrop}
-                                    onDragOver={allowDrop}
-                                >
-                                </div>
-                            </div>
-                            <div className="col-board scrum-column" id="s-in-progress">
-                                <div className="title-col-board">
-                                    <h4 className="col-title-board progress">Em Progresso</h4>
-                                </div>
-                                <div
-                                    className="col-items scrum-items"
-                                    onDrop={handleDrop}
-                                    onDragOver={allowDrop}
-                                >
-                                </div>
-                            </div>
-                            <div className="col-board scrum-column" id="review">
-                                <div className="title-col-board review">
-                                    <h4 className="col-title-board review">Revisão</h4>
-                                </div>
-                                <div
-                                    className="col-items scrum-items"
-                                    onDrop={handleDrop}
-                                    onDragOver={allowDrop}
-                                >
-                                </div>
-                            </div>
-                            <div className="col-board scrum-column" id="s-done">
-                                <div className="title-col-board">
-                                    <h4 className="col-title-board done">Concluído</h4>
-                                </div>
-                                <div
-                                    className="col-items scrum-items"
-                                    onDrop={handleDrop}
-                                    onDragOver={allowDrop}
-                                >
-                                </div>
-                            </div>
-                        </div>
+                        <BoardSection id="kanban" columns={kanbanColumns} onDrop={handleDrop} onDragOver={allowDrop} />
+                        <BoardSection id="scrum" columns={scrumColumns} onDrop={handleDrop} onDragOver={allowDrop} />
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 let cachedTasks = [];
 
+// Carrega tarefas do arquivo txt
 export async function loadTasks() {
     try {
         const response = await fetch(`${process.env.PUBLIC_URL || ''}/assets/tarefas.txt`);
@@ -77,6 +78,33 @@ function observeBoardChanges() {
     });
 }
 
+// Função que mapeia o status das tarefas para a view ativa
+function mapTaskStatusToView(task, platform) {
+    const statusMap = {
+        kanban: {
+            "Backlog": "A Fazer",
+            "Sprint Backlog": "A Fazer",
+            "Revisão": "Em Progresso",
+            "A Fazer": "A Fazer",
+            "Em Progresso": "Em Progresso",
+            "Concluído": "Concluído"
+        },
+        scrum: {
+            "A Fazer": "Backlog",
+            "Backlog": "Backlog",
+            "Sprint Backlog": "Sprint Backlog",
+            "Fazendo": "Em Progresso",
+            "Em Progresso": "Em Progresso",
+            "Revisão": "Revisão",
+            "Concluído": "Concluído"
+        }
+    };
+
+    const mappedStatus = statusMap[platform][task.status] || task.status;
+    return { ...task, status: mappedStatus };
+}
+
+// Cria os elementos das tasks e adiciona nas colunas corretas
 function createTaskItems(tasks) {
     const board = document.querySelector('.board.active');
     if (!board) {
@@ -88,13 +116,9 @@ function createTaskItems(tasks) {
         kanban: {
             'A Fazer': 'to-do',
             'Em Progresso': 'k-in-progress',
-            'Concluído': 'k-done',
-            'Backlog': 'to-do',
-            'Sprint Backlog': 'to-do',
-            'Revisão': 'k-in-progress'
+            'Concluído': 'k-done'
         },
         scrum: {
-            'A Fazer': 'backlog',
             'Backlog': 'backlog',
             'Sprint Backlog': 'sprint-backlog',
             'Em Progresso': 's-in-progress',
@@ -111,17 +135,20 @@ function createTaskItems(tasks) {
     board.querySelectorAll('.col-items').forEach(col => col.innerHTML = '');
 
     tasks.forEach((task) => {
-        const columnId = mapping[task.status];
+        // Ajusta o status conforme a view ativa
+        const adjustedTask = mapTaskStatusToView(task, platform);
+
+        const columnId = mapping[adjustedTask.status];
         if (!columnId) {
-            console.warn(`Status não mapeado: ${task.status}`);
+            console.warn(`Status não mapeado: ${adjustedTask.status}`);
             return;
         }
 
         const column = document.getElementById(columnId);
         if (column) {
-            column.querySelector('.col-items').appendChild(createTaskElement(task));
+            column.querySelector('.col-items').appendChild(createTaskElement(adjustedTask));
         } else {
-            console.error(`Coluna ${columnId} (${platform}) não encontrada para o status: ${task.status}`);
+            console.error(`Coluna ${columnId} (${platform}) não encontrada para o status: ${adjustedTask.status}`);
         }
     });
 }
@@ -194,7 +221,7 @@ function updateTotalTaskCount() {
     }
 }
 
-// Modal único
+// Modal único de task
 function openTaskModal(task) {
     let modal = document.querySelector('.modal');
     if (modal) modal.remove();

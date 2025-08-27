@@ -85,12 +85,17 @@ p.btn-title {
     gap: 6rem;
 }
 
+#kanban, #scrum {
+    overflow-x: auto;
+}
+
 .board {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     gap: 3rem;
-    overflow-x: auto;
+    padding-bottom: 10px;
+    overflow: hidden;
     width: 100%;
     height: 350px;
 }
@@ -100,38 +105,33 @@ p.btn-title {
     width: 200px;
 }
 
-.board {
-    padding-bottom: 10px;
-}
-
 .board::-webkit-scrollbar {
     height: 7px;
 }
 
-.kanban-items::-webkit-scrollbar,
-.scrum-items::-webkit-scrollbar {
-    width: 5px;
-    padding: 10px;
+.col-items::-webkit-scrollbar {
+    width: 6px;
+    
 }
 
 .board::-webkit-scrollbar-thumb,
-.kanban-items::-webkit-scrollbar-thumb,
-.scrum-items::-webkit-scrollbar-thumb {
-    background-color: #fefefe6c;
+.col-items::-webkit-scrollbar-thumb {
+    background-color: #848484;
     border-radius: 5px;
 }
 
 .board::-webkit-scrollbar-thumb:hover,
 .kanban-items::-webkit-scrollbar-thumb:hover,
-.scrum-items::-webkit-scrollbar-thumb:hover {
+.scrum-items::-webkit-scrollbar-thumb:hover,
+.col-items::-webkit-scrollbar-thumb:hover {
     cursor: pointer;
 }
 
 .col-board {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
     align-items: center;
+    gap: 1rem;
     width: 200px;
 }
 
@@ -177,6 +177,8 @@ p.btn-title {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
 .item {

@@ -1,3 +1,5 @@
+let cachedTasks = [];
+
 export async function loadTasks() {
     try {
         const response = await fetch(`${process.env.PUBLIC_URL || ''}/assets/tarefas.txt`);
@@ -8,38 +10,80 @@ export async function loadTasks() {
         }
 
         const text = await response.text();
-
-        // Processando as tarefas
         const tasks = parseTasks(text);
+        cachedTasks = tasks;
+
+        if (!tasks.length) {
+            console.warn("Nenhuma tarefa encontrada no arquivo.");
+            return;
+        }
 
         createTaskItems(tasks);
-
         updateColumnTaskCount();
         updateTotalTaskCount();
+        observeBoardChanges();
+
+        console.info(`✅ ${tasks.length} tarefas carregadas com sucesso.`);
     } catch (error) {
         console.error('Erro ao carregar o arquivo de tarefas:', error);
     }
 }
 
-// Função para parsear o conteúdo do arquivo
+// Parseia o arquivo de texto
 function parseTasks(text) {
     const tasks = [];
-
-    const taskRegex = /Tarefa (\d+): (.*?)\n- Status: (.*?)\nDescrição: (.*?)(?=\nTarefa \d+:|$)/gs;
+    const taskRegex = /Tarefa\s+(\d+):\s*(.*?)\r?\n- Status:\s*(.*?)\r?\nDescrição:\s*([\s\S]*?)(?=\r?\nTarefa\s+\d+:|$)/g;
     let match;
+    let counter = 0;
 
     while ((match = taskRegex.exec(text)) !== null) {
+        counter++;
+        const id = `task-${counter}`;
         const title = match[2].trim();
         const status = match[3].trim();
         const description = match[4].trim();
 
-        tasks.push({ title, status, description });
+        tasks.push({ id, title, status, description });
     }
 
     return tasks;
 }
 
+// Recarrega tarefas ao trocar de board
+export function reloadTasksOnBoardChange() {
+    if (cachedTasks.length) {
+        createTaskItems(cachedTasks);
+        updateColumnTaskCount();
+        updateTotalTaskCount();
+    } else {
+        console.warn("Nenhuma tarefa carregada ainda.");
+    }
+}
+
+// Observa mudanças de classe nos boards para recarregar as tarefas
+function observeBoardChanges() {
+    const boards = document.querySelectorAll('.board');
+
+    boards.forEach(board => {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.attributeName === 'class' && board.classList.contains('active')) {
+                    reloadTasksOnBoardChange();
+                }
+            });
+        });
+
+        observer.observe(board, { attributes: true, attributeFilter: ['class'] });
+    });
+}
+
 function createTaskItems(tasks) {
+    const board = document.querySelector('.board.active');
+    if (!board) {
+        console.error("Nenhum board ativo encontrado.");
+        return;
+    }
+
     const mappings = {
         kanban: {
             'A Fazer': 'to-do',
@@ -59,62 +103,56 @@ function createTaskItems(tasks) {
         }
     };
 
-    // Limpar colunas antes de adicionar novos elementos
-    document.querySelectorAll('.col-items').forEach(column => column.innerHTML = '');
+    // Detecta se o board ativo é kanban ou scrum
+    const platform = board.classList.contains("kanban-board") ? "kanban" : "scrum";
+    const mapping = mappings[platform];
 
-    // Função para criar um card único
-    function createTaskElement(task) {
-        const taskElement = document.createElement('div');
-
-        taskElement.classList.add('item', 'task-item');
-        taskElement.setAttribute('draggable', 'true');
-        taskElement.setAttribute('data-task-id', task.title);
-        taskElement.addEventListener('dragstart', drag);
-
-        const taskDescription = document.createElement('p');
-
-        taskDescription.classList.add('item-description');
-        taskDescription.textContent = task.description || "Sem descrição.";
-
-        const taskTitle = document.createElement('h3');
-        taskTitle.classList.add('item-title');
-        taskTitle.textContent = task.title;
-
-        taskElement.appendChild(taskTitle);
-        taskElement.appendChild(taskDescription);
-
-        // Adiciona evento de clique para abrir o modal
-        taskElement.onclick = () => {
-            openTaskModal(task);
-        };
-
-        return taskElement;
-    }
+    // Limpa colunas
+    board.querySelectorAll('.col-items').forEach(col => col.innerHTML = '');
 
     tasks.forEach((task) => {
-        // Função para adicionar tarefa na coluna de Kaban ou Scrum
-        function addTaskToColumn(mapping, platform) {
-            const columnId = mapping[task.status];
-            if (columnId) {
-                const column = document.getElementById(columnId);
-                if (column) {
-                    column.querySelector('.col-items').appendChild(createTaskElement(task));
-                } else {
-                    console.error(`Coluna ${platform} não encontrada para o status: ${task.status}`);
-                }
-            }
+        const columnId = mapping[task.status];
+        if (!columnId) {
+            console.warn(`Status não mapeado: ${task.status}`);
+            return;
         }
 
-        addTaskToColumn(mappings.kanban, 'Kanban');
-        addTaskToColumn(mappings.scrum, 'Scrum');
+        const column = document.getElementById(columnId);
+        if (column) {
+            column.querySelector('.col-items').appendChild(createTaskElement(task));
+        } else {
+            console.error(`Coluna ${columnId} (${platform}) não encontrada para o status: ${task.status}`);
+        }
     });
+}
+
+function createTaskElement(task) {
+    const taskElement = document.createElement('div');
+    taskElement.classList.add('item', 'task-item');
+    taskElement.setAttribute('draggable', 'true');
+    taskElement.setAttribute('data-task-id', task.id);
+    taskElement.addEventListener('dragstart', drag);
+
+    const taskTitle = document.createElement('h3');
+    taskTitle.classList.add('item-title');
+    taskTitle.textContent = task.title;
+
+    const taskDescription = document.createElement('p');
+    taskDescription.classList.add('item-description');
+    taskDescription.textContent = task.description || "Sem descrição.";
+
+    taskElement.appendChild(taskTitle);
+    taskElement.appendChild(taskDescription);
+
+    taskElement.onclick = () => openTaskModal(task);
+
+    return taskElement;
 }
 
 function drag(event) {
     event.dataTransfer.setData("text", event.target.getAttribute("data-task-id"));
 }
 
-// Atualiza a contagem de tarefas em cada coluna
 function updateColumnTaskCount() {
     document.querySelectorAll('.col-board').forEach(column => {
         const titleElement = column.querySelector('.col-title-board');
@@ -123,90 +161,73 @@ function updateColumnTaskCount() {
         if (titleElement && itemsContainer) {
             const taskCount = itemsContainer.children.length;
 
-            // Verifica se já existe um contador e atualiza
             let counterSpan = titleElement.querySelector('.task-counter');
             if (!counterSpan) {
                 counterSpan = document.createElement('span');
                 counterSpan.classList.add('task-counter');
                 titleElement.appendChild(counterSpan);
             }
-
             counterSpan.textContent = `(${taskCount})`;
         }
     });
 }
 
-// Atualiza a contagem total de tarefas no board ativo
 function updateTotalTaskCount() {
     let totalTaskCount = 0;
-
-    // Encontra o board ativo
     const activeBoard = document.querySelector('.board.active');
 
     if (activeBoard) {
-        activeBoard.querySelectorAll('.col-items').forEach(column => {
-            totalTaskCount += column.children.length;
+        activeBoard.querySelectorAll('.col-items').forEach(col => {
+            totalTaskCount += col.children.length;
         });
 
         const h3Title = document.getElementById('h3-title');
         if (h3Title) {
-            // Vê se já existe um span com o contador e atualiza ou cria um novo
             let counterSpan = h3Title.querySelector('.task-counter');
             if (!counterSpan) {
                 counterSpan = document.createElement('span');
                 counterSpan.classList.add('task-counter');
                 h3Title.appendChild(counterSpan);
             }
-
             counterSpan.textContent = `(${totalTaskCount})`;
         }
-    } else {
-        console.error('Board ativo não encontrado.');
     }
 }
 
-// Função para abrir o modal com as informações da tarefa
+// Modal único
 function openTaskModal(task) {
-    const modal = document.createElement('div');
+    let modal = document.querySelector('.modal');
+    if (modal) modal.remove();
+
+    modal = document.createElement('div');
     modal.classList.add('modal');
 
     const modalContent = document.createElement('div');
     modalContent.classList.add('modal-content');
 
-    // Título
     const title = document.createElement('h2');
     title.textContent = task.title;
     modalContent.appendChild(title);
 
     const infoContent = document.createElement('div');
     infoContent.classList.add('info-content');
-    modalContent.appendChild(infoContent);
 
-    // Status
     const status = document.createElement('p');
-    const strongStatus = document.createElement('strong');
-    strongStatus.textContent = 'Status: ';
-    status.appendChild(strongStatus);
-    status.appendChild(document.createTextNode(task.status));
+    status.innerHTML = `<strong>Status:</strong> ${task.status}`;
     infoContent.appendChild(status);
 
-    // Descrição
     const description = document.createElement('p');
-    const strong = document.createElement('strong');
-    strong.textContent = 'Descrição: ';
-    description.appendChild(strong);
-    description.appendChild(document.createTextNode(task.description || 'Nenhuma descrição disponível.'));
+    description.innerHTML = `<strong>Descrição:</strong> ${task.description || 'Nenhuma descrição disponível.'}`;
     infoContent.appendChild(description);
+
+    modalContent.appendChild(infoContent);
 
     const closeButton = document.createElement('button');
     closeButton.textContent = 'X';
     closeButton.classList.add('modal-close');
-    closeButton.onclick = () => {
-        modal.remove();
-    };
+    closeButton.onclick = () => modal.remove();
+
     modalContent.appendChild(closeButton);
-
     modal.appendChild(modalContent);
-
     document.body.appendChild(modal);
 }

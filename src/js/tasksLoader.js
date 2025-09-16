@@ -27,7 +27,7 @@ function parseTasks(text) {
     while ((match = taskRegex.exec(text)) !== null) {
         counter++;
         tasks.push({
-            id: `task-${counter}`,
+            id: `${counter}`,
             title: match[2].trim(),
             status: match[3].trim(),
             description: match[4].trim(),

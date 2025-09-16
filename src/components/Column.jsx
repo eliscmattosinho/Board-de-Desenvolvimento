@@ -6,7 +6,7 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
         <div className={`col-board ${className}`} id={id}>
             <div className="title-col-board">
                 <h4 className={`col-title-board ${className.split(" ")[1]}`}>
-                    {title} <span className="task-counter">({tasks.length})</span>
+                    {title}<span className="task-counter">({tasks.length})</span>
                 </h4>
             </div>
             <div

@@ -1,4 +1,6 @@
 import React from "react";
+import "./CardTask.css";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 
 function CardTask({ task, onClose }) {
     if (!task) return null;
@@ -6,7 +8,10 @@ function CardTask({ task, onClose }) {
     return (
         <div className="modal">
             <div className="modal-content">
-                <h2>{task.title}</h2>
+                <h2>Card
+                    <span>#{task.id}</span>
+                </h2>
+                <h3>{task.title}</h3>
 
                 <div className="info-content">
                     <p>
@@ -19,7 +24,7 @@ function CardTask({ task, onClose }) {
                 </div>
 
                 <button className="modal-close" onClick={onClose}>
-                    X
+                    <IoIosCloseCircleOutline size={25} className="close-icon" />
                 </button>
             </div>
         </div>

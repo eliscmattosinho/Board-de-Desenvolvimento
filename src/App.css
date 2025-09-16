@@ -125,17 +125,7 @@ p.text-indent {
   }
 }
 
-.close-icon {
-  color: #ff0000;
-  font-size: 25px;
-  cursor: pointer;
-}
-
 @media (min-width: 320px) and (max-width: 768px) {
-  .close-icon {
-    font-size: 23px;
-  }
-
   .content-section {
     padding: 0 4%;
   }

@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setupBoards } from "../js/boardsManipulation";
 import { loadTasks } from "../js/tasksLoader";
 import BoardSection from "../components/BoardSection";
+import CardTask from "../components/CardTask";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
 import "../App.css";
@@ -11,24 +12,48 @@ import svgBoard from "../assets/images/svg-board.svg";
 
 function Boards() {
     const navigate = useNavigate();
+    const [tasks, setTasks] = useState([]);
+    const [selectedTask, setSelectedTask] = useState(null);
 
     useEffect(() => {
         setupBoards();
-        loadTasks();
+        loadTasks().then((loaded) => setTasks(loaded || []));
     }, []);
 
     const allowDrop = (event) => event.preventDefault();
-    const handleDrop = (event) => {
+
+    const handleDrop = (event, columnId) => {
         event.preventDefault();
-        const data = event.dataTransfer.getData("text");
-        const taskElement = document.getElementById(data);
-        event.target.appendChild(taskElement);
+        const taskId = event.dataTransfer.getData("text");
+        setTasks((prev) =>
+            prev.map((t) =>
+                t.id === taskId ? { ...t, status: columnIdToStatus(columnId) } : t
+            )
+        );
+    };
+
+    const handleDragStart = (event, taskId) => {
+        event.dataTransfer.setData("text", taskId);
+    };
+
+    const columnIdToStatus = (id) => {
+        const map = {
+            "to-do": "A Fazer",
+            "k-in-progress": "Em Progresso",
+            "k-done": "Concluído",
+            "backlog": "Backlog",
+            "sprint-backlog": "Sprint Backlog",
+            "s-in-progress": "Em Progresso",
+            "review": "Revisão",
+            "s-done": "Concluído",
+        };
+        return map[id] || id;
     };
 
     const kanbanColumns = [
         { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
         { id: "k-in-progress", title: "Em Progresso", className: "kanban-column progress" },
-        { id: "k-done", title: "Concluído", className: "kanban-column done" }
+        { id: "k-done", title: "Concluído", className: "kanban-column done" },
     ];
 
     const scrumColumns = [
@@ -36,7 +61,7 @@ function Boards() {
         { id: "sprint-backlog", title: "Sprint Backlog", className: "scrum-column todo" },
         { id: "s-in-progress", title: "Em Progresso", className: "scrum-column progress" },
         { id: "review", title: "Revisão", className: "scrum-column review" },
-        { id: "s-done", title: "Concluído", className: "scrum-column done" }
+        { id: "s-done", title: "Concluído", className: "scrum-column done" },
     ];
 
     return (
@@ -69,13 +94,33 @@ function Boards() {
                 </div>
 
                 <div className="second-section-board">
-                    <h3 id="h3-title">ExampleVar</h3>
+                    <h3 id="h3-title">
+                        ExampleVar <span className="task-counter">({tasks.length})</span>
+                    </h3>
                     <div className="tables-block">
-                        <BoardSection id="kanban" columns={kanbanColumns} onDrop={handleDrop} onDragOver={allowDrop} />
-                        <BoardSection id="scrum" columns={scrumColumns} onDrop={handleDrop} onDragOver={allowDrop} />
+                        <BoardSection
+                            id="kanban"
+                            columns={kanbanColumns}
+                            onDrop={handleDrop}
+                            onDragOver={allowDrop}
+                            onTaskClick={setSelectedTask}
+                            onDragStart={handleDragStart}
+                            tasks={tasks}
+                        />
+                        <BoardSection
+                            id="scrum"
+                            columns={scrumColumns}
+                            onDrop={handleDrop}
+                            onDragOver={allowDrop}
+                            onTaskClick={setSelectedTask}
+                            onDragStart={handleDragStart}
+                            tasks={tasks}
+                        />
                     </div>
                 </div>
             </div>
+
+            <CardTask task={selectedTask} onClose={() => setSelectedTask(null)} />
         </div>
     );
 }

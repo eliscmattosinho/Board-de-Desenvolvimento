@@ -1,7 +1,7 @@
 import React from "react";
 import TaskItem from "./TaskItem";
 
-function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, onDragStart }) {
+function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, onDragStart, statusMap }) {
     return (
         <div className={`col-board ${className}`} id={id}>
             <div className="title-col-board">
@@ -20,6 +20,7 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
                         task={task}
                         onClick={onTaskClick}
                         onDragStart={onDragStart}
+                        statusMap={statusMap}
                     />
                 ))}
             </div>

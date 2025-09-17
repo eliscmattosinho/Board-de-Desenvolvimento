@@ -1,6 +1,9 @@
 import React from "react";
 
-function TaskItem({ task, onClick, onDragStart }) {
+function TaskItem({ task, onClick, onDragStart, statusMap }) {
+    // traduz status canônico para status exibdo na view atual
+    // const displayStatus = statusMap[task.status] || task.status;
+
     return (
         <div
             id={task.id}
@@ -14,6 +17,9 @@ function TaskItem({ task, onClick, onDragStart }) {
             <p className="item-description">
                 {task.description || "Sem descrição."}
             </p>
+            {/* <p className="item-status">
+                <strong>Status:</strong> {displayStatus}
+            </p> */}
         </div>
     );
 }

@@ -158,7 +158,7 @@ function Boards() {
 
                 <div className="second-section-board">
                     <h3 id="h3-title">
-                        ExampleVar <span className="task-counter">({tasks.length})</span>
+                        {activeView === "kanban" ? "Kanban" : "Scrum"}<span className="task-counter">({tasks.length})</span>
                     </h3>
                     <div className="tables-block">
                         <BoardSection

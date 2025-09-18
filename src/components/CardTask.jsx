@@ -1,20 +1,34 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./CardTask.css";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
 import { getDisplayStatus, columnIdToCanonicalStatus } from "../js/boardUtils";
 
 function CardTask({ task, onClose, activeView, columns, moveTask }) {
-  if (!task) return null;
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const handleStatusChange = (e) => {
-    const columnId = e.target.value;
-    const canonicalStatus = columnIdToCanonicalStatus(columnId);
-    moveTask(task.id, canonicalStatus);
-  };
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!task) return null;
 
   const currentColumnId = columns.find(
     (col) => getDisplayStatus(task.status, activeView) === col.title
   )?.id;
+
+  const handleSelect = (colId) => {
+    const canonicalStatus = columnIdToCanonicalStatus(colId);
+    moveTask(task.id, canonicalStatus);
+    setOpen(false);
+  };
 
   return (
     <div className="modal">
@@ -24,15 +38,27 @@ function CardTask({ task, onClose, activeView, columns, moveTask }) {
         </h2>
         <h3>{task.title}</h3>
         <div className="info-content">
-          <label>
+          <label className="status-label">
             <strong>Status:</strong>
-            <select value={currentColumnId} onChange={handleStatusChange}>
-              {columns.map((col) => (
-                <option key={col.id} value={col.id}>
-                  {col.title}
-                </option>
-              ))}
-            </select>
+            <div className="custom-dropdown" ref={dropdownRef}>
+              <div className="dropdown-selected" onClick={() => setOpen(!open)}>
+                {columns.find(col => col.id === currentColumnId)?.title || "Selecione"}
+                <IoIosArrowDown size={15} className={`dropdown-icon ${open ? "open" : ""}`} />
+              </div>
+              {open && (
+                <div className="dropdown-options">
+                  {columns.map((col) => (
+                    <div
+                      key={col.id}
+                      className="dropdown-option"
+                      onClick={() => handleSelect(col.id)}
+                    >
+                      {col.title}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </label>
           <p>
             <strong>Descrição:</strong>{" "}

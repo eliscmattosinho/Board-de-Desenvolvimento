@@ -97,7 +97,13 @@ function Boards() {
         </div>
       </div>
 
-      <CardTask task={selectedTask} onClose={() => setSelectedTask(null)} activeView={activeView} />
+      <CardTask
+        task={tasks.find((t) => t.id === selectedTask?.id) || null}
+        onClose={() => setSelectedTask(null)}
+        activeView={activeView}
+        columns={activeView === "kanban" ? kanbanColumns : scrumColumns}
+        moveTask={moveTask}
+      />
     </div>
   );
 }

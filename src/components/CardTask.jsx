@@ -1,12 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./CardTask.css";
-import { IoIosCloseCircleOutline } from "react-icons/io";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosCloseCircleOutline, IoIosArrowDown } from "react-icons/io";
 import { getDisplayStatus, columnIdToCanonicalStatus } from "../js/boardUtils";
 
-function CardTask({ task, onClose, activeView, columns, moveTask }) {
+function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, deleteTask }) {
   const [open, setOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const dropdownRef = useRef(null);
+
+  // sync inputs with the received task
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title || "");
+      setDescription(task.description || "");
+      setEditMode(false);
+      setOpen(false);
+    }
+  }, [task]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -24,25 +36,73 @@ function CardTask({ task, onClose, activeView, columns, moveTask }) {
     (col) => getDisplayStatus(task.status, activeView) === col.title
   )?.id;
 
+  // change just the status
   const handleSelect = (colId) => {
     const canonicalStatus = columnIdToCanonicalStatus(colId);
     moveTask(task.id, canonicalStatus);
     setOpen(false);
   };
 
+  // save updates (title/description)
+  const handleSave = () => {
+    const trimmedTitle = (title || "").trim();
+    const trimmedDescription = (description || "").trim();
+
+    if (!trimmedTitle) {
+      alert("O título não pode ficar vazio.");
+      return;
+    }
+
+    updateTask(task.id, {
+      title: trimmedTitle,
+      description: trimmedDescription,
+    });
+    setEditMode(false);
+  };
+
+  const handleCancel = () => {
+    // restore what came from the task
+    setTitle(task.title || "");
+    setDescription(task.description || "");
+    setEditMode(false);
+  };
+
+  const handleDelete = () => {
+    //TODO: create a delete modal/ballon
+    const ok = window.confirm("Deseja mesmo excluir esta tarefa? Esta ação não pode ser desfeita.");
+    if (!ok) return;
+    deleteTask(task.id);
+    onClose();
+  };
+
   return (
     <div className="modal">
       <div className="modal-content">
-        <h2>
-          Card<span>#{task.id}</span>
-        </h2>
-        <h3>{task.title}</h3>
+        <div className="modal-header-row">
+          <h2>
+            Card<span>#{task.id}</span>
+          </h2>
+        </div>
+
+        {editMode ? (
+          <div className="edit-section">
+            <input
+              className="input-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Título da tarefa"
+            />
+          </div>
+        ) : (
+          <h3>{task.title}</h3>
+        )}
+
         <div className="info-content">
           <label className="status-label">
             <strong>Status:</strong>
             <div className="custom-dropdown" ref={dropdownRef}>
               <div className="dropdown-selected" onClick={() => setOpen(!open)}>
-                {columns.find(col => col.id === currentColumnId)?.title || "Selecione"}
+                {columns.find((col) => col.id === currentColumnId)?.title || "Selecione"}
                 <IoIosArrowDown size={15} className={`dropdown-icon ${open ? "open" : ""}`} />
               </div>
               {open && (
@@ -60,12 +120,59 @@ function CardTask({ task, onClose, activeView, columns, moveTask }) {
               )}
             </div>
           </label>
-          <p>
+
+          <div>
             <strong>Descrição:</strong>{" "}
-            {task.description || "Nenhuma descrição disponível."}
-          </p>
+            {editMode ? (
+              <textarea
+                className="textarea-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Descrição (opcional)"
+                rows={4}
+              />
+            ) : (
+              task.description || "Nenhuma descrição disponível."
+            )}
+          </div>
+
+          <div className="modal-actions">
+            {!editMode && (
+              <button
+                type="button"
+                className="modal-btn btn-edit"
+                onClick={() => setEditMode(true)}
+                data-tooltip="Editar tarefa"
+              >
+                Editar
+              </button>
+            )}
+            {editMode && (
+              <>
+                <button type="button" className="modal-btn btn-save" onClick={handleSave}>
+                  Salvar
+                </button>
+                <button type="button" className="modal-btn btn-cancel" onClick={handleCancel}>
+                  Cancelar
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              className="modal-btn btn-delete"
+              onClick={handleDelete}
+              data-tooltip="Excluir tarefa"
+            >
+              Excluir
+            </button>
+          </div>
         </div>
-        <button className="modal-close" onClick={onClose}>
+
+        <button
+          type="button"
+          className="modal-close"
+          onClick={onClose}
+          data-tooltip="Fechar">
           <IoIosCloseCircleOutline size={25} />
         </button>
       </div>

@@ -261,14 +261,15 @@ button[data-tooltip]:hover::before {
     font-size: 16px;
 }
 
-.edit-section,
+.card-edit,
+.card-view,
 .title-block,
 .description-block {
     display: flex;
     flex-direction: column;
 }
 
-.edit-section {
+.card-edit, .card-view {
     gap: 10px;
 }
 

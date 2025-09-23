@@ -1,38 +1,28 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./CardTask.css";
-import { IoIosCloseCircleOutline, IoIosArrowDown } from "react-icons/io";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 import { getDisplayStatus, columnIdToCanonicalStatus } from "../js/boardUtils";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
+import StatusDropdown from "./StatusDropdown";
+import CardView from "./CardView";
+import CardEdit from "./CardEdit";
 
 function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, deleteTask }) {
-  const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const dropdownRef = useRef(null);
   const contentRef = useRef(null);
 
-  // sync inputs with the received task
+  // Sync inputs with the received task
   useEffect(() => {
     if (task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
       setEditMode(false);
-      setOpen(false);
     }
   }, [task]);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   if (!task) return null;
 
@@ -40,14 +30,11 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
     (col) => getDisplayStatus(task.status, activeView) === col.title
   )?.id;
 
-  // change just the status
   const handleSelect = (colId) => {
     const canonicalStatus = columnIdToCanonicalStatus(colId);
     moveTask(task.id, canonicalStatus);
-    setOpen(false);
   };
 
-  // save updates (title/description)
   const handleSave = () => {
     const trimmedTitle = (title || "").trim();
     const trimmedDescription = (description || "").trim();
@@ -65,25 +52,18 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   };
 
   const handleCancel = () => {
-    // restore what came from the task
     setTitle(task.title || "");
     setDescription(task.description || "");
     setEditMode(false);
   };
 
-  const handleDelete = () => {
-    setShowConfirmDelete(true);
-  };
-
+  const handleDelete = () => setShowConfirmDelete(true);
   const confirmDelete = () => {
     deleteTask(task.id);
     onClose();
     setShowConfirmDelete(false);
   };
-
-  const cancelDelete = () => {
-    setShowConfirmDelete(false);
-  };
+  const cancelDelete = () => setShowConfirmDelete(false);
 
   return (
     <div className="modal">
@@ -104,81 +84,22 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
             >
               <div className="content-inner" ref={contentRef}>
                 {editMode ? (
-                  <div className="edit-section">
-                    <div class="title-block">
-                      <label className="card-title w-600">Título:</label>
-                      <input
-                        className="input input-title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Título da tarefa"
-                      />
-                    </div>
-                    <div className="status-block">
-                      <label className="card-title w-600">Status:</label>
-                      <div className="custom-dropdown" ref={dropdownRef}>
-                        <div className="dropdown-selected" onClick={() => setOpen(!open)}>
-                          {columns.find((col) => col.id === currentColumnId)?.title || "Selecione"}
-                          <IoIosArrowDown size={15} className={`dropdown-icon ${open ? "open" : ""}`} />
-                        </div>
-                        {open && (
-                          <div className="dropdown-options">
-                            {columns.map((col) => (
-                              <div
-                                key={col.id}
-                                className="dropdown-option"
-                                onClick={() => handleSelect(col.id)}
-                              >
-                                {col.title}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="description-block">
-                      <label className="card-title w-600">Descrição:</label>
-                      <textarea
-                        className="input textarea-description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Descrição (opcional)"
-                        rows={4}
-                      />
-                    </div>
-                  </div>
+                  <CardEdit
+                    title={title}
+                    setTitle={setTitle}
+                    description={description}
+                    setDescription={setDescription}
+                    columns={columns}
+                    currentColumnId={currentColumnId}
+                    onSelect={handleSelect}
+                  />
                 ) : (
-                  <div className="info-content">
-                    <h3 className="task-name">{task.title}</h3>
-
-                    <div className="status-block">
-                      <label className="card-title w-600">Status:</label>
-                      <div className="custom-dropdown" ref={dropdownRef}>
-                        <div className="dropdown-selected" onClick={() => setOpen(!open)}>
-                          {columns.find((col) => col.id === currentColumnId)?.title || "Selecione"}
-                          <IoIosArrowDown size={15} className={`dropdown-icon ${open ? "open" : ""}`} />
-                        </div>
-                        {open && (
-                          <div className="dropdown-options">
-                            {columns.map((col) => (
-                              <div
-                                key={col.id}
-                                className="dropdown-option"
-                                onClick={() => handleSelect(col.id)}
-                              >
-                                {col.title}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="description-section">
-                      <h3 className="card-title w-600">Descrição:</h3>
-                      {task.description || "Nenhuma descrição disponível."}
-                    </div>
-                  </div>
+                  <CardView
+                    task={task}
+                    columns={columns}
+                    currentColumnId={currentColumnId}
+                    onSelect={handleSelect}
+                  />
                 )}
               </div>
             </CSSTransition>

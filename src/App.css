@@ -125,6 +125,10 @@ p.text-indent {
   }
 }
 
+.w-600 {
+  font-weight: 600;
+}
+
 @media (min-width: 320px) and (max-width: 768px) {
   .content-section {
     padding: 0 4%;

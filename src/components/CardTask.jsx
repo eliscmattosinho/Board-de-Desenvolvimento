@@ -86,20 +86,21 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
 
         {editMode ? (
           <div className="edit-section">
+            <h3 class="card-title w-600">Título:</h3>
             <input
-              className="input-title"
+              className="input input-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Título da tarefa"
             />
           </div>
         ) : (
-          <h3>{task.title}</h3>
+          <h3 className="task-name">{task.title}</h3>
         )}
 
         <div className="info-content">
           <label className="status-label">
-            <strong>Status:</strong>
+            <h3 class="card-title w-600">Status:</h3>
             <div className="custom-dropdown" ref={dropdownRef}>
               <div className="dropdown-selected" onClick={() => setOpen(!open)}>
                 {columns.find((col) => col.id === currentColumnId)?.title || "Selecione"}
@@ -121,11 +122,11 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
             </div>
           </label>
 
-          <div>
-            <strong>Descrição:</strong>{" "}
+          <div className="description-section">
+            <h3 class="card-title w-600">Descrição:</h3>
             {editMode ? (
               <textarea
-                className="textarea-description"
+                className="input textarea-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Descrição (opcional)"
@@ -149,10 +150,20 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
             )}
             {editMode && (
               <>
-                <button type="button" className="modal-btn btn-save" onClick={handleSave}>
+                <button
+                  type="button"
+                  className="modal-btn btn-save"
+                  onClick={handleSave}
+                  data-tooltip="Salvar alterações"
+                >
                   Salvar
                 </button>
-                <button type="button" className="modal-btn btn-cancel" onClick={handleCancel}>
+                <button
+                  type="button"
+                  className="modal-btn btn-cancel"
+                  onClick={handleCancel}
+                  data-tooltip="Descartar edição"
+                >
                   Cancelar
                 </button>
               </>

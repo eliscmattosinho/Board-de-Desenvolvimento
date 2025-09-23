@@ -41,7 +41,6 @@
     padding: 30px;
 }
 
-.modal-content h3,
 .modal-content h2 {
     font-size: 18px;
     font-weight: 600;
@@ -194,6 +193,11 @@
     color: #fefefe;
 }
 
+.btn-save {
+    background: #4caf50;
+    color: #fefefe;
+}
+
 /* Base do botão com tooltip */
 button[data-tooltip] {
     position: relative;
@@ -246,4 +250,40 @@ button[data-tooltip]::before {
 button[data-tooltip]:hover::after,
 button[data-tooltip]:hover::before {
     opacity: 1;
+}
+
+.task-name {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.card-title {
+    font-size: 16px;
+}
+
+.edit-section,
+.description-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.input {
+    width: 100%;
+    border: 1px solid #9b9b9b;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.input:focus {
+    border-color: #555;
+    outline: none;
+    box-shadow: 0 0 5px rgba(85, 85, 85, 0.5);
+}
+
+/* Prevent textarea from exceeding parent width */
+.textarea-description {
+    width: 100%;
+    max-width: 100%;
+    resize: vertical;
+    box-sizing: border-box;
 }

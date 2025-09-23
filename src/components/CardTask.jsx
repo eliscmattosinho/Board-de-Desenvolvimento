@@ -2,12 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import "./CardTask.css";
 import { IoIosCloseCircleOutline, IoIosArrowDown } from "react-icons/io";
 import { getDisplayStatus, columnIdToCanonicalStatus } from "../js/boardUtils";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, deleteTask }) {
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const dropdownRef = useRef(null);
 
   // sync inputs with the received task
@@ -68,11 +70,17 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   };
 
   const handleDelete = () => {
-    //TODO: create a delete modal/ballon
-    const ok = window.confirm("Deseja mesmo excluir esta tarefa? Esta ação não pode ser desfeita.");
-    if (!ok) return;
+    setShowConfirmDelete(true);
+  };
+
+  const confirmDelete = () => {
     deleteTask(task.id);
     onClose();
+    setShowConfirmDelete(false);
+  };
+
+  const cancelDelete = () => {
+    setShowConfirmDelete(false);
   };
 
   return (
@@ -86,7 +94,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
 
         {editMode ? (
           <div className="edit-section">
-            <h3 class="card-title w-600">Título:</h3>
+            <h3 className="card-title w-600">Título:</h3>
             <input
               className="input input-title"
               value={title}
@@ -100,7 +108,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
 
         <div className="info-content">
           <label className="status-label">
-            <h3 class="card-title w-600">Status:</h3>
+            <h3 className="card-title w-600">Status:</h3>
             <div className="custom-dropdown" ref={dropdownRef}>
               <div className="dropdown-selected" onClick={() => setOpen(!open)}>
                 {columns.find((col) => col.id === currentColumnId)?.title || "Selecione"}
@@ -123,7 +131,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
           </label>
 
           <div className="description-section">
-            <h3 class="card-title w-600">Descrição:</h3>
+            <h3 className="card-title w-600">Descrição:</h3>
             {editMode ? (
               <textarea
                 className="input textarea-description"
@@ -183,10 +191,17 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
           type="button"
           className="modal-close"
           onClick={onClose}
-          data-tooltip="Fechar">
+          data-tooltip="Fechar"
+        >
           <IoIosCloseCircleOutline size={25} />
         </button>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={showConfirmDelete}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }

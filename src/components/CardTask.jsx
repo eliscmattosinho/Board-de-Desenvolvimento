@@ -3,6 +3,7 @@ import "./CardTask.css";
 import { IoIosCloseCircleOutline, IoIosArrowDown } from "react-icons/io";
 import { getDisplayStatus, columnIdToCanonicalStatus } from "../js/boardUtils";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { CSSTransition, SwitchTransition } from "react-transition-group";
 
 function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, deleteTask }) {
   const [open, setOpen] = useState(false);
@@ -11,6 +12,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   const [description, setDescription] = useState("");
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const dropdownRef = useRef(null);
+  const contentRef = useRef(null);
 
   // sync inputs with the received task
   useEffect(() => {
@@ -92,99 +94,136 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
           </h2>
         </div>
 
-        {editMode ? (
-          <div className="edit-section">
-            <h3 className="card-title w-600">Título:</h3>
-            <input
-              className="input input-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Título da tarefa"
-            />
-          </div>
-        ) : (
-          <h3 className="task-name">{task.title}</h3>
-        )}
-
-        <div className="info-content">
-          <label className="status-label">
-            <h3 className="card-title w-600">Status:</h3>
-            <div className="custom-dropdown" ref={dropdownRef}>
-              <div className="dropdown-selected" onClick={() => setOpen(!open)}>
-                {columns.find((col) => col.id === currentColumnId)?.title || "Selecione"}
-                <IoIosArrowDown size={15} className={`dropdown-icon ${open ? "open" : ""}`} />
-              </div>
-              {open && (
-                <div className="dropdown-options">
-                  {columns.map((col) => (
-                    <div
-                      key={col.id}
-                      className="dropdown-option"
-                      onClick={() => handleSelect(col.id)}
-                    >
-                      {col.title}
+        <div className="card-content-wrapper">
+          <SwitchTransition mode="out-in">
+            <CSSTransition
+              key={editMode ? "edit" : "view"}
+              nodeRef={contentRef}
+              timeout={400}
+              classNames="slide"
+            >
+              <div className="content-inner" ref={contentRef}>
+                {editMode ? (
+                  <div className="edit-section">
+                    <div class="title-block">
+                      <label className="card-title w-600">Título:</label>
+                      <input
+                        className="input input-title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Título da tarefa"
+                      />
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </label>
+                    <div className="status-block">
+                      <label className="card-title w-600">Status:</label>
+                      <div className="custom-dropdown" ref={dropdownRef}>
+                        <div className="dropdown-selected" onClick={() => setOpen(!open)}>
+                          {columns.find((col) => col.id === currentColumnId)?.title || "Selecione"}
+                          <IoIosArrowDown size={15} className={`dropdown-icon ${open ? "open" : ""}`} />
+                        </div>
+                        {open && (
+                          <div className="dropdown-options">
+                            {columns.map((col) => (
+                              <div
+                                key={col.id}
+                                className="dropdown-option"
+                                onClick={() => handleSelect(col.id)}
+                              >
+                                {col.title}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-          <div className="description-section">
-            <h3 className="card-title w-600">Descrição:</h3>
-            {editMode ? (
-              <textarea
-                className="input textarea-description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Descrição (opcional)"
-                rows={4}
-              />
-            ) : (
-              task.description || "Nenhuma descrição disponível."
-            )}
-          </div>
+                    <div className="description-block">
+                      <label className="card-title w-600">Descrição:</label>
+                      <textarea
+                        className="input textarea-description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Descrição (opcional)"
+                        rows={4}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="info-content">
+                    <h3 className="task-name">{task.title}</h3>
 
-          <div className="modal-actions">
-            {!editMode && (
-              <button
-                type="button"
-                className="modal-btn btn-edit"
-                onClick={() => setEditMode(true)}
-                data-tooltip="Editar tarefa"
-              >
-                Editar
-              </button>
-            )}
-            {editMode && (
-              <>
-                <button
-                  type="button"
-                  className="modal-btn btn-save"
-                  onClick={handleSave}
-                  data-tooltip="Salvar alterações"
-                >
-                  Salvar
-                </button>
-                <button
-                  type="button"
-                  className="modal-btn btn-cancel"
-                  onClick={handleCancel}
-                  data-tooltip="Descartar edição"
-                >
-                  Cancelar
-                </button>
-              </>
-            )}
+                    <div className="status-block">
+                      <label className="card-title w-600">Status:</label>
+                      <div className="custom-dropdown" ref={dropdownRef}>
+                        <div className="dropdown-selected" onClick={() => setOpen(!open)}>
+                          {columns.find((col) => col.id === currentColumnId)?.title || "Selecione"}
+                          <IoIosArrowDown size={15} className={`dropdown-icon ${open ? "open" : ""}`} />
+                        </div>
+                        {open && (
+                          <div className="dropdown-options">
+                            {columns.map((col) => (
+                              <div
+                                key={col.id}
+                                className="dropdown-option"
+                                onClick={() => handleSelect(col.id)}
+                              >
+                                {col.title}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="description-section">
+                      <h3 className="card-title w-600">Descrição:</h3>
+                      {task.description || "Nenhuma descrição disponível."}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CSSTransition>
+          </SwitchTransition>
+        </div>
+
+        <div className="modal-actions">
+          {!editMode && (
             <button
               type="button"
-              className="modal-btn btn-delete"
-              onClick={handleDelete}
-              data-tooltip="Excluir tarefa"
+              className="modal-btn btn-edit"
+              onClick={() => setEditMode(true)}
+              data-tooltip="Editar tarefa"
             >
-              Excluir
+              Editar
             </button>
-          </div>
+          )}
+          {editMode && (
+            <>
+              <button
+                type="button"
+                className="modal-btn btn-save"
+                onClick={handleSave}
+                data-tooltip="Salvar alterações"
+              >
+                Salvar
+              </button>
+              <button
+                type="button"
+                className="modal-btn btn-cancel"
+                onClick={handleCancel}
+                data-tooltip="Descartar edição"
+              >
+                Cancelar
+              </button>
+            </>
+          )}
+          <button
+            type="button"
+            className="modal-btn btn-delete"
+            onClick={handleDelete}
+            data-tooltip="Excluir tarefa"
+          >
+            Excluir
+          </button>
         </div>
 
         <button

@@ -341,3 +341,19 @@ button[data-tooltip]:hover::before {
   font-size: 14px;
 }
 
+/* Estado desabilitado (sem alterações) */
+.modal-btn.btn-save.disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Estado ativo */
+.modal-btn.btn-save.active {
+  background-color: #4caf50;
+  color: white;
+}
+
+.modal-btn.btn-save.active:hover {
+  background-color: #45a049;
+}

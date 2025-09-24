@@ -12,8 +12,11 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   const [editMode, setEditMode] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [status, setStatus] = useState(""); // status local
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [dirty, setDirty] = useState(false);
+
   const contentRef = useRef(null);
 
   // Sincroniza inputs com a task recebida e reseta animação
@@ -21,20 +24,40 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
     if (task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
+      setStatus(task.status || "");
       setEditMode(false);
-      setShouldAnimate(false); // reset ao mudar de task
+      setShouldAnimate(false);
+      setDirty(false);
     }
   }, [task]);
+
+  useEffect(() => {
+    if (!editMode || !task) return;
+
+    const hasChanges =
+      title.trim() !== (task.title || "").trim() ||
+      description.trim() !== (task.description || "").trim() ||
+      status !== task.status;
+
+    setDirty(hasChanges);
+  }, [title, description, status, editMode, task]);
 
   if (!task) return null;
 
   const currentColumnId = columns.find(
-    (col) => getDisplayStatus(task.status, activeView) === col.title
+    (col) =>
+      getDisplayStatus(editMode ? status : task.status, activeView) === col.title
   )?.id;
 
   const handleSelect = (colId) => {
     const canonicalStatus = columnIdToCanonicalStatus(colId);
-    moveTask(task.id, canonicalStatus);
+    if (editMode) {
+      // Apenas altera localmente no modo edição
+      setStatus(canonicalStatus);
+    } else {
+      // Move task no estado global no modo visualização
+      moveTask(task.id, canonicalStatus);
+    }
   };
 
   const handleEditClick = () => {
@@ -43,28 +66,34 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   };
 
   const handleSave = () => {
-    const trimmedTitle = (title || "").trim();
-    const trimmedDescription = (description || "").trim();
+    const trimmedTitle = title.trim();
+    const trimmedDescription = description.trim();
 
     if (!trimmedTitle) {
       alert("O título não pode ficar vazio.");
       return;
     }
 
+    // Confirma alterações no estado global
     updateTask(task.id, {
       title: trimmedTitle,
       description: trimmedDescription,
+      status,
     });
 
     setShouldAnimate(true);
     setEditMode(false);
+    setDirty(false);
   };
 
   const handleCancel = () => {
+    // Reverte alterações locais
     setTitle(task.title || "");
     setDescription(task.description || "");
+    setStatus(task.status || "");
     setShouldAnimate(true);
     setEditMode(false);
+    setDirty(false);
   };
 
   const handleDelete = () => setShowConfirmDelete(true);
@@ -139,8 +168,9 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
             <>
               <button
                 type="button"
-                className="modal-btn btn-save"
+                className={`modal-btn btn-save ${dirty ? "active" : "disabled"}`}
                 onClick={handleSave}
+                disabled={!dirty}
                 data-tooltip="Salvar alterações"
               >
                 Salvar

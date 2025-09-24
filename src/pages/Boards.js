@@ -17,7 +17,7 @@ function Boards() {
   const [activeView, setActiveView] = useState("kanban");
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const [tasks, , moveTask] = useTasks();
+  const [tasks, , moveTask, updateTask, deleteTask] = useTasks();
 
   const allowDrop = (e) => e.preventDefault();
   const handleDragStart = (e, taskId) => e.dataTransfer.setData("text/plain", taskId);
@@ -103,6 +103,8 @@ function Boards() {
         activeView={activeView}
         columns={activeView === "kanban" ? kanbanColumns : scrumColumns}
         moveTask={moveTask}
+        updateTask={updateTask}
+        deleteTask={deleteTask}
       />
     </div>
   );

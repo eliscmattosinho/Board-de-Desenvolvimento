@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BoardSection from "../components/BoardSection";
-import CardTask from "../components/CardTask";
-import BoardControls from "../components/BoardControls";
+import BoardSection from "../components/Board/BoardSection";
+import CardTask from "../components/Card/CardTask";
+import BoardControls from "../components/Board/BoardControls";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
 import useTasks from "../hooks/useTasks";
@@ -17,7 +17,7 @@ function Boards() {
   const [activeView, setActiveView] = useState("kanban");
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const [tasks, , moveTask] = useTasks();
+  const [tasks, , moveTask, updateTask, deleteTask] = useTasks();
 
   const allowDrop = (e) => e.preventDefault();
   const handleDragStart = (e, taskId) => e.dataTransfer.setData("text/plain", taskId);
@@ -103,6 +103,8 @@ function Boards() {
         activeView={activeView}
         columns={activeView === "kanban" ? kanbanColumns : scrumColumns}
         moveTask={moveTask}
+        updateTask={updateTask}
+        deleteTask={deleteTask}
       />
     </div>
   );

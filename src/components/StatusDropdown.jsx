@@ -6,7 +6,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
-  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+  const [coords, setCoords] = useState(null); // null indica que ainda não calculou
 
   // close when clicked outside / press Esc
   useEffect(() => {
@@ -27,31 +27,28 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
   // calc position when open
   useEffect(() => {
     if (!open || !triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    setCoords({
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-      width: Math.max(rect.width, 120),
-    });
 
-    const handleReposition = () => {
-      const r = triggerRef.current.getBoundingClientRect();
+    const updatePosition = () => {
+      const rect = triggerRef.current.getBoundingClientRect();
       setCoords({
-        top: r.bottom + window.scrollY,
-        left: r.left + window.scrollX,
-        width: Math.max(r.width, 120),
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: Math.max(rect.width, 120),
       });
     };
 
-    window.addEventListener("resize", handleReposition);
-    window.addEventListener("scroll", handleReposition, true);
+    updatePosition(); // initial position
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
     return () => {
-      window.removeEventListener("resize", handleReposition);
-      window.removeEventListener("scroll", handleReposition, true);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
     };
   }, [open]);
 
-  const menu = open ? createPortal(
+  // Só renderiza o portal quando open e coords calculadas
+  const menu = open && coords ? createPortal(
     <div
       ref={menuRef}
       className="dropdown-options-portal"
@@ -60,7 +57,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
         top: `${coords.top}px`,
         left: `${coords.left}px`,
         minWidth: `${coords.width}px`,
-        zIndex: 2000 /* > modal -index (1000) */
+        zIndex: 2000
       }}
       role="menu"
     >

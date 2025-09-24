@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/Board-de-Desenvolvimento/static/css/main.8c595ddf.css",
-    "main.js": "/Board-de-Desenvolvimento/static/js/main.e9f443d6.js",
+    "main.css": "/Board-de-Desenvolvimento/static/css/main.1829bcd1.css",
+    "main.js": "/Board-de-Desenvolvimento/static/js/main.c2c67e22.js",
     "static/js/488.c7232ccf.chunk.js": "/Board-de-Desenvolvimento/static/js/488.c7232ccf.chunk.js",
     "static/media/svg-board.svg": "/Board-de-Desenvolvimento/static/media/svg-board.8a454da44a7237c3c697a4c23ffdbd77.svg",
     "static/media/builder.svg": "/Board-de-Desenvolvimento/static/media/builder.c66d9a902751ee0bf99cc061eeb12fd1.svg",
     "static/media/404.svg": "/Board-de-Desenvolvimento/static/media/404.fb2226fb691beebc970137b691f4d546.svg",
     "index.html": "/Board-de-Desenvolvimento/index.html",
-    "main.8c595ddf.css.map": "/Board-de-Desenvolvimento/static/css/main.8c595ddf.css.map",
-    "main.e9f443d6.js.map": "/Board-de-Desenvolvimento/static/js/main.e9f443d6.js.map",
+    "main.1829bcd1.css.map": "/Board-de-Desenvolvimento/static/css/main.1829bcd1.css.map",
+    "main.c2c67e22.js.map": "/Board-de-Desenvolvimento/static/js/main.c2c67e22.js.map",
     "488.c7232ccf.chunk.js.map": "/Board-de-Desenvolvimento/static/js/488.c7232ccf.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.8c595ddf.css",
-    "static/js/main.e9f443d6.js"
+    "static/css/main.1829bcd1.css",
+    "static/js/main.c2c67e22.js"
   ]
 }

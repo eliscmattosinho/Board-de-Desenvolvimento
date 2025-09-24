@@ -1,4 +1,3 @@
-// src/components/CardView.jsx
 import React from "react";
 import StatusDropdown from "./StatusDropdown";
 

@@ -13,14 +13,16 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
   const contentRef = useRef(null);
 
-  // Sync inputs with the received task
+  // Sincroniza inputs com a task recebida e reseta animação
   useEffect(() => {
     if (task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
       setEditMode(false);
+      setShouldAnimate(false); // reset ao mudar de task
     }
   }, [task]);
 
@@ -33,6 +35,11 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   const handleSelect = (colId) => {
     const canonicalStatus = columnIdToCanonicalStatus(colId);
     moveTask(task.id, canonicalStatus);
+  };
+
+  const handleEditClick = () => {
+    setShouldAnimate(true);
+    setEditMode(true);
   };
 
   const handleSave = () => {
@@ -48,22 +55,31 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
       title: trimmedTitle,
       description: trimmedDescription,
     });
+
+    setShouldAnimate(true);
     setEditMode(false);
   };
 
   const handleCancel = () => {
     setTitle(task.title || "");
     setDescription(task.description || "");
+    setShouldAnimate(true);
     setEditMode(false);
   };
 
   const handleDelete = () => setShowConfirmDelete(true);
   const confirmDelete = () => {
     deleteTask(task.id);
-    onClose();
+    handleClose();
     setShowConfirmDelete(false);
   };
   const cancelDelete = () => setShowConfirmDelete(false);
+
+  const handleClose = () => {
+    setShouldAnimate(false);
+    setEditMode(false);
+    onClose();
+  };
 
   return (
     <div className="modal">
@@ -81,6 +97,8 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
               nodeRef={contentRef}
               timeout={400}
               classNames="slide"
+              in={shouldAnimate}
+              onEntered={() => setShouldAnimate(false)}
             >
               <div className="content-inner" ref={contentRef}>
                 {editMode ? (
@@ -111,7 +129,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
             <button
               type="button"
               className="modal-btn btn-edit"
-              onClick={() => setEditMode(true)}
+              onClick={handleEditClick}
               data-tooltip="Editar tarefa"
             >
               Editar
@@ -150,7 +168,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
         <button
           type="button"
           className="modal-close"
-          onClick={onClose}
+          onClick={handleClose}
           data-tooltip="Fechar"
         >
           <IoIosCloseCircleOutline size={25} />

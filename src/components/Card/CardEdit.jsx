@@ -1,5 +1,5 @@
 import React from "react";
-import StatusDropdown from "./StatusDropdown";
+import StatusDropdown from "../StatusDropdown";
 
 export default function CardEdit({ title, setTitle, description, setDescription, columns, currentColumnId, onSelect }) {
   return (

@@ -1,6 +1,6 @@
 import React from "react";
-import Column from "./Column";
-import { getDisplayStatus } from "../js/boardUtils";
+import Column from "./Column/Column";
+import { getDisplayStatus } from "../../js/boardUtils";
 
 function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onDragStart, activeView, isActive }) {
   return (

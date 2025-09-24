@@ -1,5 +1,5 @@
 import React from "react";
-import StatusDropdown from "./StatusDropdown";
+import StatusDropdown from "../StatusDropdown";
 
 export default function CardView({ task, columns, currentColumnId, onSelect }) {
     return (

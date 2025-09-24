@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./CardTask.css";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { getDisplayStatus, columnIdToCanonicalStatus } from "../js/boardUtils";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { getDisplayStatus, columnIdToCanonicalStatus } from "../../js/boardUtils";
+import ConfirmDeleteModal from "./DeleteTaskModal/ConfirmDeleteModal";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
-import StatusDropdown from "./StatusDropdown";
+import StatusDropdown from "../StatusDropdown";
 import CardView from "./CardView";
 import CardEdit from "./CardEdit";
 

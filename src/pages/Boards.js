@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BoardSection from "../components/BoardSection";
-import CardTask from "../components/CardTask";
-import BoardControls from "../components/BoardControls";
+import BoardSection from "../components/Board/BoardSection";
+import CardTask from "../components/Card/CardTask";
+import BoardControls from "../components/Board/BoardControls";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
 import useTasks from "../hooks/useTasks";

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import Spinner from "./Spinner";
+import Spinner from "./Spinner/Spinner";
 
 const RouteChangeTracker = ({ children }) => {
   const location = useLocation();

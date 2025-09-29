@@ -1,0 +1,40 @@
+.add-task {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #efefef;
+  border-radius: 8px;
+  background-color: #6a6a6a;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.add-task svg {
+  background: none;
+}
+
+.add-task:hover {
+  background-color: #aaaaaa;
+  cursor: pointer;
+}
+
+.task-placeholder {
+  height: 0;
+  padding: 20px;
+  width: 100%;
+  border: 2px dashed #3498db;
+  border-radius: 8px;
+  background-color: rgba(52, 152, 219, 0.1);
+  overflow: hidden;
+  transition: height 0.2s ease, padding 0.2s ease;
+}
+
+.task-placeholder.active {
+  height: auto;
+  padding: 5px 0;
+}
+
+.item.task-item {
+  transition: transform 0.2s ease, margin 0.2s ease;
+}

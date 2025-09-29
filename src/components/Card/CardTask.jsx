@@ -12,7 +12,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   const [editMode, setEditMode] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState(""); // status local
+  const [status, setStatus] = useState(""); // agora guarda o ID da coluna
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [dirty, setDirty] = useState(false);
@@ -24,38 +24,47 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
     if (task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
-      setStatus(task.status || "");
+
+      // Define a coluna atual a partir do status canônico da task
+      const currentColId = columns.find(
+        (col) => getDisplayStatus(task.status, activeView) === col.title
+      )?.id;
+      setStatus(currentColId || "");
+
       setEditMode(false);
       setShouldAnimate(false);
       setDirty(false);
     }
-  }, [task]);
+  }, [task, columns, activeView]);
 
+  // Recalcula se houve mudanças
   useEffect(() => {
     if (!editMode || !task) return;
+
+    // Coluna original da task
+    const originalColId = columns.find(
+      (col) => getDisplayStatus(task.status, activeView) === col.title
+    )?.id;
 
     const hasChanges =
       title.trim() !== (task.title || "").trim() ||
       description.trim() !== (task.description || "").trim() ||
-      status !== task.status;
+      status !== originalColId;
 
     setDirty(hasChanges);
-  }, [title, description, status, editMode, task]);
+  }, [title, description, status, editMode, task, columns, activeView]);
 
   if (!task) return null;
 
-  const currentColumnId = columns.find(
-    (col) =>
-      getDisplayStatus(editMode ? status : task.status, activeView) === col.title
-  )?.id;
+  const currentColumnId = status; // agora status já é o colId
 
   const handleSelect = (colId) => {
-    const canonicalStatus = columnIdToCanonicalStatus(colId);
     if (editMode) {
       // Apenas altera localmente no modo edição
-      setStatus(canonicalStatus);
+      setStatus(colId);
     } else {
       // Move task no estado global no modo visualização
+      const canonicalStatus = columnIdToCanonicalStatus(colId);
       moveTask(task.id, canonicalStatus);
     }
   };
@@ -74,11 +83,14 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
       return;
     }
 
+    // Converte colId -> status canônico
+    const canonicalStatus = columnIdToCanonicalStatus(status);
+
     // Confirma alterações no estado global
     updateTask(task.id, {
       title: trimmedTitle,
       description: trimmedDescription,
-      status,
+      status: canonicalStatus,
     });
 
     setShouldAnimate(true);
@@ -90,7 +102,10 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
     // Reverte alterações locais
     setTitle(task.title || "");
     setDescription(task.description || "");
-    setStatus(task.status || "");
+    const originalColId = columns.find(
+      (col) => getDisplayStatus(task.status, activeView) === col.title
+    )?.id;
+    setStatus(originalColId || "");
     setShouldAnimate(true);
     setEditMode(false);
     setDirty(false);

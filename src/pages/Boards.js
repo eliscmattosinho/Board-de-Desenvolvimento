@@ -20,13 +20,17 @@ function Boards() {
   const [tasks, , moveTask, updateTask, deleteTask] = useTasks();
 
   const allowDrop = (e) => e.preventDefault();
-  const handleDragStart = (e, taskId) => e.dataTransfer.setData("text/plain", taskId);
-  const handleDrop = (e, columnId) => {
+
+  const handleDragStart = (e, taskId) => {
+    e.dataTransfer.setData("text/plain", taskId);
+  };
+
+  const handleDrop = (e, columnId, targetTaskId = null) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
     const canonicalStatus = columnIdToCanonicalStatus(columnId);
-    moveTask(taskId, canonicalStatus);
+    moveTask(taskId, canonicalStatus, targetTaskId);
   };
 
   const kanbanColumns = [
@@ -42,6 +46,8 @@ function Boards() {
     { id: "review", title: "Revisão", className: "scrum-column review" },
     { id: "s-done", title: "Concluído", className: "scrum-column done" },
   ];
+
+  const orderedTasks = [...tasks].sort((a, b) => a.order - b.order);
 
   return (
     <div className="content-block">
@@ -78,7 +84,7 @@ function Boards() {
               onDragOver={allowDrop}
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
-              tasks={tasks}
+              tasks={orderedTasks}
               activeView="kanban"
               isActive={activeView === "kanban"}
             />
@@ -89,7 +95,7 @@ function Boards() {
               onDragOver={allowDrop}
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
-              tasks={tasks}
+              tasks={orderedTasks}
               activeView="scrum"
               isActive={activeView === "scrum"}
             />
@@ -98,7 +104,7 @@ function Boards() {
       </div>
 
       <CardTask
-        task={tasks.find((t) => t.id === selectedTask?.id) || null}
+        task={orderedTasks.find((t) => t.id === selectedTask?.id) || null}
         onClose={() => setSelectedTask(null)}
         activeView={activeView}
         columns={activeView === "kanban" ? kanbanColumns : scrumColumns}

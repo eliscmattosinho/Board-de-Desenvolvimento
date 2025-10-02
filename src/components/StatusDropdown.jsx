@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { IoIosArrowDown } from "react-icons/io";
+import { columnStyles } from "../constants/columnStyles";
 
 export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
   const [open, setOpen] = useState(false);
@@ -14,8 +15,9 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
       if (triggerRef.current && triggerRef.current.contains(e.target)) return;
       if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false);
     };
-    const handleKey = (e) => { if (e.key === "Escape") setOpen(false); };
-
+    const handleKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleKey);
     return () => {
@@ -47,35 +49,59 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
     };
   }, [open]);
 
-  // Só renderiza o portal quando open e coords calculadas
-  const menu = open && coords ? createPortal(
-    <div
-      ref={menuRef}
-      className="dropdown-options-portal"
-      style={{
-        position: "absolute",
-        top: `${coords.top}px`,
-        left: `${coords.left}px`,
-        minWidth: `${coords.width}px`,
-        zIndex: 2000
-      }}
-      role="menu"
-    >
-      {columns.map((col) => (
-        <div
-          key={col.id}
-          className="dropdown-option"
-          role="menuitem"
-          tabIndex={0}
-          onClick={() => { onSelect(col.id); setOpen(false); }}
-          onKeyDown={(e) => { if (e.key === "Enter") { onSelect(col.id); setOpen(false); } }}
-        >
-          {col.title}
-        </div>
-      ))}
-    </div>,
-    document.body
-  ) : null;
+  const currentCol = columns.find((c) => c.id === currentColumnId);
+  const colKey = currentCol?.className?.split(" ")[1];
+  const colStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
+
+    // Só renderiza o portal quando open e coords calculadas
+  const menu =
+    open && coords
+      ? createPortal(
+          <div
+            ref={menuRef}
+            className="dropdown-options-portal"
+            style={{
+              position: "absolute",
+              top: `${coords.top}px`,
+              left: `${coords.left}px`,
+              minWidth: `${coords.width}px`,
+              zIndex: 2000
+            }}
+            role="menu"
+          >
+            {columns.map((col) => {
+              const key = col.className.split(" ")[1];
+              const styleVars = columnStyles[key] || { bg: "transparent", border: "transparent" };
+              return (
+                <div
+                  key={col.id}
+                  className="dropdown-option"
+                  role="menuitem"
+                  tabIndex={0}
+                  onClick={() => {
+                    onSelect(col.id);
+                    setOpen(false);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      onSelect(col.id);
+                      setOpen(false);
+                    }
+                  }}
+                  style={{
+                    "--col-bg": styleVars.bg,
+                    "--col-border": styleVars.border,
+                  }}
+                >
+                  <span className="col-circle"></span>
+                  {col.title}
+                </div>
+              );
+            })}
+          </div>,
+          document.body
+        )
+      : null;
 
   return (
     <>
@@ -86,8 +112,18 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
           aria-haspopup="true"
           aria-expanded={open}
         >
-          {columns.find(col => col.id === currentColumnId)?.title || "Selecione"}
-          <IoIosArrowDown size={15} className={`dropdown-icon ${open ? "open" : ""}`} />
+          <span
+            className="col-circle"
+            style={{
+              "--col-bg": colStyle.bg,
+              "--col-border": colStyle.border,
+            }}
+          ></span>
+          {currentCol?.title || "Selecione"}
+          <IoIosArrowDown
+            size={15}
+            className={`dropdown-icon ${open ? "open" : ""}`}
+          />
         </div>
       </div>
       {menu}

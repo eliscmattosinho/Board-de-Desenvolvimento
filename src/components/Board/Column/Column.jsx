@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import TaskItem from "./TaskItem";
 import { CiCirclePlus } from "react-icons/ci";
+import { columnStyles } from "../../../constants/columnStyles";
 import "./Column.css";
 
 function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, onDragStart }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
+
+  const colKey = className.split(" ")[1];
+  const colStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
 
   const handleDropTask = (e, targetTaskId, position = null) => {
     e.preventDefault();
@@ -29,18 +33,27 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
   };
 
   return (
-    <div className={`col-board ${className}`} id={id}>
+    <div
+      className={`col-board ${className}`}
+      id={id}
+      style={{
+        "--col-bg": colStyle.bg,
+        "--col-border": colStyle.border
+      }}
+    >
       <div
         className="title-col-board"
         onDrop={(e) => handleDropTask(e, null)}
         onDragOver={(e) => e.preventDefault()}
       >
-        <h4 className={`col-title-board ${className.split(" ")[1]}`}>
-          {title}<span className="task-counter">({tasks.length})</span>
+        <h4 className="col-title-board">
+          {title}
+          <span className="task-counter">({tasks.length})</span>
         </h4>
       </div>
 
-      <div className={`col-items ${className.split(" ")[1]}-items ${tasks.length === 0 ? "none" : ""}`}>
+      {/* Tasks list */}
+      <div className={`col-items ${colKey}-items ${tasks.length === 0 ? "none" : ""}`}>
         {tasks.map((task) => (
           <React.Fragment key={task.id}>
             {dragOverIndex === task.id && dragPosition === "above" && (
@@ -63,9 +76,7 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
         ))}
 
         {/* Placeholder para coluna vazia */}
-        {tasks.length === 0 && (
-          <div className={`task-placeholder active`}></div>
-        )}
+        {tasks.length === 0 && <div className="task-placeholder active"></div>}
       </div>
 
       {/* Ícone "+" se a coluna estiver vazia */}

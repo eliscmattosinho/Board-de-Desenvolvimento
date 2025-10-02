@@ -157,26 +157,6 @@ p.btn-title {
     font-size: 14px;
 }
 
-.col-title-board.todo {
-    background: #3DD6B3;
-}
-
-.col-title-board.progress {
-    background: #2C7FA3;
-}
-
-.col-title-board.done {
-    background: #2DA44A;
-}
-
-.col-title-board.backlog {
-    border: 1px solid #2C7FA3;
-}
-
-.col-title-board.review {
-    border: 1px solid #2DA44A;
-}
-
 .col-items {
     display: flex;
     flex-direction: column;

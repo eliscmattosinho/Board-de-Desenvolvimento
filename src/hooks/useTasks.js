@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { initializeTasks } from "../js/initializeTasks";
+import { columnIdToCanonicalStatus } from "../js/boardUtils";
 
 export default function useTasks() {
   const [tasks, setTasks] = useState([]);
@@ -8,10 +9,7 @@ export default function useTasks() {
     let mounted = true;
     initializeTasks().then((initial) => {
       if (!mounted) return;
-      const withOrder = (initial || []).map((t, i) => ({
-        order: i,
-        ...t,
-      }));
+      const withOrder = (initial || []).map((t, i) => ({ order: i, ...t }));
       setTasks(withOrder);
     });
     return () => {
@@ -26,6 +24,29 @@ export default function useTasks() {
       // fail silently if localStorage isn’t available
       console.warn("Não foi possível persistir tasks no localStorage", e);
     }
+  };
+
+  const addTask = (columnId = null, activeView = "kanban") => {
+    // Coluna padrão caso não seja passada
+    const colId = columnId;
+    const canonicalStatus = colId ? columnIdToCanonicalStatus(colId) : "Backlog";
+
+    const newTask = {
+      id: String(tasks.length + 1), // ID baseado no total de tasks
+      title: "",
+      description: "",
+      status: canonicalStatus,
+      order: tasks.length,
+      createdAt: new Date().toISOString(),
+    };
+
+    setTasks((prev) => {
+      const updated = [...prev, newTask];
+      persist(updated);
+      return updated;
+    });
+
+    return newTask;
   };
 
   /**
@@ -84,5 +105,5 @@ export default function useTasks() {
     });
   };
 
-  return [tasks, setTasks, moveTask, updateTask, deleteTask];
+  return [tasks, addTask, moveTask, updateTask, deleteTask];
 }

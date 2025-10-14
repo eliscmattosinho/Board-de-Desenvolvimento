@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
@@ -19,7 +19,7 @@ function Boards() {
   const [activeView, setActiveView] = useState("kanban");
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const [tasks, , moveTask, updateTask, deleteTask] = useTasks();
+  const [tasks, addTask, moveTask, updateTask, deleteTask] = useTasks();
 
   const allowDrop = (e) => e.preventDefault();
 
@@ -51,9 +51,9 @@ function Boards() {
 
   const orderedTasks = [...tasks].sort((a, b) => a.order - b.order);
 
-  const handleAddTask = () => {
-    console.log("Adicionar tarefa");
-    // abrir o modal de criação de tarefa/LIM
+  const handleAddTask = (columnId = null) => {
+    const newTask = addTask(columnId, activeView);
+    setSelectedTask(newTask);
   };
 
   const handleAddColumn = () => {
@@ -102,22 +102,24 @@ function Boards() {
             <BoardSection
               id="kanban"
               columns={kanbanColumns}
+              tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
-              tasks={orderedTasks}
+              onAddTask={handleAddTask}
               activeView="kanban"
               isActive={activeView === "kanban"}
             />
             <BoardSection
               id="scrum"
               columns={scrumColumns}
+              tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
-              tasks={orderedTasks}
+              onAddTask={handleAddTask}
               activeView="scrum"
               isActive={activeView === "scrum"}
             />

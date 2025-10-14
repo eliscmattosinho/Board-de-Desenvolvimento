@@ -2,11 +2,24 @@ import React from "react";
 import Column from "./Column/Column";
 import { getDisplayStatus } from "../../js/boardUtils";
 
-function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onDragStart, activeView, isActive }) {
+function BoardSection({
+  id,
+  columns,
+  tasks,
+  onDrop,
+  onDragOver,
+  onTaskClick,
+  onDragStart,
+  onAddTask,
+  activeView,
+  isActive
+}) {
   return (
     <div id={id} className={`board ${id}-board ${isActive ? "active" : ""}`}>
       {columns.map((col) => {
-        const filtered = tasks.filter(t => getDisplayStatus(t.status, activeView) === col.title);
+        const filtered = tasks.filter(
+          (t) => getDisplayStatus(t.status, activeView) === col.title
+        );
         return (
           <Column
             key={col.id}
@@ -18,6 +31,7 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
             tasks={filtered}
             onTaskClick={onTaskClick}
             onDragStart={onDragStart}
+            onAddTask={onAddTask}
           />
         );
       })}

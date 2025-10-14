@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaArrowCircleLeft } from "react-icons/fa";
+
 import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
-import { FaArrowCircleLeft } from "react-icons/fa";
+import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
 
 import useTasks from "../hooks/useTasks";
 import { columnIdToCanonicalStatus } from "../js/boardUtils";
@@ -49,13 +51,25 @@ function Boards() {
 
   const orderedTasks = [...tasks].sort((a, b) => a.order - b.order);
 
+  const handleAddTask = () => {
+    console.log("Adicionar tarefa");
+    // abrir o modal de criação de tarefa/LIM
+  };
+
+  const handleAddColumn = () => {
+    console.log("Adicionar coluna");
+    // abrir a interface para criar nova coluna
+  };
+
   return (
     <div className="content-block">
       <div id="general-content" className="content">
-        <div className="back-button">
+        <div className="btn-container back-button">
           <button onClick={() => navigate("/")} className="back-btn">
             <FaArrowCircleLeft />
           </button>
+
+          <button className="btn new-board">Novo board</button>
         </div>
 
         <div className="first-section-board">
@@ -67,15 +81,23 @@ function Boards() {
             <BoardControls activeView={activeView} setActiveView={setActiveView} />
           </div>
           <div className="img-block">
-            <img src={svgBoard} alt="" />
+            <img src={svgBoard} alt="Ilustração de board" />
           </div>
         </div>
 
         <div className="second-section-board">
-          <h3 id="h3-title">
-            {activeView === "kanban" ? "Kanban" : "Scrum"}
-            <span className="task-counter">({tasks.length})</span>
-          </h3>
+          <div className="board-title-container">
+            <h3 id="h3-title">
+              {activeView === "kanban" ? "Kanban" : "Scrum"}
+              <span className="task-counter">({tasks.length})</span>
+            </h3>
+
+            <FloatingMenu
+              onAddTask={handleAddTask}
+              onAddColumn={handleAddColumn}
+            />
+          </div>
+
           <div className="tables-block">
             <BoardSection
               id="kanban"

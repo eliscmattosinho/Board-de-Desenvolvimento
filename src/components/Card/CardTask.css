@@ -204,7 +204,7 @@ button[data-tooltip] {
     cursor: pointer;
 }
 
-button[data-tooltip="Fechar"] {
+button.modal-close {
     position: absolute;
 }
 

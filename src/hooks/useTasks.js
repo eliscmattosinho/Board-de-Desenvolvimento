@@ -37,6 +37,7 @@ export default function useTasks() {
       description: "",
       status: canonicalStatus,
       order: tasks.length,
+      isNew: true,
       createdAt: new Date().toISOString(),
     };
 

@@ -53,7 +53,7 @@ function Boards() {
 
   const handleAddTask = (columnId = null) => {
     const newTask = addTask(columnId, activeView);
-    setSelectedTask(newTask);
+    setSelectedTask({ ...newTask, isNew: true });
   };
 
   const handleAddColumn = () => {
@@ -128,13 +128,19 @@ function Boards() {
       </div>
 
       <CardTask
-        task={orderedTasks.find((t) => t.id === selectedTask?.id) || null}
+        task={selectedTask}
         onClose={() => setSelectedTask(null)}
         activeView={activeView}
         columns={activeView === "kanban" ? kanbanColumns : scrumColumns}
         moveTask={moveTask}
-        updateTask={updateTask}
-        deleteTask={deleteTask}
+        updateTask={(taskId, changes) => {
+          updateTask(taskId, changes);
+          setSelectedTask(null);
+        }}
+        deleteTask={(taskId) => {
+          deleteTask(taskId);
+          setSelectedTask(null);
+        }}
       />
     </div>
   );

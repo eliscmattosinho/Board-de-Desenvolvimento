@@ -9,35 +9,38 @@ import CardView from "./CardView";
 import CardEdit from "./CardEdit";
 
 function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, deleteTask }) {
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(task?.isNew || false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState(""); // agora guarda o ID da coluna
+  const [status, setStatus] = useState(""); // guarda o ID da coluna
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [dirty, setDirty] = useState(false);
 
   const contentRef = useRef(null);
 
+  const isCreating = !!task?.isNew;
+
   // Sincroniza inputs com a task recebida e reseta animação
   useEffect(() => {
-    if (task) {
-      setTitle(task.title || "");
-      setDescription(task.description || "");
+    if (!task) return;
 
-      // Define a coluna atual a partir do status canônico da task
-      const currentColId = columns.find(
-        (col) => getDisplayStatus(task.status, activeView) === col.title
-      )?.id;
-      setStatus(currentColId || "");
+    setTitle(task.title || "");
+    setDescription(task.description || "");
 
-      setEditMode(false);
-      setShouldAnimate(false);
-      setDirty(false);
-    }
+    const currentColId = columns.find(
+      (col) => getDisplayStatus(task.status, activeView) === col.title
+    )?.id;
+    setStatus(currentColId || columns[0]?.id || "");
+
+    // Modo edição apenas para nova task não salva
+    setEditMode(!!task.isNew);
+
+    setShouldAnimate(false);
+    setDirty(false);
   }, [task, columns, activeView]);
 
-  // Recalcula se houve mudanças
+  // Verifica se houve alterações
   useEffect(() => {
     if (!editMode || !task) return;
 
@@ -64,8 +67,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
       setStatus(colId);
     } else {
       // Move task no estado global no modo visualização
-      const canonicalStatus = columnIdToCanonicalStatus(colId);
-      moveTask(task.id, canonicalStatus);
+      moveTask(task.id, columnIdToCanonicalStatus(colId));
     }
   };
 
@@ -76,26 +78,21 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
 
   const handleSave = () => {
     const trimmedTitle = title.trim();
-    const trimmedDescription = description.trim();
-
     if (!trimmedTitle) {
       alert("O título não pode ficar vazio.");
       return;
     }
 
-    // Converte colId -> status canônico
-    const canonicalStatus = columnIdToCanonicalStatus(status);
+    const colIdToSave = status || columns[0]?.id;
+    if (!colIdToSave) return;
 
-    // Confirma alterações no estado global
+    // Atualiza a task e fecha o modal
     updateTask(task.id, {
       title: trimmedTitle,
-      description: trimmedDescription,
-      status: canonicalStatus,
+      description: description.trim(),
+      status: columnIdToCanonicalStatus(colIdToSave),
+      isNew: false,
     });
-
-    setShouldAnimate(true);
-    setEditMode(false);
-    setDirty(false);
   };
 
   const handleCancel = () => {
@@ -105,7 +102,8 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
     const originalColId = columns.find(
       (col) => getDisplayStatus(task.status, activeView) === col.title
     )?.id;
-    setStatus(originalColId || "");
+
+    setStatus(originalColId || columns[0]?.id || "");
     setShouldAnimate(true);
     setEditMode(false);
     setDirty(false);
@@ -120,6 +118,14 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   const cancelDelete = () => setShowConfirmDelete(false);
 
   const handleClose = () => {
+    // Se estiver criando e sem conteúdo, exclui
+    if (isCreating) {
+      const hasContent = title.trim() || description.trim();
+      if (!hasContent) {
+        deleteTask(task.id);
+      }
+    }
+
     setShouldAnimate(false);
     setEditMode(false);
     onClose();
@@ -154,6 +160,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
                     columns={columns}
                     currentColumnId={currentColumnId}
                     onSelect={handleSelect}
+                    mode={isCreating ? "create" : "edit"}
                   />
                 ) : (
                   <CardView
@@ -169,7 +176,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
         </div>
 
         <div className="modal-actions">
-          {!editMode && (
+          {!editMode && !isCreating && (
             <button
               type="button"
               className="modal-btn btn-edit"
@@ -190,31 +197,35 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
               >
                 Salvar
               </button>
-              <button
-                type="button"
-                className="modal-btn btn-cancel"
-                onClick={handleCancel}
-                data-tooltip="Descartar edição"
-              >
-                Cancelar
-              </button>
+              {!isCreating && (
+                <button
+                  type="button"
+                  className="modal-btn btn-cancel"
+                  onClick={handleCancel}
+                  data-tooltip="Descartar edição"
+                >
+                  Cancelar
+                </button>
+              )}
             </>
           )}
-          <button
-            type="button"
-            className="modal-btn btn-delete"
-            onClick={handleDelete}
-            data-tooltip="Excluir tarefa"
-          >
-            Excluir
-          </button>
+          {!isCreating && (
+            <button
+              type="button"
+              className="modal-btn btn-delete"
+              onClick={handleDelete}
+              data-tooltip="Excluir tarefa"
+            >
+              Excluir
+            </button>
+          )}
         </div>
 
         <button
           type="button"
           className="modal-close"
           onClick={handleClose}
-          data-tooltip="Fechar"
+          data-tooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
           <IoIosCloseCircleOutline size={25} />
         </button>

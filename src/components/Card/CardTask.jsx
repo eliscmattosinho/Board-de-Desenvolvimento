@@ -141,38 +141,53 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
         </div>
 
         <div className="card-content-wrapper">
-          <SwitchTransition mode="out-in">
-            <CSSTransition
-              key={editMode ? "edit" : "view"}
-              nodeRef={contentRef}
-              timeout={400}
-              classNames="slide"
-              in={shouldAnimate}
-              onEntered={() => setShouldAnimate(false)}
-            >
-              <div className="content-inner" ref={contentRef}>
-                {editMode ? (
-                  <CardEdit
-                    title={title}
-                    setTitle={setTitle}
-                    description={description}
-                    setDescription={setDescription}
-                    columns={columns}
-                    currentColumnId={currentColumnId}
-                    onSelect={handleSelect}
-                    mode={isCreating ? "create" : "edit"}
-                  />
-                ) : (
-                  <CardView
-                    task={task}
-                    columns={columns}
-                    currentColumnId={currentColumnId}
-                    onSelect={handleSelect}
-                  />
-                )}
-              </div>
-            </CSSTransition>
-          </SwitchTransition>
+          {isCreating ? (
+            <div className="content-inner">
+              <CardEdit
+                title={title}
+                setTitle={setTitle}
+                description={description}
+                setDescription={setDescription}
+                columns={columns}
+                currentColumnId={currentColumnId}
+                onSelect={handleSelect}
+                mode="create"
+              />
+            </div>
+          ) : (
+            <SwitchTransition mode="out-in">
+              <CSSTransition
+                key={editMode ? "edit" : "view"}
+                nodeRef={contentRef}
+                timeout={400}
+                classNames="slide"
+                in={shouldAnimate}
+                onEntered={() => setShouldAnimate(false)}
+              >
+                <div className="content-inner" ref={contentRef}>
+                  {editMode ? (
+                    <CardEdit
+                      title={title}
+                      setTitle={setTitle}
+                      description={description}
+                      setDescription={setDescription}
+                      columns={columns}
+                      currentColumnId={currentColumnId}
+                      onSelect={handleSelect}
+                      mode="edit"
+                    />
+                  ) : (
+                    <CardView
+                      task={task}
+                      columns={columns}
+                      currentColumnId={currentColumnId}
+                      onSelect={handleSelect}
+                    />
+                  )}
+                </div>
+              </CSSTransition>
+            </SwitchTransition>
+          )}
         </div>
 
         <div className="modal-actions">

@@ -59,3 +59,27 @@
   background: var(--col-bg, transparent);
   border: 2px solid var(--col-border, transparent);
 }
+
+.col-title-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.col-icon-left,
+.col-icon-right {
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0;
+}
+
+.col-board:hover .col-icon-left,
+.col-board:hover .col-icon-right {
+  opacity: 1;
+}
+
+.col-title-board {
+  margin: 0 8px;
+  flex: 1;
+  text-align: center;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
@@ -8,6 +8,7 @@ import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
 
 import useTasks from "../hooks/useTasks";
+import useColumns from "../hooks/useColumns";
 import { columnIdToCanonicalStatus } from "../js/boardUtils";
 
 import "../App.css";
@@ -20,6 +21,22 @@ function Boards() {
   const [selectedTask, setSelectedTask] = useState(null);
 
   const [tasks, addTask, moveTask, updateTask, deleteTask] = useTasks();
+
+  const defaultKanban = [
+    { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
+    { id: "k-in-progress", title: "Em Progresso", className: "kanban-column progress" },
+    { id: "k-done", title: "Concluído", className: "kanban-column done" },
+  ];
+
+  const defaultScrum = [
+    { id: "backlog", title: "Backlog", className: "scrum-column backlog" },
+    { id: "sprint-backlog", title: "Sprint Backlog", className: "scrum-column todo" },
+    { id: "s-in-progress", title: "Em Progresso", className: "scrum-column progress" },
+    { id: "review", title: "Revisão", className: "scrum-column review" },
+    { id: "s-done", title: "Concluído", className: "scrum-column done" },
+  ];
+
+  const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
 
   const allowDrop = (e) => e.preventDefault();
 
@@ -35,20 +52,6 @@ function Boards() {
     moveTask(taskId, canonicalStatus, targetTaskId);
   };
 
-  const kanbanColumns = [
-    { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
-    { id: "k-in-progress", title: "Em Progresso", className: "kanban-column progress" },
-    { id: "k-done", title: "Concluído", className: "kanban-column done" },
-  ];
-
-  const scrumColumns = [
-    { id: "backlog", title: "Backlog", className: "scrum-column backlog" },
-    { id: "sprint-backlog", title: "Sprint Backlog", className: "scrum-column todo" },
-    { id: "s-in-progress", title: "Em Progresso", className: "scrum-column progress" },
-    { id: "review", title: "Revisão", className: "scrum-column review" },
-    { id: "s-done", title: "Concluído", className: "scrum-column done" },
-  ];
-
   const orderedTasks = [...tasks].sort((a, b) => a.order - b.order);
 
   const handleAddTask = (columnId = null) => {
@@ -56,9 +59,8 @@ function Boards() {
     setSelectedTask({ ...newTask, isNew: true });
   };
 
-  const handleAddColumn = () => {
-    console.log("Adicionar coluna");
-    // abrir a interface para criar nova coluna
+  const handleAddColumn = (index) => {
+    addColumn(activeView, index);
   };
 
   return (
@@ -94,14 +96,14 @@ function Boards() {
 
             <FloatingMenu
               onAddTask={handleAddTask}
-              onAddColumn={handleAddColumn}
+              onAddColumn={() => handleAddColumn(columns[activeView].length)}
             />
           </div>
 
           <div className="tables-block">
             <BoardSection
               id="kanban"
-              columns={kanbanColumns}
+              columns={columns.kanban}
               tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
@@ -111,10 +113,12 @@ function Boards() {
               onAddColumn={handleAddColumn}
               activeView="kanban"
               isActive={activeView === "kanban"}
+              renameColumn={renameColumn}
+              removeColumn={removeColumn}
             />
             <BoardSection
               id="scrum"
-              columns={scrumColumns}
+              columns={columns.scrum}
               tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
@@ -124,6 +128,8 @@ function Boards() {
               onAddColumn={handleAddColumn}
               activeView="scrum"
               isActive={activeView === "scrum"}
+              renameColumn={renameColumn}
+              removeColumn={removeColumn}
             />
           </div>
         </div>
@@ -133,7 +139,7 @@ function Boards() {
         task={selectedTask}
         onClose={() => setSelectedTask(null)}
         activeView={activeView}
-        columns={activeView === "kanban" ? kanbanColumns : scrumColumns}
+        columns={columns[activeView]}
         moveTask={moveTask}
         updateTask={(taskId, changes) => {
           updateTask(taskId, changes);
@@ -149,3 +155,4 @@ function Boards() {
 }
 
 export default Boards;
+

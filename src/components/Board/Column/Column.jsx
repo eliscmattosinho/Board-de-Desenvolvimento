@@ -1,22 +1,13 @@
 import React, { useState } from "react";
 import TaskItem from "./TaskItem";
-import { CiCirclePlus } from "react-icons/ci";
+import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
 import { columnStyles } from "../../../constants/columnStyles";
 import "./Column.css";
 
-function Column({
-  id,
-  title,
-  className,
-  onDrop,
-  onDragOver,
-  tasks,
-  onTaskClick,
-  onDragStart,
-  onAddTask,
-}) {
+function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, onDragStart, onAddTask, onEdit, onRemove }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
+  const [hovered, setHovered] = useState(false); // hover state
 
   const colKey = className.split(" ")[1];
   const colStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
@@ -50,15 +41,27 @@ function Column({
         "--col-bg": colStyle.bg,
         "--col-border": colStyle.border,
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div
         className="title-col-board"
         onDrop={(e) => handleDropTask(e, null)}
         onDragOver={(e) => e.preventDefault()}
       >
-        <h4 className="col-title-board">
-          {title} <span className="task-counter">({tasks.length})</span>
-        </h4>
+        <div className="col-title-flex">
+          {hovered && onRemove && (
+            <CiTrash className="col-icon-left" size={20} onClick={onRemove} />
+          )}
+
+          <h4 className="col-title-board">
+            {title} <span className="task-counter">({tasks.length})</span>
+          </h4>
+
+          {hovered && onEdit && (
+            <CiEdit className="col-icon-right" size={20} onClick={onEdit} />
+          )}
+        </div>
       </div>
 
       {/* Tasks list */}
@@ -88,14 +91,13 @@ function Column({
         {tasks.length === 0 && <div className="task-placeholder active"></div>}
       </div>
 
-      <div
-        className="add-task"
-        onClick={() => onAddTask(id)}
-      >
-        <CiCirclePlus size={30} />
-      </div>
+      {onAddTask && (
+        <div className="add-task" onClick={() => onAddTask(id)}>
+          <CiCirclePlus size={30} />
+        </div>
+      )}
 
-      {/* Área invisível para drag & drop sem bloquear clique */}
+      {/* Área invisível para drag & drop */}
       <div
         className="drop-zone"
         onDrop={(e) => handleDropTask(e, null)}

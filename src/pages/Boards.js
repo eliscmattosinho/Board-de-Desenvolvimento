@@ -108,6 +108,7 @@ function Boards() {
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
+              onAddColumn={handleAddColumn}
               activeView="kanban"
               isActive={activeView === "kanban"}
             />
@@ -120,6 +121,7 @@ function Boards() {
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
+              onAddColumn={handleAddColumn}
               activeView="scrum"
               isActive={activeView === "scrum"}
             />

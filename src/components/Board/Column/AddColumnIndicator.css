@@ -1,0 +1,78 @@
+.add-col-container * {
+  background: none;
+}
+
+.add-col-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: none;
+  z-index: 999;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  animation: fadeInZoom 0.25s ease forwards;
+}
+
+/* animação suave de hover */
+.add-col-container:hover {
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s ease;
+}
+
+/* linhas */
+.col-line {
+  position: absolute;
+  width: 1px;
+  top: 0;
+  bottom: 0;
+  background-color: #ffffff;
+  opacity: 0.7;
+}
+
+.col-line:first-child {
+  left: 50%;
+  top: 0;
+  bottom: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 25px;
+}
+
+.col-line:last-child {
+  left: 50%;
+  top: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  margin-top: 25px;
+}
+
+/* ícone */
+.add-col-container>svg {
+  position: relative;
+  z-index: 1000;
+  color: #ffffff;
+  transition: color 0.2s ease;
+}
+
+.add-col-container:hover>svg {
+  color: #c7c7c7;
+}
+
+@keyframes fadeInZoom {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}

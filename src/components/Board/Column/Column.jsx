@@ -51,7 +51,14 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
       >
         <div className="col-title-flex">
           {hovered && onRemove && (
-            <CiTrash className="col-icon-left" size={20} onClick={onRemove} />
+            <CiTrash
+              className="col-icon-left"
+              size={20}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove();
+              }}
+            />
           )}
 
           <h4 className="col-title-board">
@@ -59,7 +66,14 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
           </h4>
 
           {hovered && onEdit && (
-            <CiEdit className="col-icon-right" size={20} onClick={onEdit} />
+            <CiEdit
+              className="col-icon-right"
+              size={20}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+            />
           )}
         </div>
       </div>

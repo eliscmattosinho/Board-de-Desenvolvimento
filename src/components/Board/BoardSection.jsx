@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Column from "./Column/Column";
 import AddColumnIndicator from "../Board/Column/AddColumnIndicator";
+import ConfirmDeleteModal from "../Card/DeleteTaskModal/ConfirmDeleteModal";
 import "./BoardSection.css";
 import { CiCirclePlus } from "react-icons/ci";
 import { getDisplayStatus } from "../../js/boardUtils";
@@ -8,6 +9,8 @@ import { getDisplayStatus } from "../../js/boardUtils";
 function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onDragStart, onAddTask, onAddColumn, activeView, isActive, renameColumn, removeColumn }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [newColumnId, setNewColumnId] = useState(""); // ID fixo para a nova coluna
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [colToDelete, setColToDelete] = useState(null);
 
   // Gera o ID da nova coluna apenas uma vez
   useEffect(() => {
@@ -56,7 +59,10 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
                 const newTitle = prompt("Digite o novo nome da coluna", col.title);
                 if (newTitle) renameColumn(activeView, col.id, newTitle);
               }}
-              onRemove={() => removeColumn(activeView, col.id)}
+              onRemove={() => {
+                setColToDelete(col);
+                setShowDeleteModal(true);
+              }}
             />
 
             {index < columns.length - 1 && (
@@ -87,6 +93,22 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
         <CiCirclePlus className="add-col" size={30} />
         <p>Criar nova coluna</p>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        type="column"
+        onConfirm={() => {
+          if (colToDelete) {
+            removeColumn(activeView, colToDelete.id);
+            setColToDelete(null);
+          }
+          setShowDeleteModal(false);
+        }}
+        onCancel={() => {
+          setShowDeleteModal(false);
+          setColToDelete(null);
+        }}
+      />
     </div>
   );
 }

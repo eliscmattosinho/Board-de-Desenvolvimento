@@ -1,3 +1,4 @@
+// src\components\Board\Column\Column.jsx
 import React, { useState } from "react";
 import TaskItem from "./TaskItem";
 import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
@@ -41,13 +42,13 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
         "--col-bg": colStyle.bg,
         "--col-border": colStyle.border,
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       <div
         className="title-col-board"
         onDrop={(e) => handleDropTask(e, null)}
         onDragOver={(e) => e.preventDefault()}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
         <div className="col-title-flex">
           {hovered && onRemove && (
@@ -78,7 +79,7 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
         </div>
       </div>
 
-      {/* Tasks list */}
+      {/* Lista de tarefas */}
       <div className={`col-items ${colKey}-items ${tasks.length === 0 ? "none" : ""}`}>
         {tasks.map((task) => (
           <React.Fragment key={task.id}>

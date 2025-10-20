@@ -73,8 +73,8 @@
   opacity: 0;
 }
 
-.col-board:hover .col-icon-left,
-.col-board:hover .col-icon-right {
+.title-col-board:hover .col-icon-left,
+.title-col-board:hover .col-icon-right {
   opacity: 1;
 }
 

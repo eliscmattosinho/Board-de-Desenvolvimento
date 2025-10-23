@@ -2,11 +2,13 @@ import React, { useState, useCallback, useEffect } from "react";
 import Column from "./Column/Column";
 import AddColumnIndicator from "../Board/Column/AddColumnIndicator";
 import ConfirmDeleteModal from "../Card/DeleteTaskModal/ConfirmDeleteModal";
+import ColumnCreate from "../Board/Column/ColumnCreate";
 import "./BoardSection.css";
 import { CiCirclePlus } from "react-icons/ci";
 import { getDisplayStatus } from "../../js/boardUtils";
 
 function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onDragStart, onAddTask, onAddColumn, activeView, isActive, renameColumn, removeColumn }) {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [newColumnId, setNewColumnId] = useState(""); // ID fixo para a nova coluna
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -56,7 +58,10 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
               onDragStart={onDragStart}
               onAddTask={onAddTask}
               onEdit={() => {
-                const newTitle = prompt("Digite o novo nome da coluna", col.title);
+                const newTitle = prompt(
+                  "Digite o novo nome da coluna",
+                  col.title
+                );
                 if (newTitle) renameColumn(activeView, col.id, newTitle);
               }}
               onRemove={() => {
@@ -86,13 +91,15 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
       })}
 
       {/* Add end column */}
-      <div
-        className="col-add-last"
-        onClick={() => handleColumn("addColumn", columns.length)}
-      >
+      <div className="col-add-last" onClick={() => setIsCreateModalOpen(true)}>
         <CiCirclePlus className="add-col" size={30} />
         <p>Criar nova coluna</p>
       </div>
+
+      <ColumnCreate
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
 
       <ConfirmDeleteModal
         isOpen={showDeleteModal}

@@ -1,0 +1,81 @@
+.modal-content * {
+  background: none;
+  color: #151515;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 400px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content,
+.col-create-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.color-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.color-preview {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 3px solid #ccc;
+  cursor: pointer;
+  display: block;
+  flex-shrink: 0;
+}
+
+label {
+  font-size: 14px;
+}
+
+.modal-close svg path {
+    color: #ff0000;
+}
+
+.col-title-block,
+.col-color-block,
+.col-description-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.btn-save {
+  width: fit-content;
+  background: #4caf50;
+  color: #fefefe;
+}
+

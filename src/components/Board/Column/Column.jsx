@@ -1,4 +1,3 @@
-// src\components\Board\Column\Column.jsx
 import React, { useState } from "react";
 import TaskItem from "./TaskItem";
 import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";

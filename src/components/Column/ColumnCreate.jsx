@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./ColumnCreate.css";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import ColorPickerPanel from "./ColorPickerPanel";
+import ColorPickerPanel from "./ColorPickerPanel/ColorPickerPanel.jsx";
 import { columnStyles } from "../../constants/columnStyles.js";
 
 export default function ColumnCreate({ isOpen, onClose, onSave, columnData }) {

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import Column from "../Column/Column";
-import AddColumnIndicator from "../Column/AddColumnIndicator";
+import AddColumnIndicator from "../Column/AddColIndicator/AddColumnIndicator";
 import ConfirmDeleteModal from "../Card/DeleteTaskModal/ConfirmDeleteModal";
 import "./BoardSection.css";
 import { CiCirclePlus } from "react-icons/ci";

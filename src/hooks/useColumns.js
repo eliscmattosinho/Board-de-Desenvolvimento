@@ -11,7 +11,8 @@ export default function useColumns(defaultKanban, defaultScrum) {
       const newColumn = {
         id: `col-${Date.now()}`,
         title: columnData?.title || "Nova Coluna",
-        color: columnData?.color || "#02773aff",
+        color: columnData?.color || undefined,
+        applyTo: columnData?.applyTo || "fundo",
         description: columnData?.description || "",
         className: `${view}-column new`,
       };
@@ -29,7 +30,15 @@ export default function useColumns(defaultKanban, defaultScrum) {
   const renameColumn = (view, id, newData) => {
     setColumns((prev) => {
       const updatedView = prev[view].map((col) =>
-        col.id === id ? { ...col, ...newData } : col
+        col.id === id
+          ? {
+              ...col,
+              title: newData.title ?? col.title,
+              description: newData.description ?? col.description,
+              color: newData.color ?? col.color,
+              applyTo: newData.applyTo ?? col.applyTo,
+            }
+          : col
       );
       return { ...prev, [view]: updatedView };
     });

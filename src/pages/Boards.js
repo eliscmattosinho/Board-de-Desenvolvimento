@@ -39,14 +39,13 @@ function Boards() {
 
   const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
 
-  // Estado do modal de criar/editar coluna
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [createModalIndex, setCreateModalIndex] = useState(0);
-  const [createModalView, setCreateModalView] = useState("kanban");
+  // Modal de criar/editar coluna
+  const [columnModalOpen, setColumnModalOpen] = useState(false);
+  const [columnModalIndex, setColumnModalIndex] = useState(0);
+  const [columnModalView, setColumnModalView] = useState("kanban");
   const [editingColumn, setEditingColumn] = useState(null);
 
   const allowDrop = (e) => e.preventDefault();
-
   const handleDragStart = (e, taskId) => e.dataTransfer.setData("text/plain", taskId);
 
   const handleDrop = (e, columnId, targetTaskId = null) => {
@@ -64,24 +63,22 @@ function Boards() {
     setSelectedTask({ ...newTask, isNew: true });
   };
 
-  // Abre modal de criar ou editar coluna
-  const openCreateColumnModal = (view, index, column = null) => {
-    setCreateModalView(view);
-    setCreateModalIndex(typeof index === "number" ? index : columns[view].length);
-    setEditingColumn(column || null);
-    setCreateModalOpen(true);
+  const openColumnModal = (view, index, column = null) => {
+    setColumnModalView(view);
+    setColumnModalIndex(index);
+    setEditingColumn(column);
+    setColumnModalOpen(true);
   };
 
-  // Salva os dados do modal
-  const handleSaveCreateColumn = (columnData) => {
+  const handleSaveColumn = (columnData) => {
     if (editingColumn) {
-      // Edição
-      renameColumn(createModalView, editingColumn.id, columnData);
+      // edição
+      renameColumn(columnModalView, editingColumn.id, columnData);
     } else {
-      // Criação
-      addColumn(createModalView, createModalIndex, columnData);
+      // criação
+      addColumn(columnModalView, columnModalIndex, columnData);
     }
-    setCreateModalOpen(false);
+    setColumnModalOpen(false);
   };
 
   return (
@@ -116,7 +113,7 @@ function Boards() {
 
             <FloatingMenu
               onAddTask={handleAddTask}
-              onAddColumn={() => openCreateColumnModal(activeView, columns[activeView].length)}
+              onAddColumn={() => openColumnModal(activeView, columns[activeView].length)}
             />
           </div>
 
@@ -130,7 +127,7 @@ function Boards() {
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
-              onAddColumn={(index, column) => openCreateColumnModal("kanban", index, column)}
+              onAddColumn={(index, column) => openColumnModal("kanban", index, column)}
               removeColumn={removeColumn}
               activeView="kanban"
               isActive={activeView === "kanban"}
@@ -145,7 +142,7 @@ function Boards() {
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
-              onAddColumn={(index, column) => openCreateColumnModal("scrum", index, column)}
+              onAddColumn={(index, column) => openColumnModal("scrum", index, column)}
               removeColumn={removeColumn}
               activeView="scrum"
               isActive={activeView === "scrum"}
@@ -166,9 +163,9 @@ function Boards() {
 
       {/* Modal de criação/edição de coluna */}
       <ColumnCreate
-        isOpen={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSave={handleSaveCreateColumn}
+        isOpen={columnModalOpen}
+        onClose={() => setColumnModalOpen(false)}
+        onSave={handleSaveColumn}
         columnData={editingColumn}
       />
     </div>

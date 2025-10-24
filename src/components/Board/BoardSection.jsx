@@ -6,7 +6,20 @@ import "./BoardSection.css";
 import { CiCirclePlus } from "react-icons/ci";
 import { getDisplayStatus } from "../../js/boardUtils";
 
-function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onDragStart, onAddTask, onAddColumn, removeColumn, activeView, isActive }) {
+function BoardSection({
+  id,
+  columns,
+  tasks,
+  onDrop,
+  onDragOver,
+  onTaskClick,
+  onDragStart,
+  onAddTask,
+  onAddColumn,
+  removeColumn,
+  activeView,
+  isActive,
+}) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [colToDelete, setColToDelete] = useState(null);
@@ -46,7 +59,9 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
               onTaskClick={onTaskClick}
               onDragStart={onDragStart}
               onAddTask={onAddTask}
-              onEdit={() => onAddColumn(index, col)}  // abre modal de edição
+              color={col.color}
+              applyTo={col.applyTo}
+              onEdit={() => onAddColumn(index, col)}
               onRemove={() => {
                 setColToDelete(col);
                 setShowDeleteModal(true);
@@ -63,7 +78,7 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
                   <AddColumnIndicator
                     onClick={(e) => {
                       e.stopPropagation();
-                      onAddColumn(index + 1); // abre modal de criação
+                      onAddColumn(index + 1);
                     }}
                   />
                 )}
@@ -74,10 +89,7 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
       })}
 
       {/* Área para adicionar coluna no final */}
-      <div
-        className="col-add-last"
-        onClick={() => onAddColumn(columns.length)}
-      >
+      <div className="col-add-last" onClick={() => onAddColumn(columns.length)}>
         <CiCirclePlus className="add-col" size={30} />
         <p>Criar nova coluna</p>
       </div>

@@ -4,13 +4,33 @@ import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
 import { columnStyles } from "../../constants/columnStyles.js";
 import "./Column.css";
 
-function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, onDragStart, onAddTask, onEdit, onRemove }) {
+function Column({
+  id,
+  title,
+  className,
+  onDrop,
+  onDragOver,
+  tasks,
+  onTaskClick,
+  onDragStart,
+  onAddTask,
+  onEdit,
+  onRemove,
+  color,
+  applyTo
+}) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
-  const [hovered, setHovered] = useState(false); // hover state
+  const [hovered, setHovered] = useState(false);
 
   const colKey = className.split(" ")[1];
-  const colStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
+  const defaultStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
+
+  // Se o usuário definiu uma cor, usa ela; senão usa o padrão
+  const colStyle = {
+    bg: applyTo === "fundo" && color ? color : defaultStyle.bg,
+    border: applyTo === "borda" && color ? color : defaultStyle.border,
+  };
 
   const handleDropTask = (e, targetTaskId, position = null) => {
     e.preventDefault();
@@ -101,7 +121,6 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
           </React.Fragment>
         ))}
 
-        {/* Placeholder para coluna vazia */}
         {tasks.length === 0 && <div className="task-placeholder active"></div>}
       </div>
 
@@ -111,7 +130,6 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
         </div>
       )}
 
-      {/* Área invisível para drag & drop */}
       <div
         className="drop-zone"
         onDrop={(e) => handleDropTask(e, null)}

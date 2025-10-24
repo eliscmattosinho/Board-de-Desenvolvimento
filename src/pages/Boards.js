@@ -6,7 +6,7 @@ import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
-import ColumnCreate from "../components/Board/Column/ColumnCreate";
+import ColumnCreate from "../components/Column/ColumnCreate";
 
 import useTasks from "../hooks/useTasks";
 import useColumns from "../hooks/useColumns";

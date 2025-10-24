@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import TaskItem from "./TaskItem";
 import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
-import { columnStyles } from "../../../constants/columnStyles";
+import { columnStyles } from "../../constants/columnStyles.js";
 import "./Column.css";
 
 function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, onDragStart, onAddTask, onEdit, onRemove }) {

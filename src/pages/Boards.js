@@ -6,7 +6,8 @@ import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
-import ColumnCreate from "../components/Column/ColumnCreate";
+import ColumnCreate from "../components/Column/ColumnModal/ColumnCreate";
+import ColumnEdit from "../components/Column/ColumnModal/ColumnEdit";
 
 import useTasks from "../hooks/useTasks";
 import useColumns from "../hooks/useColumns";
@@ -66,16 +67,14 @@ function Boards() {
   const openColumnModal = (view, index, column = null) => {
     setColumnModalView(view);
     setColumnModalIndex(index);
-    setEditingColumn(column);
+    setEditingColumn(column); // null = criar, objeto = editar
     setColumnModalOpen(true);
   };
 
   const handleSaveColumn = (columnData) => {
     if (editingColumn) {
-      // edição
       renameColumn(columnModalView, editingColumn.id, columnData);
     } else {
-      // criação
       addColumn(columnModalView, columnModalIndex, columnData);
     }
     setColumnModalOpen(false);
@@ -162,12 +161,20 @@ function Boards() {
       />
 
       {/* Modal de criação/edição de coluna */}
-      <ColumnCreate
-        isOpen={columnModalOpen}
-        onClose={() => setColumnModalOpen(false)}
-        onSave={handleSaveColumn}
-        columnData={editingColumn}
-      />
+      {editingColumn ? (
+        <ColumnEdit
+          isOpen={columnModalOpen}
+          onClose={() => setColumnModalOpen(false)}
+          onSave={handleSaveColumn}
+          columnData={editingColumn}
+        />
+      ) : (
+        <ColumnCreate
+          isOpen={columnModalOpen}
+          onClose={() => setColumnModalOpen(false)}
+          onSave={handleSaveColumn}
+        />
+      )}
     </div>
   );
 }

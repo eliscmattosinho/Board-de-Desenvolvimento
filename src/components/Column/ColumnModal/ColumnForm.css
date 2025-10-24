@@ -62,7 +62,7 @@ label {
 }
 
 .modal-close svg path {
-    color: #ff0000;
+  color: #ff0000;
 }
 
 .col-title-block,
@@ -78,4 +78,3 @@ label {
   background: #4caf50;
   color: #fefefe;
 }
-

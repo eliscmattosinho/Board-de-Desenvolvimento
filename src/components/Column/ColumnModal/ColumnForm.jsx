@@ -1,53 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
-import "./ColumnCreate.css";
+import React, { useState, useRef } from "react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import ColorPickerPanel from "./ColorPickerPanel/ColorPickerPanel.jsx";
-import { columnStyles } from "../../constants/columnStyles.js";
+import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel.jsx";
+import useColumnForm from "../../../hooks/useColumnForm.js";
+import "../ColumnModal/ColumnForm.css";
 
-export default function ColumnCreate({ isOpen, onClose, onSave, columnData }) {
-    const [title, setTitle] = useState("");
-    const [color, setColor] = useState("#02773aff");
-    const [description, setDescription] = useState("");
-    const [applyTo, setApplyTo] = useState("fundo");
+export default function ColumnForm({ onClose, onSave, columnData }) {
+    const { title, setTitle, color, setColor, description, setDescription, applyTo, setApplyTo } =
+        useColumnForm(columnData);
+
     const [showPicker, setShowPicker] = useState(false);
     const inputRef = useRef(null);
-
-    // Determina cor e aplicação (fundo ou borda)
-    const determineColor = (colData) => {
-        if (!colData) return { color: "#02773aff", applyTo: "fundo" };
-
-        if (colData.color) return { color: colData.color, applyTo: colData.applyTo || "fundo" };
-
-        if (colData.className) {
-            const key = colData.className.split(" ")[1];
-            const style = columnStyles[key];
-            if (style) {
-                if (style.bg !== "transparent") return { color: style.bg, applyTo: "fundo" };
-                if (style.border !== "transparent") return { color: style.border, applyTo: "borda" };
-            }
-        }
-
-        return { color: "#02773aff", applyTo: "fundo" };
-    };
-
-    // Atualiza estados ao abrir modal ou mudar columnData
-    useEffect(() => {
-        if (columnData) {
-            setTitle(columnData.title || "");
-            setDescription(columnData.description || "");
-            const { color: c, applyTo: a } = determineColor(columnData);
-            setColor(c);
-            setApplyTo(a);
-        } else {
-            setTitle("");
-            setDescription("");
-            const { color: c, applyTo: a } = determineColor(null);
-            setColor(c);
-            setApplyTo(a);
-        }
-    }, [columnData]);
-
-    if (!isOpen) return null;
 
     const handleSave = () => {
         if (onSave) {
@@ -62,10 +24,7 @@ export default function ColumnCreate({ isOpen, onClose, onSave, columnData }) {
 
     return (
         <div className="modal-overlay">
-            <div
-                className="modal-content column-create"
-                onClick={() => showPicker && setShowPicker(false)}
-            >
+            <div className="modal-content column-create" onClick={() => showPicker && setShowPicker(false)}>
                 <button
                     type="button"
                     className="modal-close"

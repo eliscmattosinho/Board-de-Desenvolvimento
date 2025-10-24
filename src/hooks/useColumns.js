@@ -1,18 +1,18 @@
 import { useState } from "react";
 
 export default function useColumns(defaultKanban, defaultScrum) {
-  // Estado inicial com colunas padrão
   const [columns, setColumns] = useState({
     kanban: defaultKanban || [],
     scrum: defaultScrum || [],
   });
 
-  // Adicionar nova coluna
-  const addColumn = (view, index) => {
+  const addColumn = (view, index, columnData) => {
     setColumns((prev) => {
       const newColumn = {
         id: `col-${Date.now()}`,
-        title: "Nova Coluna",
+        title: columnData?.title || "Nova Coluna",
+        color: columnData?.color || "#02773aff",
+        description: columnData?.description || "",
         className: `${view}-column new`,
       };
 
@@ -26,17 +26,15 @@ export default function useColumns(defaultKanban, defaultScrum) {
     });
   };
 
-  // Renomear coluna
-  const renameColumn = (view, id, newTitle) => {
+  const renameColumn = (view, id, newData) => {
     setColumns((prev) => {
       const updatedView = prev[view].map((col) =>
-        col.id === id ? { ...col, title: newTitle } : col
+        col.id === id ? { ...col, ...newData } : col
       );
       return { ...prev, [view]: updatedView };
     });
   };
 
-  // Remover coluna
   const removeColumn = (view, id) => {
     setColumns((prev) => {
       const updatedView = prev[view].filter((col) => col.id !== id);

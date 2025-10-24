@@ -6,6 +6,7 @@ import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
+import ColumnCreate from "../components/Board/Column/ColumnCreate";
 
 import useTasks from "../hooks/useTasks";
 import useColumns from "../hooks/useColumns";
@@ -38,11 +39,15 @@ function Boards() {
 
   const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
 
+  // Estado do modal de criar/editar coluna
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createModalIndex, setCreateModalIndex] = useState(0);
+  const [createModalView, setCreateModalView] = useState("kanban");
+  const [editingColumn, setEditingColumn] = useState(null);
+
   const allowDrop = (e) => e.preventDefault();
 
-  const handleDragStart = (e, taskId) => {
-    e.dataTransfer.setData("text/plain", taskId);
-  };
+  const handleDragStart = (e, taskId) => e.dataTransfer.setData("text/plain", taskId);
 
   const handleDrop = (e, columnId, targetTaskId = null) => {
     e.preventDefault();
@@ -59,8 +64,24 @@ function Boards() {
     setSelectedTask({ ...newTask, isNew: true });
   };
 
-  const handleAddColumn = (index) => {
-    addColumn(activeView, index);
+  // Abre modal de criar ou editar coluna
+  const openCreateColumnModal = (view, index, column = null) => {
+    setCreateModalView(view);
+    setCreateModalIndex(typeof index === "number" ? index : columns[view].length);
+    setEditingColumn(column || null);
+    setCreateModalOpen(true);
+  };
+
+  // Salva os dados do modal
+  const handleSaveCreateColumn = (columnData) => {
+    if (editingColumn) {
+      // Edição
+      renameColumn(createModalView, editingColumn.id, columnData);
+    } else {
+      // Criação
+      addColumn(createModalView, createModalIndex, columnData);
+    }
+    setCreateModalOpen(false);
   };
 
   return (
@@ -70,7 +91,6 @@ function Boards() {
           <button onClick={() => navigate("/")} className="back-btn">
             <FaArrowCircleLeft />
           </button>
-
           <button className="btn new-board">Novo board</button>
         </div>
 
@@ -96,7 +116,7 @@ function Boards() {
 
             <FloatingMenu
               onAddTask={handleAddTask}
-              onAddColumn={() => handleAddColumn(columns[activeView].length)}
+              onAddColumn={() => openCreateColumnModal(activeView, columns[activeView].length)}
             />
           </div>
 
@@ -110,12 +130,12 @@ function Boards() {
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
-              onAddColumn={handleAddColumn}
+              onAddColumn={(index, column) => openCreateColumnModal("kanban", index, column)}
+              removeColumn={removeColumn}
               activeView="kanban"
               isActive={activeView === "kanban"}
-              renameColumn={renameColumn}
-              removeColumn={removeColumn}
             />
+
             <BoardSection
               id="scrum"
               columns={columns.scrum}
@@ -125,11 +145,10 @@ function Boards() {
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
-              onAddColumn={handleAddColumn}
+              onAddColumn={(index, column) => openCreateColumnModal("scrum", index, column)}
+              removeColumn={removeColumn}
               activeView="scrum"
               isActive={activeView === "scrum"}
-              renameColumn={renameColumn}
-              removeColumn={removeColumn}
             />
           </div>
         </div>
@@ -141,18 +160,19 @@ function Boards() {
         activeView={activeView}
         columns={columns[activeView]}
         moveTask={moveTask}
-        updateTask={(taskId, changes) => {
-          updateTask(taskId, changes);
-          setSelectedTask(null);
-        }}
-        deleteTask={(taskId) => {
-          deleteTask(taskId);
-          setSelectedTask(null);
-        }}
+        updateTask={(taskId, changes) => { updateTask(taskId, changes); setSelectedTask(null); }}
+        deleteTask={(taskId) => { deleteTask(taskId); setSelectedTask(null); }}
+      />
+
+      {/* Modal de criação/edição de coluna */}
+      <ColumnCreate
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSave={handleSaveCreateColumn}
+        columnData={editingColumn}
       />
     </div>
   );
 }
 
 export default Boards;
-

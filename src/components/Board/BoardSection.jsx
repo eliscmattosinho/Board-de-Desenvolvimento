@@ -1,25 +1,17 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import Column from "./Column/Column";
 import AddColumnIndicator from "../Board/Column/AddColumnIndicator";
 import ConfirmDeleteModal from "../Card/DeleteTaskModal/ConfirmDeleteModal";
-import ColumnCreate from "../Board/Column/ColumnCreate";
 import "./BoardSection.css";
 import { CiCirclePlus } from "react-icons/ci";
 import { getDisplayStatus } from "../../js/boardUtils";
 
-function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onDragStart, onAddTask, onAddColumn, activeView, isActive, renameColumn, removeColumn }) {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onDragStart, onAddTask, onAddColumn, removeColumn, activeView, isActive }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [newColumnId, setNewColumnId] = useState(""); // ID fixo para a nova coluna
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [colToDelete, setColToDelete] = useState(null);
 
-  // Gera o ID da nova coluna apenas uma vez
-  useEffect(() => {
-    setNewColumnId(`new-col-${Date.now()}`);
-  }, []);
-
-  const handleColumn = useCallback(
+  const handleColumnHover = useCallback(
     (action, index = null) => {
       switch (action) {
         case "hoverEnter":
@@ -28,14 +20,11 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
         case "hoverLeave":
           setHoveredIndex(null);
           break;
-        case "addColumn":
-          if (onAddColumn) onAddColumn(index);
-          break;
         default:
-          console.warn(`Unhandled column action: ${action}`);
+          console.warn(`Unhandled column hover action: ${action}`);
       }
     },
-    [onAddColumn]
+    []
   );
 
   return (
@@ -57,13 +46,7 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
               onTaskClick={onTaskClick}
               onDragStart={onDragStart}
               onAddTask={onAddTask}
-              onEdit={() => {
-                const newTitle = prompt(
-                  "Digite o novo nome da coluna",
-                  col.title
-                );
-                if (newTitle) renameColumn(activeView, col.id, newTitle);
-              }}
+              onEdit={() => onAddColumn(index, col)}  // abre modal de edição
               onRemove={() => {
                 setColToDelete(col);
                 setShowDeleteModal(true);
@@ -73,14 +56,14 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
             {index < columns.length - 1 && (
               <div
                 className="add-column-zone"
-                onMouseEnter={() => handleColumn("hoverEnter", index)}
-                onMouseLeave={() => handleColumn("hoverLeave")}
+                onMouseEnter={() => handleColumnHover("hoverEnter", index)}
+                onMouseLeave={() => handleColumnHover("hoverLeave")}
               >
                 {hoveredIndex === index && (
                   <AddColumnIndicator
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleColumn("addColumn", index + 1);
+                      onAddColumn(index + 1); // abre modal de criação
                     }}
                   />
                 )}
@@ -90,17 +73,16 @@ function BoardSection({ id, columns, tasks, onDrop, onDragOver, onTaskClick, onD
         );
       })}
 
-      {/* Add end column */}
-      <div className="col-add-last" onClick={() => setIsCreateModalOpen(true)}>
+      {/* Área para adicionar coluna no final */}
+      <div
+        className="col-add-last"
+        onClick={() => onAddColumn(columns.length)}
+      >
         <CiCirclePlus className="add-col" size={30} />
         <p>Criar nova coluna</p>
       </div>
 
-      <ColumnCreate
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-      />
-
+      {/* Modal de confirmação de exclusão */}
       <ConfirmDeleteModal
         isOpen={showDeleteModal}
         type="column"

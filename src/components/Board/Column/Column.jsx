@@ -4,7 +4,17 @@ import { CiCirclePlus } from "react-icons/ci";
 import { columnStyles } from "../../../constants/columnStyles";
 import "./Column.css";
 
-function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, onDragStart }) {
+function Column({
+  id,
+  title,
+  className,
+  onDrop,
+  onDragOver,
+  tasks,
+  onTaskClick,
+  onDragStart,
+  onAddTask,
+}) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
 
@@ -38,7 +48,7 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
       id={id}
       style={{
         "--col-bg": colStyle.bg,
-        "--col-border": colStyle.border
+        "--col-border": colStyle.border,
       }}
     >
       <div
@@ -47,8 +57,7 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
         onDragOver={(e) => e.preventDefault()}
       >
         <h4 className="col-title-board">
-          {title}
-          <span className="task-counter">({tasks.length})</span>
+          {title} <span className="task-counter">({tasks.length})</span>
         </h4>
       </div>
 
@@ -79,16 +88,19 @@ function Column({ id, title, className, onDrop, onDragOver, tasks, onTaskClick, 
         {tasks.length === 0 && <div className="task-placeholder active"></div>}
       </div>
 
-      {/* Ícone "+" se a coluna estiver vazia */}
-      {tasks.length === 0 && (
-        <div
-          className="add-task"
-          onDrop={(e) => handleDropTask(e, null)}
-          onDragOver={(e) => e.preventDefault()}
-        >
-          <CiCirclePlus size={30} />
-        </div>
-      )}
+      <div
+        className="add-task"
+        onClick={() => onAddTask(id)}
+      >
+        <CiCirclePlus size={30} />
+      </div>
+
+      {/* Área invisível para drag & drop sem bloquear clique */}
+      <div
+        className="drop-zone"
+        onDrop={(e) => handleDropTask(e, null)}
+        onDragOver={(e) => e.preventDefault()}
+      />
     </div>
   );
 }

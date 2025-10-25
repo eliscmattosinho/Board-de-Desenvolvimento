@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaArrowCircleLeft } from "react-icons/fa";
+
 import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
-import { FaArrowCircleLeft } from "react-icons/fa";
+import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
 
 import useTasks from "../hooks/useTasks";
 import { columnIdToCanonicalStatus } from "../js/boardUtils";
@@ -17,7 +19,7 @@ function Boards() {
   const [activeView, setActiveView] = useState("kanban");
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const [tasks, , moveTask, updateTask, deleteTask] = useTasks();
+  const [tasks, addTask, moveTask, updateTask, deleteTask] = useTasks();
 
   const allowDrop = (e) => e.preventDefault();
 
@@ -49,13 +51,25 @@ function Boards() {
 
   const orderedTasks = [...tasks].sort((a, b) => a.order - b.order);
 
+  const handleAddTask = (columnId = null) => {
+    const newTask = addTask(columnId, activeView);
+    setSelectedTask({ ...newTask, isNew: true });
+  };
+
+  const handleAddColumn = () => {
+    console.log("Adicionar coluna");
+    // abrir a interface para criar nova coluna
+  };
+
   return (
     <div className="content-block">
       <div id="general-content" className="content">
-        <div className="back-button">
+        <div className="btn-container back-button">
           <button onClick={() => navigate("/")} className="back-btn">
             <FaArrowCircleLeft />
           </button>
+
+          <button className="btn new-board">Novo board</button>
         </div>
 
         <div className="first-section-board">
@@ -67,35 +81,45 @@ function Boards() {
             <BoardControls activeView={activeView} setActiveView={setActiveView} />
           </div>
           <div className="img-block">
-            <img src={svgBoard} alt="" />
+            <img src={svgBoard} alt="Ilustração de board" />
           </div>
         </div>
 
         <div className="second-section-board">
-          <h3 id="h3-title">
-            {activeView === "kanban" ? "Kanban" : "Scrum"}
-            <span className="task-counter">({tasks.length})</span>
-          </h3>
+          <div className="board-title-container">
+            <h3 id="h3-title">
+              {activeView === "kanban" ? "Kanban" : "Scrum"}
+              <span className="task-counter">({tasks.length})</span>
+            </h3>
+
+            <FloatingMenu
+              onAddTask={handleAddTask}
+              onAddColumn={handleAddColumn}
+            />
+          </div>
+
           <div className="tables-block">
             <BoardSection
               id="kanban"
               columns={kanbanColumns}
+              tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
-              tasks={orderedTasks}
+              onAddTask={handleAddTask}
               activeView="kanban"
               isActive={activeView === "kanban"}
             />
             <BoardSection
               id="scrum"
               columns={scrumColumns}
+              tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
-              tasks={orderedTasks}
+              onAddTask={handleAddTask}
               activeView="scrum"
               isActive={activeView === "scrum"}
             />
@@ -104,13 +128,19 @@ function Boards() {
       </div>
 
       <CardTask
-        task={orderedTasks.find((t) => t.id === selectedTask?.id) || null}
+        task={selectedTask}
         onClose={() => setSelectedTask(null)}
         activeView={activeView}
         columns={activeView === "kanban" ? kanbanColumns : scrumColumns}
         moveTask={moveTask}
-        updateTask={updateTask}
-        deleteTask={deleteTask}
+        updateTask={(taskId, changes) => {
+          updateTask(taskId, changes);
+          setSelectedTask(null);
+        }}
+        deleteTask={(taskId) => {
+          deleteTask(taskId);
+          setSelectedTask(null);
+        }}
       />
     </div>
   );

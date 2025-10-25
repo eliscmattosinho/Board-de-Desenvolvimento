@@ -1,9 +1,9 @@
 import React from "react";
 import StatusDropdown from "../StatusDropdown";
 
-export default function CardEdit({ title, setTitle, description, setDescription, columns, currentColumnId, onSelect }) {
+export default function CardEdit({ mode = "edit", title, setTitle, description, setDescription, columns, currentColumnId, onSelect }) {
   return (
-    <div className="card-edit">
+    <div className={`card-edit ${mode === "create" ? "card-create" : ""}`}>
       <div className="title-block">
         <label className="card-title w-600">Título:</label>
         <input

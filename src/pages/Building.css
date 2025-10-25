@@ -71,10 +71,6 @@ h2 {
     transition: transform 0.3s ease-in-out;
 }
 
-button:hover {
-    transform: scale(1.1);
-}
-
 #sub-link {
     font-size: 14px;
     text-decoration: underline;

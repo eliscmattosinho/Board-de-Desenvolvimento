@@ -39,8 +39,12 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   if (!task) return null;
 
   const handleSelect = (colId) => {
-    if (editMode) setStatus(colId);
-    else moveTask(task.id, columnIdToCanonicalStatus(colId));
+    if (editMode) {
+      setStatus(colId);
+    } else {
+      moveTask(task.id, columnIdToCanonicalStatus(colId));
+      setStatus(colId);
+    }
   };
 
   const handleEditClick = () => {

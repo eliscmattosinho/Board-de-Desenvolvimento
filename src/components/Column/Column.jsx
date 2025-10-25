@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import TaskItem from "./TaskItem";
-import { CiCirclePlus } from "react-icons/ci";
-import { columnStyles } from "../../../constants/columnStyles";
+import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
+import { columnStyles } from "../../constants/columnStyles.js";
 import "./Column.css";
 
 function Column({
@@ -14,12 +14,23 @@ function Column({
   onTaskClick,
   onDragStart,
   onAddTask,
+  onEdit,
+  onRemove,
+  color,
+  applyTo
 }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
+  const [hovered, setHovered] = useState(false);
 
   const colKey = className.split(" ")[1];
-  const colStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
+  const defaultStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
+
+  // Se o usuário definiu uma cor, usa ela; senão usa o padrão
+  const colStyle = {
+    bg: applyTo === "fundo" && color ? color : defaultStyle.bg,
+    border: applyTo === "borda" && color ? color : defaultStyle.border,
+  };
 
   const handleDropTask = (e, targetTaskId, position = null) => {
     e.preventDefault();
@@ -55,13 +66,39 @@ function Column({
         className="title-col-board"
         onDrop={(e) => handleDropTask(e, null)}
         onDragOver={(e) => e.preventDefault()}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        <h4 className="col-title-board">
-          {title} <span className="task-counter">({tasks.length})</span>
-        </h4>
+        <div className="col-title-flex">
+          {hovered && onRemove && (
+            <CiTrash
+              className="col-icon-left"
+              size={20}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove();
+              }}
+            />
+          )}
+
+          <h4 className="col-title-board">
+            {title} <span className="task-counter">({tasks.length})</span>
+          </h4>
+
+          {hovered && onEdit && (
+            <CiEdit
+              className="col-icon-right"
+              size={20}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+            />
+          )}
+        </div>
       </div>
 
-      {/* Tasks list */}
+      {/* Lista de tarefas */}
       <div className={`col-items ${colKey}-items ${tasks.length === 0 ? "none" : ""}`}>
         {tasks.map((task) => (
           <React.Fragment key={task.id}>
@@ -84,18 +121,15 @@ function Column({
           </React.Fragment>
         ))}
 
-        {/* Placeholder para coluna vazia */}
         {tasks.length === 0 && <div className="task-placeholder active"></div>}
       </div>
 
-      <div
-        className="add-task"
-        onClick={() => onAddTask(id)}
-      >
-        <CiCirclePlus size={30} />
-      </div>
+      {onAddTask && (
+        <div className="add-task" onClick={() => onAddTask(id)}>
+          <CiCirclePlus size={30} />
+        </div>
+      )}
 
-      {/* Área invisível para drag & drop sem bloquear clique */}
       <div
         className="drop-zone"
         onDrop={(e) => handleDropTask(e, null)}

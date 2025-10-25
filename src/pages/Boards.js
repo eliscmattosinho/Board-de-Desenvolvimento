@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
@@ -6,8 +6,11 @@ import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
+import ColumnCreate from "../components/Column/ColumnModal/ColumnCreate";
+import ColumnEdit from "../components/Column/ColumnModal/ColumnEdit";
 
 import useTasks from "../hooks/useTasks";
+import useColumns from "../hooks/useColumns";
 import { columnIdToCanonicalStatus } from "../js/boardUtils";
 
 import "../App.css";
@@ -21,11 +24,30 @@ function Boards() {
 
   const [tasks, addTask, moveTask, updateTask, deleteTask] = useTasks();
 
-  const allowDrop = (e) => e.preventDefault();
+  const defaultKanban = [
+    { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
+    { id: "k-in-progress", title: "Em Progresso", className: "kanban-column progress" },
+    { id: "k-done", title: "Concluído", className: "kanban-column done" },
+  ];
 
-  const handleDragStart = (e, taskId) => {
-    e.dataTransfer.setData("text/plain", taskId);
-  };
+  const defaultScrum = [
+    { id: "backlog", title: "Backlog", className: "scrum-column backlog" },
+    { id: "sprint-backlog", title: "Sprint Backlog", className: "scrum-column todo" },
+    { id: "s-in-progress", title: "Em Progresso", className: "scrum-column progress" },
+    { id: "review", title: "Revisão", className: "scrum-column review" },
+    { id: "s-done", title: "Concluído", className: "scrum-column done" },
+  ];
+
+  const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
+
+  // Modal de criar/editar coluna
+  const [columnModalOpen, setColumnModalOpen] = useState(false);
+  const [columnModalIndex, setColumnModalIndex] = useState(0);
+  const [columnModalView, setColumnModalView] = useState("kanban");
+  const [editingColumn, setEditingColumn] = useState(null);
+
+  const allowDrop = (e) => e.preventDefault();
+  const handleDragStart = (e, taskId) => e.dataTransfer.setData("text/plain", taskId);
 
   const handleDrop = (e, columnId, targetTaskId = null) => {
     e.preventDefault();
@@ -35,20 +57,6 @@ function Boards() {
     moveTask(taskId, canonicalStatus, targetTaskId);
   };
 
-  const kanbanColumns = [
-    { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
-    { id: "k-in-progress", title: "Em Progresso", className: "kanban-column progress" },
-    { id: "k-done", title: "Concluído", className: "kanban-column done" },
-  ];
-
-  const scrumColumns = [
-    { id: "backlog", title: "Backlog", className: "scrum-column backlog" },
-    { id: "sprint-backlog", title: "Sprint Backlog", className: "scrum-column todo" },
-    { id: "s-in-progress", title: "Em Progresso", className: "scrum-column progress" },
-    { id: "review", title: "Revisão", className: "scrum-column review" },
-    { id: "s-done", title: "Concluído", className: "scrum-column done" },
-  ];
-
   const orderedTasks = [...tasks].sort((a, b) => a.order - b.order);
 
   const handleAddTask = (columnId = null) => {
@@ -56,9 +64,20 @@ function Boards() {
     setSelectedTask({ ...newTask, isNew: true });
   };
 
-  const handleAddColumn = () => {
-    console.log("Adicionar coluna");
-    // abrir a interface para criar nova coluna
+  const openColumnModal = (view, index, column = null) => {
+    setColumnModalView(view);
+    setColumnModalIndex(index);
+    setEditingColumn(column); // null = criar, objeto = editar
+    setColumnModalOpen(true);
+  };
+
+  const handleSaveColumn = (columnData) => {
+    if (editingColumn) {
+      renameColumn(columnModalView, editingColumn.id, columnData);
+    } else {
+      addColumn(columnModalView, columnModalIndex, columnData);
+    }
+    setColumnModalOpen(false);
   };
 
   return (
@@ -68,7 +87,6 @@ function Boards() {
           <button onClick={() => navigate("/")} className="back-btn">
             <FaArrowCircleLeft />
           </button>
-
           <button className="btn new-board">Novo board</button>
         </div>
 
@@ -94,32 +112,37 @@ function Boards() {
 
             <FloatingMenu
               onAddTask={handleAddTask}
-              onAddColumn={handleAddColumn}
+              onAddColumn={() => openColumnModal(activeView, columns[activeView].length)}
             />
           </div>
 
           <div className="tables-block">
             <BoardSection
               id="kanban"
-              columns={kanbanColumns}
+              columns={columns.kanban}
               tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
+              onAddColumn={(index, column) => openColumnModal("kanban", index, column)}
+              removeColumn={removeColumn}
               activeView="kanban"
               isActive={activeView === "kanban"}
             />
+
             <BoardSection
               id="scrum"
-              columns={scrumColumns}
+              columns={columns.scrum}
               tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
+              onAddColumn={(index, column) => openColumnModal("scrum", index, column)}
+              removeColumn={removeColumn}
               activeView="scrum"
               isActive={activeView === "scrum"}
             />
@@ -131,17 +154,27 @@ function Boards() {
         task={selectedTask}
         onClose={() => setSelectedTask(null)}
         activeView={activeView}
-        columns={activeView === "kanban" ? kanbanColumns : scrumColumns}
+        columns={columns[activeView]}
         moveTask={moveTask}
-        updateTask={(taskId, changes) => {
-          updateTask(taskId, changes);
-          setSelectedTask(null);
-        }}
-        deleteTask={(taskId) => {
-          deleteTask(taskId);
-          setSelectedTask(null);
-        }}
+        updateTask={(taskId, changes) => { updateTask(taskId, changes); setSelectedTask(null); }}
+        deleteTask={(taskId) => { deleteTask(taskId); setSelectedTask(null); }}
       />
+
+      {/* Modal de criação/edição de coluna */}
+      {editingColumn ? (
+        <ColumnEdit
+          isOpen={columnModalOpen}
+          onClose={() => setColumnModalOpen(false)}
+          onSave={handleSaveColumn}
+          columnData={editingColumn}
+        />
+      ) : (
+        <ColumnCreate
+          isOpen={columnModalOpen}
+          onClose={() => setColumnModalOpen(false)}
+          onSave={handleSaveColumn}
+        />
+      )}
     </div>
   );
 }

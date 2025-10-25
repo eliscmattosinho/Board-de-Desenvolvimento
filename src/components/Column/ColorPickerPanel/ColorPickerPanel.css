@@ -136,3 +136,13 @@
     border-width: 2px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
 }
+
+input[type="radio"] {
+    accent-color: #2DD44A;
+    transition: all 0.2s ease-in-out;
+
+}
+
+input[type="radio"]:hover {
+    cursor: pointer;
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { initializeTasks } from "../js/initializeTasks";
+import { columnIdToCanonicalStatus } from "../js/boardUtils";
 
 export default function useTasks() {
   const [tasks, setTasks] = useState([]);
@@ -8,7 +9,8 @@ export default function useTasks() {
     let mounted = true;
     initializeTasks().then((initial) => {
       if (!mounted) return;
-      setTasks(initial || []);
+      const withOrder = (initial || []).map((t, i) => ({ order: i, ...t }));
+      setTasks(withOrder);
     });
     return () => {
       mounted = false;
@@ -24,17 +26,66 @@ export default function useTasks() {
     }
   };
 
-  const moveTask = (taskId, canonicalStatus) => {
+  const addTask = (columnId = null, activeView = "kanban") => {
+    // Coluna padrão caso não seja passada
+    const colId = columnId;
+    const canonicalStatus = colId ? columnIdToCanonicalStatus(colId) : "Backlog";
+
+    const newTask = {
+      id: String(tasks.length + 1), // ID baseado no total de tasks
+      title: "",
+      description: "",
+      status: canonicalStatus,
+      order: tasks.length,
+      isNew: true,
+      createdAt: new Date().toISOString(),
+    };
+
     setTasks((prev) => {
-      const updated = prev.map((t) =>
-        String(t.id) === String(taskId) ? { ...t, status: canonicalStatus } : t
-      );
+      const updated = [...prev, newTask];
       persist(updated);
       return updated;
     });
+
+    return newTask;
   };
 
-  // TODO: Implement debounce
+  /**
+   * Move um card para outra coluna ou dentro da mesma coluna,
+   * respeitando a posição "above" ou "below" do target card
+   */
+  const moveTask = (taskId, canonicalStatus, targetTaskId = null, position = null) => {
+    setTasks((prev) => {
+      const task = prev.find((t) => String(t.id) === String(taskId));
+      if (!task) return prev;
+
+      // Remove task do array original
+      const without = prev.filter((t) => String(t.id) !== String(taskId));
+
+      // Filtra tasks da coluna destino
+      const destTasks = without.filter((t) => t.status === canonicalStatus);
+
+      // Define índice de inserção
+      let insertIndex = destTasks.length;
+      if (targetTaskId) {
+        const idx = destTasks.findIndex((t) => String(t.id) === String(targetTaskId));
+        if (idx !== -1) insertIndex = position === "below" ? idx + 1 : idx;
+      }
+
+      const updatedTask = { ...task, status: canonicalStatus };
+
+      // Reconstrói lista completa mantendo ordem
+      const reordered = [
+        ...without.slice(0, insertIndex),
+        updatedTask,
+        ...without.slice(insertIndex),
+      ].map((t, i) => ({ ...t, order: i }));
+
+      persist(reordered);
+      return reordered;
+    });
+  };
+
   const updateTask = (taskId, changes) => {
     setTasks((prev) => {
       const updated = prev.map((t) =>
@@ -47,11 +98,13 @@ export default function useTasks() {
 
   const deleteTask = (taskId) => {
     setTasks((prev) => {
-      const updated = prev.filter((t) => String(t.id) !== String(taskId));
+      const updated = prev
+        .filter((t) => String(t.id) !== String(taskId))
+        .map((t, i) => ({ ...t, order: i }));
       persist(updated);
       return updated;
     });
   };
 
-  return [tasks, setTasks, moveTask, updateTask, deleteTask];
+  return [tasks, addTask, moveTask, updateTask, deleteTask];
 }

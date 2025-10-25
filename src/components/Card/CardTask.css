@@ -72,7 +72,7 @@
 }
 
 .modal-close {
-    transition: transform .3s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 .modal-close:hover {
@@ -204,7 +204,7 @@ button[data-tooltip] {
     cursor: pointer;
 }
 
-button[data-tooltip="Fechar"] {
+button.modal-close {
     position: absolute;
 }
 
@@ -269,7 +269,8 @@ button[data-tooltip]:hover::before {
     flex-direction: column;
 }
 
-.card-edit, .card-view {
+.card-edit,
+.card-view {
     gap: 10px;
 }
 
@@ -279,7 +280,7 @@ button[data-tooltip]:hover::before {
 }
 
 .input {
-    width: 100%;
+    max-width: 100%;
     border: 1px solid #9b9b9b;
     border-radius: 6px;
     padding: 8px;
@@ -300,60 +301,63 @@ button[data-tooltip]:hover::before {
 }
 
 .card-content-wrapper {
-  position: relative;
-  overflow: hidden;
-  transition: height 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    transition: height 0.4s ease;
 }
 
 .content-inner {
-  width: 100%;
+    width: 100%;
 }
 
 /* Animação de slide */
 .slide-enter {
-  transform: translateX(100%);
-  opacity: 0;
+    transform: translateX(100%);
+    opacity: 0;
 }
+
 .slide-enter-active {
-  transform: translateX(0);
-  opacity: 1;
-  transition: transform 0.4s ease, opacity 0.4s ease;
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.4s ease, opacity 0.4s ease;
 }
+
 .slide-exit {
-  transform: translateX(0);
-  opacity: 1;
+    transform: translateX(0);
+    opacity: 1;
 }
+
 .slide-exit-active {
-  transform: translateX(-100%);
-  opacity: 0;
-  transition: transform 0.4s ease, opacity 0.4s ease;
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 /* portal styling (on body) */
 .dropdown-options-portal {
-  border: 1px solid #9b9b9b;
-  border-radius: 6px;
-  background-color: #efefef;
-  margin-top: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  max-height: 200px;
-  overflow-y: auto;
-  font-size: 14px;
+    border: 1px solid #9b9b9b;
+    border-radius: 6px;
+    background-color: #efefef;
+    margin-top: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 14px;
 }
 
 /* Estado desabilitado (sem alterações) */
 .modal-btn.btn-save.disabled {
-  background-color: #ccc;
-  color: #666;
-  cursor: not-allowed;
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
 }
 
 /* Estado ativo */
 .modal-btn.btn-save.active {
-  background-color: #4caf50;
-  color: white;
+    background-color: #4caf50;
+    color: white;
 }
 
 .modal-btn.btn-save.active:hover {
-  background-color: #45a049;
+    background-color: #45a049;
 }

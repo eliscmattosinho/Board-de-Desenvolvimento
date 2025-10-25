@@ -1,0 +1,148 @@
+.color-picker-panel * {
+    background: none;
+}
+
+.color-picker-panel {
+    position: absolute;
+    background: #1e1e1e;
+    color: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    width: 220px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.picker-label {
+    font-size: 0.8rem;
+    color: #bbb;
+    pointer-events: none;
+}
+
+.picker-hex-input {
+    background: #2b2b2b;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-family: monospace;
+    width: 100%;
+}
+
+.picker-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: space-between;
+}
+
+.swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid #444;
+}
+
+.swatch:hover {
+    transform: scale(1.05);
+}
+
+.picker-checkboxes {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 0.85rem;
+}
+
+.picker-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.picker-save-btn {
+    background: #199354;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transform: none;
+}
+
+.picker-save-btn:hover {
+    background: #025e2e;
+}
+
+.col-label {
+    display: flex;
+    align-items: center;
+    color: #efefef;
+    user-select: none;
+}
+
+.input-color {
+    max-width: 100%;
+    width: min-content;
+}
+
+.picker-drag-handle {
+    height: 20px;
+    background: #333;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #fff;
+    user-select: none;
+}
+
+.picker-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    width: min-content;
+}
+
+.picker-mode-toggle svg {
+    display: block;
+}
+
+.picker-mode-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    transition: transform 0.2s ease, color 0.2s ease;
+    padding: 2px;
+    display: inline-block;
+    transform-origin: center center;
+}
+
+.picker-mode-toggle:active {
+    transform: rotate(180deg);
+    color: #000;
+}
+
+.color-picker-panel .react-colorful__pointer {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+
+input[type="radio"] {
+    accent-color: #2DD44A;
+    transition: all 0.2s ease-in-out;
+
+}
+
+input[type="radio"]:hover {
+    cursor: pointer;
+}

@@ -1,62 +1,49 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import "./CardTask.css";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { getDisplayStatus, columnIdToCanonicalStatus } from "../../js/boardUtils";
+import { columnIdToCanonicalStatus, getDisplayStatus } from "../../js/boardUtils";
 import ConfirmDeleteModal from "./DeleteTaskModal/ConfirmDeleteModal";
-import { CSSTransition, SwitchTransition } from "react-transition-group";
-import StatusDropdown from "../StatusDropdown";
-import CardView from "./CardView";
 import CardEdit from "./CardEdit";
+import CardView from "./CardView";
+import useTaskForm from "../../hooks/useTaskForm";
+import CardContentSwitcher from "./CardContentSwitcher";
+import CardActions from "./CardActions";
 
 function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, deleteTask }) {
-  const [editMode, setEditMode] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState(""); // status local
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const isCreating = !!task?.isNew;
+  const [editMode, setEditMode] = useState(isCreating);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
-  const contentRef = useRef(null);
+  const { title, setTitle, description, setDescription, status, setStatus } = useTaskForm(task, columns, activeView);
 
-  // Sincroniza inputs com a task recebida e reseta animação
-  useEffect(() => {
-    if (task) {
-      setTitle(task.title || "");
-      setDescription(task.description || "");
-      setStatus(task.status || "");
-      setEditMode(false);
-      setShouldAnimate(false);
-      setDirty(false);
-    }
-  }, [task]);
+  const currentColumnId = status;
 
-  useEffect(() => {
+  // Detecta alterações para habilitar botão Salvar
+  React.useEffect(() => {
     if (!editMode || !task) return;
+
+    const originalColId = columns.find(
+      (col) => getDisplayStatus(task.status, activeView) === col.title
+    )?.id;
 
     const hasChanges =
       title.trim() !== (task.title || "").trim() ||
       description.trim() !== (task.description || "").trim() ||
-      status !== task.status;
+      status !== originalColId;
 
     setDirty(hasChanges);
-  }, [title, description, status, editMode, task]);
+  }, [title, description, status, editMode, task, columns, activeView]);
 
   if (!task) return null;
 
-  const currentColumnId = columns.find(
-    (col) =>
-      getDisplayStatus(editMode ? status : task.status, activeView) === col.title
-  )?.id;
-
   const handleSelect = (colId) => {
-    const canonicalStatus = columnIdToCanonicalStatus(colId);
     if (editMode) {
-      // Apenas altera localmente no modo edição
-      setStatus(canonicalStatus);
+      setStatus(colId);
     } else {
-      // Move task no estado global no modo visualização
-      moveTask(task.id, canonicalStatus);
+      moveTask(task.id, columnIdToCanonicalStatus(colId));
+      setStatus(colId);
     }
   };
 
@@ -67,33 +54,33 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
 
   const handleSave = () => {
     const trimmedTitle = title.trim();
-    const trimmedDescription = description.trim();
+    if (!trimmedTitle) return alert("O título não pode ficar vazio.");
 
-    if (!trimmedTitle) {
-      alert("O título não pode ficar vazio.");
-      return;
-    }
+    const colIdToSave = status || columns[0]?.id;
+    if (!colIdToSave) return;
 
-    // Confirma alterações no estado global
+    // Atualiza a task e fecha o modal
     updateTask(task.id, {
       title: trimmedTitle,
-      description: trimmedDescription,
-      status,
+      description: description.trim(),
+      status: columnIdToCanonicalStatus(colIdToSave),
+      isNew: false,
     });
 
-    setShouldAnimate(true);
     setEditMode(false);
     setDirty(false);
   };
 
   const handleCancel = () => {
-    // Reverte alterações locais
     setTitle(task.title || "");
     setDescription(task.description || "");
-    setStatus(task.status || "");
-    setShouldAnimate(true);
+    const originalColId = columns.find(
+      (col) => getDisplayStatus(task.status, activeView) === col.title
+    )?.id;
+    setStatus(originalColId || columns[0]?.id || "");
     setEditMode(false);
     setDirty(false);
+    setShouldAnimate(true);
   };
 
   const handleDelete = () => setShowConfirmDelete(true);
@@ -105,8 +92,11 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
   const cancelDelete = () => setShowConfirmDelete(false);
 
   const handleClose = () => {
-    setShouldAnimate(false);
+    if (isCreating && !(title.trim() || description.trim())) {
+      deleteTask(task.id);
+    }
     setEditMode(false);
+    setShouldAnimate(false);
     onClose();
   };
 
@@ -114,92 +104,64 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
     <div className="modal">
       <div className="modal-content">
         <div className="modal-header-row">
-          <h2>
-            Card<span>#{task.id}</span>
-          </h2>
+          <h2>Card<span>#{task.id}</span></h2>
         </div>
 
         <div className="card-content-wrapper">
-          <SwitchTransition mode="out-in">
-            <CSSTransition
-              key={editMode ? "edit" : "view"}
-              nodeRef={contentRef}
-              timeout={400}
-              classNames="slide"
-              in={shouldAnimate}
-              onEntered={() => setShouldAnimate(false)}
+          {isCreating ? (
+            <div className="content-inner">
+              <CardEdit
+                title={title}
+                setTitle={setTitle}
+                description={description}
+                setDescription={setDescription}
+                columns={columns}
+                currentColumnId={currentColumnId}
+                onSelect={handleSelect}
+                mode="create"
+              />
+            </div>
+          ) : (
+            <CardContentSwitcher
+              editMode={editMode}
+              shouldAnimate={shouldAnimate}
+              onAnimationEnd={() => setShouldAnimate(false)}
             >
-              <div className="content-inner" ref={contentRef}>
-                {editMode ? (
-                  <CardEdit
-                    title={title}
-                    setTitle={setTitle}
-                    description={description}
-                    setDescription={setDescription}
-                    columns={columns}
-                    currentColumnId={currentColumnId}
-                    onSelect={handleSelect}
-                  />
-                ) : (
-                  <CardView
-                    task={task}
-                    columns={columns}
-                    currentColumnId={currentColumnId}
-                    onSelect={handleSelect}
-                  />
-                )}
-              </div>
-            </CSSTransition>
-          </SwitchTransition>
+              <CardEdit
+                title={title}
+                setTitle={setTitle}
+                description={description}
+                setDescription={setDescription}
+                columns={columns}
+                currentColumnId={currentColumnId}
+                onSelect={handleSelect}
+                mode="edit"
+              />
+              <CardView
+                task={task}
+                columns={columns}
+                currentColumnId={currentColumnId}
+                onSelect={handleSelect}
+              />
+            </CardContentSwitcher>
+          )}
         </div>
 
-        <div className="modal-actions">
-          {!editMode && (
-            <button
-              type="button"
-              className="modal-btn btn-edit"
-              onClick={handleEditClick}
-              data-tooltip="Editar tarefa"
-            >
-              Editar
-            </button>
-          )}
-          {editMode && (
-            <>
-              <button
-                type="button"
-                className={`modal-btn btn-save ${dirty ? "active" : "disabled"}`}
-                onClick={handleSave}
-                disabled={!dirty}
-                data-tooltip="Salvar alterações"
-              >
-                Salvar
-              </button>
-              <button
-                type="button"
-                className="modal-btn btn-cancel"
-                onClick={handleCancel}
-                data-tooltip="Descartar edição"
-              >
-                Cancelar
-              </button>
-            </>
-          )}
-          <button
-            type="button"
-            className="modal-btn btn-delete"
-            onClick={handleDelete}
-            data-tooltip="Excluir tarefa"
-          >
-            Excluir
-          </button>
-        </div>
+        <CardActions
+          editMode={isCreating || editMode}
+          isCreating={isCreating}
+          dirty={dirty}
+          onSave={handleSave}
+          onCancel={handleCancel}
+          onEdit={handleEditClick}
+          onDelete={handleDelete}
+        />
 
         <button
           type="button"
           className="modal-close"
           onClick={handleClose}
-          data-tooltip="Fechar"
+          data-tooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
           <IoIosCloseCircleOutline size={25} />
         </button>

@@ -8,20 +8,29 @@
     z-index: 3000;
 }
 
+.confirm-modal * {
+    background: none;
+}
+
 .confirm-modal-content {
     background: #fff;
     padding: 20px;
     border-radius: 12px;
-    max-width: 400px;
+    max-width: 350px;
     text-align: center;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 .confirm-modal-content h3 {
-    margin-top: 0;
+    margin-bottom: 10px;
     font-size: 1.25rem;
     font-weight: bold;
     color: #e63946;
+}
+
+.confirm-modal-content p {
+    max-width: 300px;
+    color: #151515;
 }
 
 .confirm-modal-actions {

@@ -20,7 +20,7 @@ p.btn-title {
     -webkit-text-fill-color: transparent;
 }
 
-.btn.active {
+.btn-board.active {
     background: #efefef;
 }
 
@@ -52,14 +52,8 @@ p.btn-title {
     width: 70%;
 }
 
-.btn {
-    padding: 10px 20px;
+.btn-project {
     border: 1px solid #efefef;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-
-    transition: transform 0.3s ease-in-out;
 }
 
 .btns-block {

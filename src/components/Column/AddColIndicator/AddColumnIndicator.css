@@ -33,7 +33,7 @@
   width: 1px;
   top: 0;
   bottom: 0;
-  background-color: #ffffff;
+  background-color: #efefef;
   opacity: 0.7;
 }
 
@@ -57,7 +57,7 @@
 .add-col-container>svg {
   position: relative;
   z-index: 1000;
-  color: #ffffff;
+  color: #efefef;
   transition: color 0.2s ease;
 }
 

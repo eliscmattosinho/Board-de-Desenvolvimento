@@ -15,12 +15,11 @@ function Building() {
           </div>
         </div>
         <div className="state-communicate">
-          <p id="block-p">
-            Bem-vindo(a)! Fico feliz de te encontrar aqui, mas você chegou um pouco cedo, 
-            gostaria de ver o status atual do projeto?
+          <p id="p-intro">
+            Bem-vindo(a)! Fico feliz de te encontrar aqui, mas você chegou um pouco cedo. Gostaria de ver o status atual do projeto?
           </p>
 
-          <button id="p-state" className="btn-p-state" onClick={() => navigate("/boards")}>
+          <button id="p-state" className="btn-p-state w-600" onClick={() => navigate("/boards")}>
             Acessar board
           </button>
 

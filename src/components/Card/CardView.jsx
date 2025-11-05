@@ -4,7 +4,7 @@ import StatusDropdown from "../StatusDropdown";
 export default function CardView({ task, columns, currentColumnId, onSelect }) {
   return (
     <div className="card-view">
-      <h3 className="task-name">{task.title}</h3>
+      <h3 className="task-name w-600">{task.title}</h3>
 
       <div className="status-block">
         <label className="card-title w-600">Status:</label>

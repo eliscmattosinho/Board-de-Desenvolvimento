@@ -28,10 +28,9 @@ h2 {
     height: 100vh;
 }
 
-#block-p {
+#p-intro {
     max-width: 400px;
     text-align: center;
-    font-weight: 500;
 }
 
 #content-block {
@@ -41,10 +40,6 @@ h2 {
     justify-content: center;
     text-align: center;
     padding: 60px;
-}
-
-.social-link {
-    font-weight: 600;
 }
 
 .state-communicate {
@@ -59,7 +54,6 @@ h2 {
     padding: 10px 20px;
     border: 1px solid #efefef;
     border-radius: 40px;
-    font-weight: 600;
     cursor: pointer;
 
     background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);

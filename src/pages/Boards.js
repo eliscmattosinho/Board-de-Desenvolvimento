@@ -87,7 +87,7 @@ function Boards() {
           <button onClick={() => navigate("/")} className="back-btn">
             <FaArrowCircleLeft />
           </button>
-          <button className="btn new-board">Novo board</button>
+          <button className="btn-project new-board">Novo board</button>
         </div>
 
         <div className="first-section-board">

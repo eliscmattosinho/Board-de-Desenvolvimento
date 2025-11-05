@@ -14,7 +14,7 @@ function ConfirmDeleteModal({ isOpen, onConfirm, onCancel, type = "task" }) {
                 <p>Deseja mesmo excluir esta {entityText}? Esta ação não pode ser desfeita.</p>
 
                 <div className="confirm-modal-actions">
-                    <button className="modal-btn btn-confirm" onClick={onConfirm}>
+                    <button className="modal-btn btn-confirm w-600" onClick={onConfirm}>
                         Sim, excluir
                     </button>
                     <button className="modal-btn btn-cancel" onClick={onCancel}>

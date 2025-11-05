@@ -104,7 +104,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
     <div className="modal">
       <div className="modal-content">
         <div className="modal-header-row">
-          <h2>Card<span>#{task.id}</span></h2>
+          <h2 className="w-600">Card<span>#{task.id}</span></h2>
         </div>
 
         <div className="card-content-wrapper">

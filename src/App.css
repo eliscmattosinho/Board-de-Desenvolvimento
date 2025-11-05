@@ -3,13 +3,20 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+
   text-decoration: none;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* Estilização da main */
-#main {
+body {
   background-color: #efefef;
+  color: #151515;
+  letter-spacing: 0.5px;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.no-select {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -22,39 +29,14 @@
   padding: 0 2%;
 }
 
-.content-section {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 8%;
-}
-
 .content-block {
   margin: 40px 0;
 }
 
-.content-blocks {
-  display: flex;
-  flex-direction: column;
-  gap: 5rem;
-}
-
-.section-content-blocks {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.section-title {
-  font-size: 28px;
-}
-
 img {
   max-width: 100%;
+  width: 100%;
   height: auto;
-}
-
-h4.sub-title {
-  font-weight: 100;
 }
 
 a {
@@ -63,7 +45,11 @@ a {
   cursor: pointer;
 }
 
-.btn {
+button {
+  font-weight: 600;
+}
+
+.btn-project {
   padding: 10px 20px;
   border: none;
   font-weight: 700;
@@ -71,58 +57,8 @@ a {
   border-radius: 40px;
 }
 
-.btn:hover {
+.btn-project:hover {
   cursor: pointer;
-}
-
-p.text-indent {
-  text-indent: 20px;
-}
-
-.flex-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.p-block {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-@media (min-width: 320px) and (max-width: 768px) {
-  .section-title {
-    font-size: 20px;
-  }
-
-  .sub-title {
-    font-size: 16px;
-  }
-
-  .btn {
-    font-size: 12px;
-  }
-
-  p {
-    font-size: 14px;
-  }
-
-  .content-blocks {
-    gap: 3rem;
-  }
-
-  .mobile-section {
-    display: flex;
-    flex-direction: column;
-  }
-
-  #bg-tgreen {
-    border-radius: 50px 50px 0px 0px;
-  }
-  #bg-cgreen {
-    border-radius: 0px 0px 50px 50px;
-  }
 }
 
 .w-600 {
@@ -130,23 +66,11 @@ p.text-indent {
 }
 
 @media (min-width: 320px) and (max-width: 768px) {
-  .content-section {
-    padding: 0 4%;
-  }
-}
-
-@media (min-width: 768px) {
-  .grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    align-items: center;
-    gap: 10px;
+  .btn-project {
+    font-size: 12px;
   }
 
-  #bg-tgreen {
-    border-radius: 100px 100px 0px 0px;
-  }
-  #bg-cgreen {
-    border-radius: 0px 0px 100px 100px;
+  p {
+    font-size: 14px;
   }
 }

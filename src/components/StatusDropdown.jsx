@@ -75,7 +75,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
               return (
                 <div
                   key={col.id}
-                  className="dropdown-option"
+                  className="dropdown-option w-600"
                   role="menuitem"
                   tabIndex={0}
                   onClick={() => {
@@ -105,7 +105,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
 
   return (
     <>
-      <div className="custom-dropdown" ref={triggerRef}>
+      <div className="custom-dropdown w-600" ref={triggerRef}>
         <div
           className="dropdown-selected"
           onClick={() => setOpen((o) => !o)}

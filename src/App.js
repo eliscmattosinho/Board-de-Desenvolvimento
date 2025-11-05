@@ -3,21 +3,31 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Building from "./pages/Building";
 import Boards from "./pages/Boards";
 import NotFound from "./pages/NotFound";
+import ScreenBlockage from "./pages/ScreenBlockage";
 import RouteChangeTracker from "./components/RouteChangeTracker";
+import useScreenBlocker from "./hooks/useScreenBlocker";
+
+function AppContent() {
+  useScreenBlocker(480);
+
+  return (
+    <div id="main">
+      <Routes>
+        <Route path="/" element={<Building />} />
+        <Route path="/boards" element={<Boards />} />
+        <Route path="/block" element={<ScreenBlockage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </div>
+  );
+}
 
 function App() {
   return (
     <Router basename="/Board-de-Desenvolvimento">
       <RouteChangeTracker>
         <div className="App">
-          <div id="main">
-            <Routes>
-              <Route path="/" element={<Building />} />
-              <Route path="/boards" element={<Boards />} />
-
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+          <AppContent />
         </div>
       </RouteChangeTracker>
     </Router>

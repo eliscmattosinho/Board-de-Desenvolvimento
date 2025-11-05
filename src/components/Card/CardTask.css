@@ -183,17 +183,17 @@
     border: 1px solid #141414;
 }
 
-.btn-delete {
+button.btn-delete {
     background: #ff4c4c;
     color: #fefefe;
 }
 
-.btn-cancel {
+button.btn-cancel {
     background: #9b9b9b;
     color: #fefefe;
 }
 
-.btn-save {
+button.btn-save {
     background: #4caf50;
     color: #fefefe;
 }

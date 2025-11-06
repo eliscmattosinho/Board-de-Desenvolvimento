@@ -24,7 +24,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router basename="/Board-de-Desenvolvimento">
+    <Router basename="/development-board">
       <RouteChangeTracker>
         <div className="App">
           <AppContent />

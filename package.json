@@ -1,5 +1,5 @@
 {
-  "name": "board-de-desenvolvimento",
+  "name": "development-board",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -13,7 +13,7 @@
     "react-transition-group": "^4.4.5",
     "web-vitals": "^5.1.0"
   },
-  "homepage": "https://eliscmattosinho.github.io/Board-de-Desenvolvimento/",
+  "homepage": "https://eliscmattosinho.github.io/development-board/",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",

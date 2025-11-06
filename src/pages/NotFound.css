@@ -7,7 +7,7 @@
     font-size: clamp(28px, 4.5vw, 48px);
     margin-bottom: 15px;
 
-    background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
+    background: var(--btn-thematic-text);
     background-size: 60vw 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -28,16 +28,16 @@
 
 .go-back {
     display: inline-block;
-    color: #ccc;
+    color: #3366cc;
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 4px;
     text-shadow:
-        0 0 2px #ccc,
-        0 0 5px #bbb,
-        0 0 7px #aaa,
-        0 0 10px #999;
-    animation: neon-gray-wink 2s infinite alternate-reverse;
+        0 0 2px #66aaff,
+        0 0 5px #5599ee,
+        0 0 7px #4477cc,
+        0 0 10px #3355aa;
+    animation: neon-blue-wink 3s infinite backwards;
     transition: transform .5s ease;
 }
 
@@ -63,17 +63,21 @@
     }
 }
 
-@keyframes neon-gray-wink {
-    0% {
+@keyframes neon-blue-wink {
+    0%, 100% {
         text-shadow:
-            0 0 2px #eee,
-            0 0 5px #ddd,
-            0 0 7px #ccc;
-        color: #eee;
+            0 0 2px #66aaff,
+            0 0 5px #5599ee,
+            0 0 7px #4477cc,
+            0 0 10px #3355aa;
+        opacity: 1;
     }
-
-    100% {
-        text-shadow: none;
-        color: #555;
+    50% {
+        text-shadow:
+            0 0 1px #88bbff,
+            0 0 3px #77aaff,
+            0 0 5px #6699ee,
+            0 0 8px #5588dd;
+        opacity: 0.85;
     }
 }

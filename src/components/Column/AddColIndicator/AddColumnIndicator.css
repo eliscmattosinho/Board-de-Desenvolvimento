@@ -15,21 +15,18 @@
   pointer-events: auto;
   opacity: 0;
 
-  animation: fadeInZoom 0.25s ease forwards;
+  animation: fadeInZoom 0.3s ease-in-out forwards;
 }
 
 /* linhas */
 .col-line {
   position: absolute;
-  width: 1px;
+  width: 1.2px;
+  border-radius: 40px;
   top: 0;
   bottom: 0;
-  background-color: #2DA44A;
+  background-color: var(--global-green);
   opacity: 0.7;
-}
-
-.col-line.dark {
-  background-color: #efefef;
 }
 
 .col-line:first-child {
@@ -51,16 +48,8 @@
 /* ícone */
 .add-col-container>svg {
   position: relative;
-  color: #2DA44A;
+  color: var(--global-green);
   transition: color 0.3s ease-in-out;
-}
-
-.add-col-container.dark>svg {
-  color: #efefef;
-}
-
-.add-col-container.dark:hover>svg {
-  color: #c7c7c7;
 }
 
 @keyframes fadeInZoom {

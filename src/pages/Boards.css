@@ -7,22 +7,18 @@
 }
 
 .btn-board {
-    border: 1px solid #2DA44A;
+    border: 1px solid var(--global-green);
 }
 
 .btn-board:hover {
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--shadow);
 }
 
 .btn-board.active {
-    border: 2px solid #2DA44A;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border: 2px solid var(--btn-active);
+    box-shadow: var(--shadow);
 
     transition: all 0.3s ease-in-out;
-}
-
-.btn-board.dark.active {
-    background: #efefef;
 }
 
 .h3-board-page {
@@ -125,11 +121,6 @@
     text-align: center;
 }
 
-.kanban-item,
-.scrum-item {
-    color: #efefef;
-}
-
 .col-title-board {
     padding: 10px 20px;
     border-radius: 4px;
@@ -148,7 +139,7 @@
 .item {
     padding: 10px 15px;
     margin: 5px;
-    border: 1px solid #212121;
+    border: 1px solid var(--global-black);
     border-radius: 10px;
     width: 180px;
     height: auto;
@@ -157,13 +148,8 @@
 }
 
 .item:hover {
-    border: 1px solid #2DA44A;
-    box-shadow: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
-
-}
-
-.item.dark {
-    border: #efefef;
+    border: 1px solid var(--global-green);
+    box-shadow: var(--on-focus)
 }
 
 .item-title {
@@ -178,7 +164,7 @@ h3 .task-counter {
 
 .item-description {
     font-size: 0.9rem;
-    color: #848484;
+    color: var(--global-gray);
     margin-top: 4px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -189,7 +175,6 @@ h3 .task-counter {
 
 button.back-btn {
     border: none;
-
     transition: all 0.3s ease-in-out;
 }
 
@@ -204,10 +189,6 @@ button.back-btn svg {
 
 .item:hover {
     cursor: pointer;
-}
-
-.none {
-    display: none;
 }
 
 @media (min-width: 320px) and (max-width: 768px) {

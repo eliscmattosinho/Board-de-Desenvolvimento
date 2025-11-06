@@ -67,7 +67,6 @@
 .custom-dropdown .col-circle {
   background: var(--col-bg, transparent);
   border: 2px solid var(--col-border, transparent);
-  color: var(--col-font, transparent);
 }
 
 .col-title-flex {

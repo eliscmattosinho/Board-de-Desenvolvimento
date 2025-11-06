@@ -11,10 +11,14 @@ export default function useColumns(defaultKanban, defaultScrum) {
       const newColumn = {
         id: `col-${Date.now()}`,
         title: columnData?.title || "Nova Coluna",
-        color: columnData?.color || undefined,
+        color: columnData?.color || "#EFEFEF",
         applyTo: columnData?.applyTo || "fundo",
         description: columnData?.description || "",
         className: `${view}-column new`,
+        styleVars: {
+          bg: columnData?.applyTo === "fundo" ? columnData?.color || "#EFEFEF" : "transparent",
+          border: columnData?.applyTo === "borda" ? columnData?.color || "#CCCCCC" : "transparent",
+        },
       };
 
       const updatedView = [
@@ -32,17 +36,26 @@ export default function useColumns(defaultKanban, defaultScrum) {
       const updatedView = prev[view].map((col) =>
         col.id === id
           ? {
-              ...col,
-              title: newData.title ?? col.title,
-              description: newData.description ?? col.description,
-              color: newData.color ?? col.color,
-              applyTo: newData.applyTo ?? col.applyTo,
-            }
+            ...col,
+            title: newData.title ?? col.title,
+            description: newData.description ?? col.description,
+            color: newData.color ?? col.color,
+            applyTo: newData.applyTo ?? col.applyTo,
+            styleVars: {
+              bg: (newData.applyTo ?? col.applyTo) === "fundo"
+                ? newData.color ?? col.color
+                : col.styleVars?.bg ?? "transparent",
+              border: (newData.applyTo ?? col.applyTo) === "borda"
+                ? newData.color ?? col.color
+                : col.styleVars?.border ?? "transparent",
+            },
+          }
           : col
       );
       return { ...prev, [view]: updatedView };
     });
   };
+
 
   const removeColumn = (view, id) => {
     setColumns((prev) => {

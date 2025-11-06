@@ -71,7 +71,10 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
         >
           {columns.map((col) => {
             const key = col.className.split(" ")[1];
-            const styleVars = columnStyles[key] || { bg: "transparent", border: "transparent", color: "inherit" };
+            const styleVars = col.styleVars || columnStyles[key] || {
+              bg: "transparent",
+              border: "transparent",
+            };
             return (
               <div
                 key={col.id}
@@ -91,7 +94,6 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
                 style={{
                   "--col-bg": styleVars.bg,
                   "--col-border": styleVars.border,
-                  "--col-font": styleVars.font,
                 }}
               >
                 <span className="col-circle"></span>
@@ -116,11 +118,11 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
           <span
             className="col-circle"
             style={{
-              "--col-bg": colStyle.bg,
-              "--col-border": colStyle.border,
-              "--col-font": colStyle.font,
+              "--col-bg": currentCol?.styleVars?.bg || colStyle.bg,
+              "--col-border": currentCol?.styleVars?.border || colStyle.border,
             }}
           ></span>
+
           {currentCol?.title || "Selecione"}
           <IoIosArrowDown
             size={15}

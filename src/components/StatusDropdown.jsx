@@ -51,56 +51,57 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
 
   const currentCol = columns.find((c) => c.id === currentColumnId);
   const colKey = currentCol?.className?.split(" ")[1];
-  const colStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
+  const colStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent", color: "inherit" };
 
-    // Só renderiza o portal quando open e coords calculadas
+  // Só renderiza o portal quando open e coords calculadas
   const menu =
     open && coords
       ? createPortal(
-          <div
-            ref={menuRef}
-            className="dropdown-options-portal"
-            style={{
-              position: "absolute",
-              top: `${coords.top}px`,
-              left: `${coords.left}px`,
-              minWidth: `${coords.width}px`,
-              zIndex: 2000
-            }}
-            role="menu"
-          >
-            {columns.map((col) => {
-              const key = col.className.split(" ")[1];
-              const styleVars = columnStyles[key] || { bg: "transparent", border: "transparent" };
-              return (
-                <div
-                  key={col.id}
-                  className="dropdown-option w-600"
-                  role="menuitem"
-                  tabIndex={0}
-                  onClick={() => {
+        <div
+          ref={menuRef}
+          className="dropdown-options-portal"
+          style={{
+            position: "absolute",
+            top: `${coords.top}px`,
+            left: `${coords.left}px`,
+            minWidth: `${coords.width}px`,
+            zIndex: 2000
+          }}
+          role="menu"
+        >
+          {columns.map((col) => {
+            const key = col.className.split(" ")[1];
+            const styleVars = columnStyles[key] || { bg: "transparent", border: "transparent", color: "inherit" };
+            return (
+              <div
+                key={col.id}
+                className="dropdown-option w-600"
+                role="menuitem"
+                tabIndex={0}
+                onClick={() => {
+                  onSelect(col.id);
+                  setOpen(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
                     onSelect(col.id);
                     setOpen(false);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      onSelect(col.id);
-                      setOpen(false);
-                    }
-                  }}
-                  style={{
-                    "--col-bg": styleVars.bg,
-                    "--col-border": styleVars.border,
-                  }}
-                >
-                  <span className="col-circle"></span>
-                  {col.title}
-                </div>
-              );
-            })}
-          </div>,
-          document.body
-        )
+                  }
+                }}
+                style={{
+                  "--col-bg": styleVars.bg,
+                  "--col-border": styleVars.border,
+                  "--col-font": styleVars.font,
+                }}
+              >
+                <span className="col-circle"></span>
+                {col.title}
+              </div>
+            );
+          })}
+        </div>,
+        document.body
+      )
       : null;
 
   return (
@@ -117,6 +118,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
             style={{
               "--col-bg": colStyle.bg,
               "--col-border": colStyle.border,
+              "--col-font": colStyle.font,
             }}
           ></span>
           {currentCol?.title || "Selecione"}

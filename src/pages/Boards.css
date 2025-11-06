@@ -125,7 +125,6 @@
     text-align: center;
 }
 
-.col-title-board,
 .kanban-item,
 .scrum-item {
     color: #efefef;
@@ -158,8 +157,8 @@
 }
 
 .item:hover {
-  border: 1px solid #2DA44A;
-  box-shadow: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
+    border: 1px solid #2DA44A;
+    box-shadow: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
 
 }
 

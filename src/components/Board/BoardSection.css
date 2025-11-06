@@ -41,15 +41,16 @@
   justify-content: center;
   gap: 10px;
   font-weight: 500;
-  background: #2DA44Ab6;
-  color: #efefef;
+  border: 1px solid #2DA44A;
+  color: #2DA44A;
   border-radius: 6px;
   padding: 20px 0;
   min-width: 200px;
 }
 
 .col-add-last:hover {
-  background: #207736db;
+  background: #2DA44Ab6;
+  color: #efefef;
   transition: background-color 0.3s ease-in-out;
 }
 

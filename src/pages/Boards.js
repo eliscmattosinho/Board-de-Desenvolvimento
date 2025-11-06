@@ -87,25 +87,25 @@ function Boards() {
           <button onClick={() => navigate("/")} className="back-btn">
             <FaArrowCircleLeft />
           </button>
-          <button className="btn-project new-board">Novo board</button>
+          <button className="btn btn-thematic new-board">Novo board</button>
         </div>
 
         <div className="first-section-board">
           <div className="text-content-intro">
             <div className="titles-content">
-              <h2 className="h2-board-page">Board de desenvolvimento</h2>
-              <h3 className="h3-board-page">Escolha sua opção de visualização.</h3>
+              <h2 className="title-thematic h2-board-page">Board de desenvolvimento</h2>
+              <h3 className="h3-board-page">Escolha seu board de visualização.</h3>
             </div>
             <BoardControls activeView={activeView} setActiveView={setActiveView} />
           </div>
-          <div className="img-block">
+          <div className="img-block img-panel">
             <img src={svgBoard} alt="Ilustração de board" />
           </div>
         </div>
 
         <div className="second-section-board">
           <div className="board-title-container">
-            <h3 id="h3-title">
+            <h3 id="h3-title" className="title-thematic">
               {activeView === "kanban" ? "Kanban" : "Scrum"}
               <span className="task-counter">({tasks.length})</span>
             </h3>

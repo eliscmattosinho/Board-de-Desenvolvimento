@@ -10,7 +10,7 @@ function Building() {
       <div id="content-block">
         <div className="block-intro">
           <h2>Ops...</h2>
-          <div className="builder">
+          <div className="img-block">
             <img src={builder} alt="Woman builder climbing the stairs" />
           </div>
         </div>
@@ -19,7 +19,7 @@ function Building() {
             Bem-vindo(a)! Fico feliz de te encontrar aqui, mas você chegou um pouco cedo. Gostaria de ver o status atual do projeto?
           </p>
 
-          <button id="p-state" className="btn-p-state w-600" onClick={() => navigate("/boards")}>
+          <button id="p-state" className="btn btn-thematic w-600" onClick={() => navigate("/boards")}>
             Acessar board
           </button>
 

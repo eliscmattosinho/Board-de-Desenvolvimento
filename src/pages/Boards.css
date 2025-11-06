@@ -2,22 +2,8 @@
     font-size: 30px;
 }
 
-.h2-board-page,
-#h3-title {
-    background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
 .task-counter {
     background-color: transparent;
-}
-
-p.btn-title {
-    background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .btn-board.active {
@@ -42,18 +28,8 @@ p.btn-title {
     grid-template-columns: 3fr 4fr;
 }
 
-.img-block {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.img-block img {
+.img-panel img {
     width: 70%;
-}
-
-.btn-project {
-    border: 1px solid #efefef;
 }
 
 .btns-block {
@@ -203,4 +179,14 @@ button.back-btn svg {
 
 .none {
     display: none;
+}
+
+@media (min-width: 320px) and (max-width: 768px) {
+    .first-section-board {
+        display: flex;
+    }
+
+    .img-panel {
+        display: none;
+    }
 }

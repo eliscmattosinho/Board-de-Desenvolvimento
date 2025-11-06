@@ -39,22 +39,52 @@ img {
   height: auto;
 }
 
+.img-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 a {
   text-decoration: none;
   color: #efefef;
   cursor: pointer;
 }
 
-button {
+.btn {
   font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 40px;
+
+  transition: transform 0.3s ease-in-out;
+}
+
+.btn:hover {
+  transform: scale(1.05);
 }
 
 .btn-project {
-  padding: 10px 20px;
-  border: none;
+  border: 1px solid #efefef;
   font-weight: 700;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 40px;
+}
+
+.title-thematic {
+  background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn-thematic {
+  border: 1px solid #efefef;
+  cursor: pointer;
+
+  background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
 }
 
 .btn-project:hover {
@@ -63,6 +93,15 @@ button {
 
 .w-600 {
   font-weight: 600;
+}
+
+/* vertical center */
+.center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 @media (min-width: 320px) and (max-width: 768px) {

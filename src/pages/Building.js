@@ -6,7 +6,7 @@ function Building() {
   const navigate = useNavigate();
 
   return (
-    <div className="block center building-page">
+    <div className="block building-page">
       <div id="content-block">
         <div className="block-intro">
           <h2>Ops...</h2>

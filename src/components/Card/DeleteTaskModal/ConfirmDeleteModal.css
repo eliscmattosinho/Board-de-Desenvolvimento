@@ -30,7 +30,7 @@
 
 .confirm-modal-content p {
     max-width: 300px;
-    color: #151515;
+    color: #212121;
 }
 
 .confirm-modal-actions {
@@ -50,7 +50,7 @@
 
 .btn-cancel {
     background: #ccc;
-    color: #141414;
+    color: #212121;
     padding: 8px 16px;
     border-radius: 8px;
     border: none;

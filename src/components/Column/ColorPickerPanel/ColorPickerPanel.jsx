@@ -133,7 +133,7 @@ export default function ColorPickerPanel({ color, setColor, applyTo, setApplyTo,
             )}
 
             <div className="picker-swatches">
-                {["#141414", "#2C7FA3", "#3DD6B3", "#2DD44A", "#008000", "#EFEFEF"].map(
+                {["#212121", "#2C7FA3", "#3DD6B3", "#2DD44A", "#008000", "#EFEFEF"].map(
                     (c) => (
                         <div
                             key={c}

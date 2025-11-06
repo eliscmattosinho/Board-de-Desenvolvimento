@@ -84,7 +84,7 @@ function Boards() {
     <div className="content-block">
       <div id="general-content" className="content">
         <div className="btn-container back-button">
-          <button onClick={() => navigate("/")} className="back-btn">
+          <button onClick={() => navigate("/")} className="board-icon back-btn">
             <FaArrowCircleLeft />
           </button>
           <button className="btn btn-thematic light new-board">Novo board</button>

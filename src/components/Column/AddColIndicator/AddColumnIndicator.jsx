@@ -6,7 +6,7 @@ function AddColumnIndicator({ onClick }) {
   return (
     <div className="add-col-container" onClick={onClick}>
       <span className="col-line"></span>
-      <CiCirclePlus className="add-col" size={30} />
+      <CiCirclePlus className="board-icon add-col" size={30} />
       <span className="col-line"></span>
     </div>
   );

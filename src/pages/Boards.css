@@ -141,17 +141,26 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 5px;
     overflow-y: auto;
     padding-right: 5px;
 }
 
 .item {
-    padding: 10px 20px;
-    border: 1px solid #151515;
+    padding: 10px 15px;
+    margin: 5px;
+    border: 1px solid #212121;
     border-radius: 10px;
     width: 180px;
     height: auto;
+
+    transition: all 0.5s ease-in-out;
+}
+
+.item:hover {
+  border: 1px solid #2DA44A;
+  box-shadow: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
+
 }
 
 .item.dark {
@@ -181,10 +190,12 @@ h3 .task-counter {
 
 button.back-btn {
     border: none;
+
+    transition: all 0.3s ease-in-out;
 }
 
 button.back-btn:hover {
-    cursor: pointer;
+    transform: scale(1.1);
 }
 
 button.back-btn svg {

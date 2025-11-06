@@ -34,10 +34,6 @@
   display: flex;
 }
 
-.col-add-last * {
-  background: none;
-}
-
 .col-add-last {
   display: flex;
   flex-direction: column;
@@ -45,14 +41,15 @@
   justify-content: center;
   gap: 10px;
   font-weight: 500;
-  background: rgba(68, 68, 68, 0.512);
+  background: #2DA44Ab6;
+  color: #efefef;
   border-radius: 6px;
   padding: 20px 0;
   min-width: 200px;
 }
 
 .col-add-last:hover {
-  background: rgba(68, 68, 68, 0.712);
+  background: #207736db;
   transition: background-color 0.3s ease-in-out;
 }
 

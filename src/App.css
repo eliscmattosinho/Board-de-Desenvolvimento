@@ -10,7 +10,7 @@
 
 body {
   background-color: #efefef;
-  color: #151515;
+  color: #212121;
   letter-spacing: 0.5px;
   line-height: 1.6;
   font-size: 16px;
@@ -48,6 +48,10 @@ img {
 a {
   text-decoration: none;
   color: #efefef;
+  cursor: pointer;
+}
+
+button {
   cursor: pointer;
 }
 
@@ -89,21 +93,21 @@ a {
   border: 1px solid #2DA44A;
 }
 
+
+.btn-thematic:hover {
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
 .btn-project:hover {
   cursor: pointer;
 }
 
-.w-600 {
-  font-weight: 600;
+.board-icon {
+    color: #2DA44A;
 }
 
-/* vertical center */
-.center {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+.w-600 {
+  font-weight: 600;
 }
 
 @media (min-width: 320px) and (max-width: 768px) {

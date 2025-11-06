@@ -126,7 +126,10 @@ function Column({
 
       {onAddTask && (
         <div className="add-task" onClick={() => onAddTask(id)}>
-          <CiCirclePlus size={30} />
+          <CiCirclePlus
+            size={30}
+            className="board-icon"
+          />
         </div>
       )}
 

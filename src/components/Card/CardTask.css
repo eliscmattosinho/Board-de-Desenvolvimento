@@ -15,7 +15,7 @@
 
 .modal * {
     background-color: #fefefe;
-    color: #141414;
+    color: #212121;
 }
 
 .info-content {
@@ -94,7 +94,7 @@
 
 .dropdown-selected {
     padding: 5px;
-    color: #141414;
+    color: #212121;
     font-size: 14px;
     border: 1px solid #9b9b9b;
     border-radius: 6px;
@@ -111,7 +111,7 @@
 }
 
 .dropdown-selected svg path {
-    color: #141414;
+    color: #212121;
 }
 
 .dropdown-icon {
@@ -143,14 +143,14 @@
 
 .dropdown-option {
     background-color: #fefefe;
-    color: #141414;
+    color: #212121;
     padding: 8px 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .dropdown-option:hover {
-    background-color: #141414;
+    background-color: #212121;
     color: #fefefe;
 }
 
@@ -172,7 +172,7 @@
 }
 
 .btn-edit {
-    border: 1px solid #141414;
+    border: 1px solid #212121;
 }
 
 button.btn-delete {
@@ -278,9 +278,9 @@ button[data-tooltip]:hover::before {
 }
 
 .input:focus {
-    border-color: #555;
+    border: 1px solid #2DA44A;
     outline: none;
-    box-shadow: 0 0 5px rgba(85, 85, 85, 0.5);
+    box-shadow: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
 }
 
 /* Prevent textarea from exceeding parent width */
@@ -293,8 +293,11 @@ button[data-tooltip]:hover::before {
 
 .card-content-wrapper {
     position: relative;
-    overflow: hidden;
     transition: height 0.4s ease;
+}
+
+.card-content-wrapper.is-animating {
+  overflow: hidden;
 }
 
 .content-inner {

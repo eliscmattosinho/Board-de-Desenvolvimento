@@ -5,17 +5,19 @@
   width: 100%;
   padding: 6px;
   border-radius: 8px;
+  border: transparent;
+
   transition: all 0.3s ease-in-out;
 }
 
-.add-task svg {
-  background: none;
+.add-task:hover {
+  background-color: #2DA44Ab6;
+  border: 1px solid #2DA44A3e;
+  cursor: pointer;
 }
 
-.add-task:hover {
-  background-color: #aaaaaa3e;
-  border: 1px solid #151515;
-  cursor: pointer;
+.add-task:hover * {
+  color: #efefef;
 }
 
 .add-task.dark:hover {

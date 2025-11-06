@@ -1,5 +1,5 @@
 .building-page {
-    background-color: #2da44a;
+    background-color: #2da44ab3;
     color: #efefef;
     min-height: 100vh;
     width: 100%;
@@ -73,7 +73,7 @@ h2 {
 }
 
 #sub-link:hover {
-    color: #bababa;
+    color: #212121;
     transition: .3s;
 }
 

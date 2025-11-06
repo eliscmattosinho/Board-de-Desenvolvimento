@@ -5,7 +5,7 @@
   width: 100%;
   padding: 6px;
   border-radius: 8px;
-  transition: background-color 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .add-task svg {
@@ -14,9 +14,14 @@
 
 .add-task:hover {
   background-color: #aaaaaa3e;
-  border: 1px solid #efefef;
+  border: 1px solid #151515;
   cursor: pointer;
 }
+
+.add-task.dark:hover {
+  border: #efefef;
+}
+
 
 .task-placeholder {
   height: 0;

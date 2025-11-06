@@ -33,8 +33,12 @@
   width: 1px;
   top: 0;
   bottom: 0;
-  background-color: #efefef;
+  background-color: #151515;
   opacity: 0.7;
+}
+
+.col-line.dark {
+  background-color: #efefef;
 }
 
 .col-line:first-child {
@@ -57,11 +61,19 @@
 .add-col-container>svg {
   position: relative;
   z-index: 1000;
-  color: #efefef;
+  color: #151515;
   transition: color 0.2s ease;
 }
 
+.add-col-container.dark>svg {
+  color: #efefef;
+}
+
 .add-col-container:hover>svg {
+  color: #3c3c3c;
+}
+
+.add-col-container.dark:hover>svg {
   color: #c7c7c7;
 }
 

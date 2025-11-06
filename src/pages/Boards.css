@@ -6,8 +6,23 @@
     background-color: transparent;
 }
 
-.btn-board.active {
+.btn-board {
+    border: 1px solid #2DA44A;
+}
+
+.btn-board.dark.active {
     background: #efefef;
+}
+
+.btn-board.light.active {
+    border: 2px solid #2DA44A;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-board:hover {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .h3-board-page {
@@ -133,10 +148,14 @@
 
 .item {
     padding: 10px 20px;
-    border: 1px solid #efefef;
+    border: 1px solid #151515;
     border-radius: 10px;
     width: 180px;
     height: auto;
+}
+
+.item.dark {
+    border: #efefef;
 }
 
 .item-title {

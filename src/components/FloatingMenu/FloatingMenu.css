@@ -23,7 +23,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background-color: #efefef;
+    background-color: #151515;
     border-radius: 10px;
     padding: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -38,15 +38,15 @@
     left: -6px;
     width: 12px;
     height: 12px;
-    background-color: #efefef;
+    background-color: #151515;
     transform: rotate(45deg);
     z-index: -1;
 }
 
 .menu-item {
-    background-color: #efefef;
-    border: 1px solid #2f2f2f;
-    color: #141414;
+    background-color: #151515;
+    border: 1px solid #c6c6c6;
+    color: #efefef;
     font-weight: 500;
     padding: 8px 12px;
     border-radius: 6px;
@@ -60,7 +60,13 @@
 }
 
 .menu-item:hover {
-    background: #141414;
+    background: #efefef;
+    color: #151515;
+    transform: none;
+}
+
+.menu-item.dark:hover {
+    background: #151515;
     color: #efefef;
     transform: none;
 }

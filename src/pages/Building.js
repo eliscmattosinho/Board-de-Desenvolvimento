@@ -6,7 +6,7 @@ function Building() {
   const navigate = useNavigate();
 
   return (
-    <div className="block center">
+    <div className="block center building-page">
       <div id="content-block">
         <div className="block-intro">
           <h2>Ops...</h2>
@@ -19,8 +19,8 @@ function Building() {
             Bem-vindo(a)! Fico feliz de te encontrar aqui, mas você chegou um pouco cedo. Gostaria de ver o status atual do projeto?
           </p>
 
-          <button id="p-state" className="btn btn-thematic w-600" onClick={() => navigate("/boards")}>
-            Acessar board
+          <button id="p-state" className="btn btn-building light w-600" onClick={() => navigate("/boards")}>
+            <span>Acessar board</span>
           </button>
 
           <a id="sub-link" href="https://eliscmattosinho.github.io/Skeelo-Skoob-Epics/" target="_blank" rel="noopener noreferrer">projeto original</a>

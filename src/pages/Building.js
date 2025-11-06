@@ -19,7 +19,7 @@ function Building() {
             Bem-vindo(a)! Fico feliz de te encontrar aqui, mas você chegou um pouco cedo. Gostaria de ver o status atual do projeto?
           </p>
 
-          <button id="p-state" className="btn btn-building light w-600" onClick={() => navigate("/boards")}>
+          <button id="p-state" className="btn btn-building w-600" onClick={() => navigate("/boards")}>
             <span>Acessar board</span>
           </button>
 

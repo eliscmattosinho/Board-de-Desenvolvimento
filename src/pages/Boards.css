@@ -10,19 +10,19 @@
     border: 1px solid #2DA44A;
 }
 
-.btn-board.dark.active {
-    background: #efefef;
+.btn-board:hover {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
-.btn-board.light.active {
+.btn-board.active {
     border: 2px solid #2DA44A;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
     transition: all 0.3s ease-in-out;
 }
 
-.btn-board:hover {
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+.btn-board.dark.active {
+    background: #efefef;
 }
 
 .h3-board-page {

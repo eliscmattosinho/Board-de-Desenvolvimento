@@ -43,14 +43,14 @@ function FloatingMenu({ onAddTask, onAddColumn }) {
 
             {open && (
                 <div
-                    className="floating-menu light"
+                    className="floating-menu"
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    <button className="menu-item light" onClick={onAddTask}>
+                    <button className="menu-item" onClick={onAddTask}>
                         Adicionar tarefa
                     </button>
-                    <button className="menu-item light" onClick={onAddColumn}>
+                    <button className="menu-item" onClick={onAddColumn}>
                         Adicionar coluna
                     </button>
                 </div>

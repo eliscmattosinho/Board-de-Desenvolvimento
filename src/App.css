@@ -79,7 +79,7 @@ button {
 }
 
 .btn-thematic {
-  border: 1px solid #efefef;
+  border: 1px solid #2DA44A;
   cursor: pointer;
 
   background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
@@ -88,11 +88,6 @@ button {
     background-clip: text;
     text-fill-color: transparent;
 }
-
-.btn-thematic.light {
-  border: 1px solid #2DA44A;
-}
-
 
 .btn-thematic:hover {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);

@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkboard_de_desenvolvimento=self.webpackChunkboard_de_desenvolvimento||[]).push([[488],{488:(e,n,s)=>{new WeakMap;new Set}}]);
-//# sourceMappingURL=488.b384d15e.chunk.js.map

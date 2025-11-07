@@ -1,15 +1,11 @@
-.color-picker-panel * {
-    background: none;
-}
-
 .color-picker-panel {
     position: absolute;
-    background: #1e1e1e;
-    color: #fff;
+    background: var(--global-black);
+    color: var(--global-white);
     border-radius: 12px;
     padding: 12px;
     width: 220px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--item-shadow);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -18,14 +14,15 @@
 
 .picker-label {
     font-size: 0.8rem;
-    color: #bbb;
+    color: var(--global-gray);
+    font-weight: 500;
     pointer-events: none;
 }
 
 .picker-hex-input {
-    background: #2b2b2b;
-    color: #fff;
-    border: 1px solid #444;
+    background: var(--hover-gray);
+    color: var(--global-white);
+    border: 1px solid var(--global-gray);
     border-radius: 6px;
     padding: 6px 8px;
     font-family: monospace;
@@ -44,11 +41,11 @@
     height: 22px;
     border-radius: 6px;
     cursor: pointer;
-    border: 1px solid #444;
+    border: 1px solid var(--global-gray);
 }
 
 .swatch:hover {
-    transform: scale(1.05);
+    transform: scale(1.2);
 }
 
 .picker-checkboxes {
@@ -66,24 +63,19 @@
 }
 
 .picker-save-btn {
-    background: #199354;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-weight: bold;
+    background: var(--global-green);
+    color: var(--global-white);
     transform: none;
 }
 
 .picker-save-btn:hover {
-    background: #025e2e;
+    background: var(--green-hover);
 }
 
 .col-label {
     display: flex;
     align-items: center;
-    color: #efefef;
+    color: var(--global-white);
     user-select: none;
 }
 
@@ -94,11 +86,11 @@
 
 .picker-drag-handle {
     height: 20px;
-    background: #333;
+    background: var(--global-black);
     border-radius: 6px;
     text-align: center;
     font-size: 0.75rem;
-    color: #fff;
+    color: var(--global-white);
     user-select: none;
 }
 
@@ -118,7 +110,7 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    color: #555;
+    color: var(--global-gray);
     transition: transform 0.2s ease, color 0.2s ease;
     padding: 2px;
     display: inline-block;
@@ -127,20 +119,19 @@
 
 .picker-mode-toggle:active {
     transform: rotate(180deg);
-    color: #000;
+    color: var(--global-black);
 }
 
 .color-picker-panel .react-colorful__pointer {
     width: 18px;
     height: 18px;
     border-width: 2px;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--item-shadow);
 }
 
 input[type="radio"] {
-    accent-color: #2DD44A;
+    accent-color: var(--global-green);
     transition: all 0.2s ease-in-out;
-
 }
 
 input[type="radio"]:hover {

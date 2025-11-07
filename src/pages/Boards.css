@@ -11,12 +11,12 @@
 }
 
 .btn-board:hover {
-    box-shadow: var(--shadow);
+    box-shadow: var(--item-shadow);
 }
 
 .btn-board.active {
     border: 2px solid var(--btn-active);
-    box-shadow: var(--shadow);
+    box-shadow: var(--item-shadow);
 
     transition: all 0.3s ease-in-out;
 }

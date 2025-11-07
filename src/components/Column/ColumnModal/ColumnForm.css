@@ -1,12 +1,12 @@
 .modal-content * {
   background: none;
-  color: #212121;
+  color: var(--global-black);
 }
 
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--modal-overlay);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,12 +14,11 @@
 }
 
 .modal-content {
-  background: #fff;
+  background: var(--global-white);
   border-radius: 12px;
   padding: 24px;
   width: 400px;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .modal-content,
@@ -29,14 +28,12 @@
   gap: 1rem;
 }
 
-.modal-close {
+.btn-close {
   position: absolute;
   top: 10px;
   right: 10px;
-  border: none;
   background: transparent;
   font-size: 1.2rem;
-  cursor: pointer;
 }
 
 .color-input-wrapper {
@@ -51,7 +48,7 @@
   height: 30px;
   border-radius: 50%;
   box-sizing: border-box;
-  border: 3px solid #ccc;
+  border: 3px solid var(--global-gray);
   cursor: pointer;
   display: block;
   flex-shrink: 0;
@@ -61,20 +58,10 @@ label {
   font-size: 14px;
 }
 
-.modal-close svg path {
-  color: #ff0000;
-}
-
 .col-title-block,
 .col-color-block,
 .col-description-block {
   display: flex;
   flex-direction: column;
   gap: 3px;
-}
-
-.btn-save {
-  width: fit-content;
-  background: #4caf50;
-  color: #fefefe;
 }

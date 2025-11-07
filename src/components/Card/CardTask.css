@@ -9,13 +9,13 @@
     justify-content: center;
     align-items: center;
 
-    background: rgba(0, 0, 0, 0.808);
+    background: var(--modal-overlay);
     z-index: 1000;
 }
 
 .modal * {
-    background-color: #fefefe;
-    color: #212121;
+    background-color: var(--global-white);
+    color: var(--global-black);
 }
 
 .info-content {
@@ -33,7 +33,7 @@
     flex-direction: column;
     gap: 1rem;
 
-    box-shadow: 6px 6px 12px rgb(35, 35, 35);
+    box-shadow: var(--modal-shadow);
     border-radius: 8px;
     position: relative;
     width: 350px;
@@ -53,28 +53,23 @@
 .modal-content span {
     margin-left: 5px;
     font-size: 16px;
-    color: #8c8c8c;
+    color: var(--global-gray);
 }
 
-.modal-close {
+.btn-close {
     position: absolute;
     top: 10px;
     right: 10px;
     background: transparent;
     border: none;
-    cursor: pointer;
 }
 
-.modal-close {
+.btn-close {
     transition: transform 0.3s ease-in-out;
 }
 
-.modal-close:hover {
+.btn-close:hover {
     transform: scale(1.1);
-}
-
-.modal svg path {
-    color: #ff0000;
 }
 
 /* Status label */
@@ -94,11 +89,11 @@
 
 .dropdown-selected {
     padding: 5px;
-    color: #212121;
+    color: var(--global-black);
     font-size: 14px;
-    border: 1px solid #9b9b9b;
+    border: 1px solid var(--global-gray);
     border-radius: 6px;
-    background: #fefefe;
+    background: var(--global-white);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -107,11 +102,11 @@
 }
 
 .dropdown-selected:hover {
-    border-color: #555;
+    box-shadow: var(--on-focus);
 }
 
 .dropdown-selected svg path {
-    color: #212121;
+    color: var(--global-black);
 }
 
 .dropdown-icon {
@@ -130,11 +125,11 @@
     left: 0;
     width: 100%;
     min-width: max-content;
-    border: 1px solid #9b9b9b;
+    border: 1px solid var(--global-gray);
     border-radius: 6px;
-    background-color: #efefef;
+    background-color: var(--global-white);
     margin-top: 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--item-shadow);
     z-index: 10;
     max-height: 200px;
     overflow-y: auto;
@@ -142,16 +137,17 @@
 }
 
 .dropdown-option {
-    background-color: #fefefe;
-    color: #212121;
+    background-color: var(--global-white);
+    color: var(--global-black);
     padding: 8px 10px;
     cursor: pointer;
+
     transition: background-color 0.3s ease;
 }
 
 .dropdown-option:hover {
-    background-color: #212121;
-    color: #fefefe;
+    background-color: var(--global-black);
+    color: var(--global-white);
 }
 
 .modal-actions {
@@ -160,43 +156,16 @@
     padding-top: 20px;
 }
 
-.modal-btn {
-    border: none;
-    border-radius: 6px;
-    padding: 10px 15px;
-}
-
-.modal-btn:hover {
-    cursor: pointer;
-    transition: transform 0.3s ease-in-out;
-}
-
-.btn-edit {
-    border: 1px solid #212121;
-}
-
-button.btn-delete {
-    background: #ff4c4c;
-    color: #fefefe;
-}
-
-button.btn-cancel {
-    background: #9b9b9b;
-    color: #fefefe;
-}
-
-button.btn-save {
-    background: #4caf50;
-    color: #fefefe;
+button.btn-edit {
+    border: 1px solid var(--global-black);
 }
 
 /* Base do botão com tooltip */
 button[data-tooltip] {
     position: relative;
-    cursor: pointer;
 }
 
-button.modal-close {
+button.btn-close {
     position: absolute;
 }
 
@@ -207,8 +176,8 @@ button[data-tooltip]::after {
     top: 115%;
     left: 100%;
     transform: translateX(-50%);
-    background: rgba(20, 20, 20, 0.85);
-    color: #efefef;
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
     padding: 6px 10px;
     border-radius: 6px;
     font-size: 12px;
@@ -231,7 +200,7 @@ button[data-tooltip]::before {
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-bottom: 6px solid rgba(0, 0, 0, 0.85);
+    border-bottom: 6px solid var(--tooltip-bg);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s;
@@ -333,7 +302,7 @@ button[data-tooltip]:hover::before {
     border-radius: 6px;
     background-color: var(--bg-color);
     margin-top: 4px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--item-shadow);
     max-height: 200px;
     overflow-y: auto;
     font-size: 14px;

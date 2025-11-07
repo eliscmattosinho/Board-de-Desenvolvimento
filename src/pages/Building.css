@@ -13,15 +13,9 @@
     display: inline-block;
     background: var(--global-white);
     border: 1px solid var(--global-black);
-    border-radius: 40px;
-    cursor: pointer;
     font-size: 16px;
-    font-weight: 600;
-    padding: 10px 20px;
-    text-decoration: none;
     transition: transform .3s ease-in-out;
     z-index: 0;
-    overflow: hidden;
 }
 
 .btn-building span {
@@ -67,11 +61,12 @@ h2 {
     margin-top: -20px;
     color: var(--global-white);
     font-weight: 500;
+
+    transition: color .3s ease-in-out;
 }
 
 #sub-link:hover {
     color: var(--global-black);
-    transition: .3s ease-in-out;
 }
 
 @media (min-width: 768px) {

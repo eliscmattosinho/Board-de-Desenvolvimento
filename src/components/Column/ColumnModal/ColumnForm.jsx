@@ -27,7 +27,7 @@ export default function ColumnForm({ onClose, onSave, columnData }) {
             <div className="modal-content column-create" onClick={() => showPicker && setShowPicker(false)}>
                 <button
                     type="button"
-                    className="modal-close"
+                    className="btn-close"
                     data-tooltip={"A coluna não será salva"}
                     onClick={onClose}
                 >

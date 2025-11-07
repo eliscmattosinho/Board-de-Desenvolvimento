@@ -161,7 +161,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
 
         <button
           type="button"
-          className="modal-close"
+          className="btn-close"
           onClick={handleClose}
           data-tooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >

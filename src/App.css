@@ -12,6 +12,7 @@
 
   --global-white: #efefef;
   --global-gray: #9b9b9b;
+  --hover-gray: #666666;
 
   --global-red: #d73a49;
   --hover-red: #ae2432;
@@ -29,7 +30,13 @@
   --btn-active: var(--global-green);
   --btn-border: var(--global-green);
 
-  --shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  --tooltip-bg: rgba(33, 33, 33, 0.851);
+  --tooltip-text: var(--global-white);
+
+  --modal-shadow: 6px 6px 12px rgb(35, 35, 35);
+  --modal-overlay: rgba(33, 33, 33, 0.702);
+
+  --item-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   --on-focus: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
   --btn-thematic-text: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
 }
@@ -111,6 +118,52 @@ button {
   transform: scale(1.05);
 }
 
+.modal-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.modal-btn:hover {
+    cursor: pointer;
+}
+
+.btn-save {
+  width: fit-content;
+  background: var(--global-green);
+  color: var(--global-white);
+}
+
+.btn-save:hover {
+  background: var(--hover-green);
+}
+
+.btn-close svg path {
+  color: var(--global-red);
+}
+
+button.btn-delete {
+  background: var(--global-red);
+  color: var(--global-white);
+}
+
+.btn-delete:hover {
+  background: var(--hover-red);
+}
+
+button.btn-cancel {
+  background: var(--global-gray);
+  color: var(--global-white);
+
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-cancel:hover {
+  background: var(--hover-gray);
+}
+
 .modal-btn,
 .btn-project {
   font-weight: 600;
@@ -134,7 +187,7 @@ button {
 }
 
 .btn-thematic:hover {
-  box-shadow: var(--shadow);
+  box-shadow: var(--item-shadow);
 }
 
 .board-icon {

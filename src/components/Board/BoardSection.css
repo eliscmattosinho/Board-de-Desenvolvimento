@@ -34,10 +34,6 @@
   display: flex;
 }
 
-.col-add-last * {
-  background: none;
-}
-
 .col-add-last {
   display: flex;
   flex-direction: column;
@@ -45,15 +41,27 @@
   justify-content: center;
   gap: 10px;
   font-weight: 500;
-  background: rgba(68, 68, 68, 0.512);
+  border: 1px solid var(--global-green);
+  color: var(--global-green);
   border-radius: 6px;
   padding: 20px 0;
   min-width: 200px;
+
+  transition: all 0.3s ease-in-out;
 }
 
 .col-add-last:hover {
-  background: rgba(68, 68, 68, 0.712);
-  transition: background-color 0.3s ease-in-out;
+  background: var(--hover-green);
+  color: var(--hover-text-color);
+}
+
+.dark .col-add-last {
+  border: 1px solid var(--global-white);
+  color: var(--global-white);
+}
+
+.dark .col-add-last:hover {
+  background-color: none;
 }
 
 .add-col:hover {

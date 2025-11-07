@@ -1,3 +1,56 @@
+:root {
+  /* Global colors */
+  --global-green: #2DA44A;
+  --hover-green: #217b37;
+  --light-green: rgba(45, 164, 74, 0.702);
+
+  --global-blue: #3DD6B3;
+  --global-dark-blue: #2C7FA3;
+
+  --global-black: #212121;
+
+  --global-white: #efefef;
+  --global-gray: #9b9b9b;
+  --hover-gray: #666666;
+
+  --global-red: #d73a49;
+  --hover-red: #ae2432;
+
+  /* Thematic & general */
+  --bg-color: var(--global-white);
+  --text-color: var(--global-black);
+  --hover-text-color: var(--global-white);
+  --bg-component: var(--global-green);
+  --hover-component: var(--global-white);
+
+  --btn-bg: transparent;
+  --btn-disabled: #c4c4c4;
+  --btn-disabled-text: #666;
+  --btn-active: var(--global-green);
+  --btn-border: var(--global-green);
+
+  --tooltip-bg: rgba(33, 33, 33, 0.851);
+  --tooltip-text: var(--global-white);
+
+  --modal-shadow: 6px 6px 12px rgb(35, 35, 35);
+  --modal-overlay: rgba(33, 33, 33, 0.702);
+
+  --item-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  --on-focus: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
+  --btn-thematic-text: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
+}
+
+/* Dark mode vars */
+.dark {
+  --bg-color: #212121;
+  --bg-component: var(--global-white);
+  --text-color: var(--global-white);
+  --btn-bg: var(--global-white);
+
+  --item-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+  --modal-shadow: 0px 8px 16px rgba(0, 0, 0, 0.6);
+}
+
 /* Estilos globais */
 * {
   box-sizing: border-box;
@@ -9,8 +62,8 @@
 }
 
 body {
-  background-color: #efefef;
-  color: #151515;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   letter-spacing: 0.5px;
   line-height: 1.6;
   font-size: 16px;
@@ -40,14 +93,18 @@ img {
 }
 
 .img-block {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 a {
   text-decoration: none;
-  color: #efefef;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+button {
   cursor: pointer;
 }
 
@@ -63,45 +120,92 @@ a {
   transform: scale(1.05);
 }
 
-.btn-project {
-  border: 1px solid #efefef;
-  font-weight: 700;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+.modal-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+
+  transition: all 0.3s ease-in-out;
 }
 
-.title-thematic {
-  background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.modal-btn:hover {
+  cursor: pointer;
+}
+
+.btn-save {
+  width: fit-content;
+  background: var(--global-green);
+  color: var(--global-white);
+}
+
+.btn-save:hover {
+  background: var(--hover-green);
+}
+
+.btn-close svg path {
+  color: var(--global-red);
+}
+
+button.btn-delete {
+  background: var(--global-red);
+  color: var(--global-white);
+}
+
+.btn-delete:hover {
+  background: var(--hover-red);
+}
+
+button.btn-cancel {
+  background: var(--global-gray);
+  color: var(--global-white);
+
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-cancel:hover {
+  background: var(--hover-gray);
+}
+
+.modal-btn,
+.btn-project {
+  font-weight: 600;
+}
+
+.title-thematic,
+.btn-thematic {
+  background: var(--btn-thematic-text);
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+
+  cursor: pointer;
+  font-weight: 700;
 }
 
 .btn-thematic {
-  border: 1px solid #efefef;
-  cursor: pointer;
-
-  background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
+  border: 1px solid var(--btn-border);
 }
 
-.btn-project:hover {
-  cursor: pointer;
+.btn-thematic:hover {
+  box-shadow: var(--item-shadow);
+}
+
+.board-icon {
+  color: var(--global-green);
+}
+
+.dark .board-icon {
+  color: var(--global-white);
 }
 
 .w-600 {
   font-weight: 600;
 }
 
-/* vertical center */
-.center {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+.none {
+  display: none;
 }
 
 @media (min-width: 320px) and (max-width: 768px) {

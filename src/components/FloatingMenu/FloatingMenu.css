@@ -23,10 +23,10 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background-color: #efefef;
+    background-color: var(--bg-component);
     border-radius: 10px;
     padding: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--item-shadow);
     z-index: 100;
     animation: fadeIn 0.2s ease-in-out;
 }
@@ -38,15 +38,15 @@
     left: -6px;
     width: 12px;
     height: 12px;
-    background-color: #efefef;
+    background-color: var(--bg-component);
     transform: rotate(45deg);
     z-index: -1;
 }
 
 .menu-item {
-    background-color: #efefef;
-    border: 1px solid #2f2f2f;
-    color: #141414;
+    background-color: var(--bg-component);
+    border: 1px solid var(--global-white);
+    color: var(--global-white);
     font-weight: 500;
     padding: 8px 12px;
     border-radius: 6px;
@@ -60,9 +60,18 @@
 }
 
 .menu-item:hover {
-    background: #141414;
-    color: #efefef;
-    transform: none;
+    background: var(--hover-component);
+    color: var(--global-green);
+}
+
+.dark .menu-item {
+    border: 1px solid var(--global-black);
+    color: var(--global-black);
+}
+
+.dark .menu-item:hover {
+    background: var(--global-black);
+    color: var(--global-white);
 }
 
 @keyframes fadeIn {

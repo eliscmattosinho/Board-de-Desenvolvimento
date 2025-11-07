@@ -1,7 +1,3 @@
-.add-col-container * {
-  background: none;
-}
-
 .add-col-container {
   position: absolute;
   top: 50%;
@@ -9,32 +5,32 @@
   transform: translate(-50%, -50%);
   height: 100%;
   width: 40px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: none;
+
   z-index: 999;
   pointer-events: auto;
   opacity: 0;
-  transform: translate(-50%, -50%);
-  animation: fadeInZoom 0.25s ease forwards;
-}
 
-/* animação suave de hover */
-.add-col-container:hover {
-  transform: translate(-50%, -50%);
-  transition: transform 0.25s ease;
+  animation: fadeInZoom 0.3s ease-in-out forwards;
 }
 
 /* linhas */
 .col-line {
   position: absolute;
-  width: 1px;
+  width: 1.2px;
+  border-radius: 40px;
   top: 0;
   bottom: 0;
-  background-color: #efefef;
+  background-color: var(--global-green);
   opacity: 0.7;
+}
+
+.dark .col-line {
+  background-color: var(--global-white);
 }
 
 .col-line:first-child {
@@ -56,13 +52,8 @@
 /* ícone */
 .add-col-container>svg {
   position: relative;
-  z-index: 1000;
-  color: #efefef;
-  transition: color 0.2s ease;
-}
-
-.add-col-container:hover>svg {
-  color: #c7c7c7;
+  color: var(--global-green);
+  transition: color 0.3s ease-in-out;
 }
 
 @keyframes fadeInZoom {

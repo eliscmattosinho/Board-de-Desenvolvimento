@@ -7,7 +7,7 @@
     font-size: clamp(1.4rem, 4.5vw, 2rem);
     margin-bottom: 15px;
 
-    background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
+    background: var(--btn-thematic-text);
     background-size: 60vw 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -24,11 +24,6 @@
 .blocker-info p {
     margin: 15px 0;
     font-size: 14px;
-}
-
-.img {
-    max-width: 100%;
-    height: auto;
 }
 
 .blocker-img-container {

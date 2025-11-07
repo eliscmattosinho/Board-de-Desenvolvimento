@@ -28,9 +28,16 @@ function Column({
 
   // Se o usuário definiu uma cor, usa ela; senão usa o padrão
   const colStyle = {
-    bg: applyTo === "fundo" && color ? color : defaultStyle.bg,
-    border: applyTo === "borda" && color ? color : defaultStyle.border,
-  };
+  bg: applyTo === "fundo" && color ? color : defaultStyle.bg,
+  border: applyTo === "borda" && color ? color : defaultStyle.border,
+  color:
+    applyTo === "fundo"
+      ? "#efefef"
+      : applyTo === "borda" && color
+      ? color
+      : defaultStyle.color,
+};
+
 
   const handleDropTask = (e, targetTaskId, position = null) => {
     e.preventDefault();
@@ -60,6 +67,7 @@ function Column({
       style={{
         "--col-bg": colStyle.bg,
         "--col-border": colStyle.border,
+        "--col-font": colStyle.color,
       }}
     >
       <div
@@ -126,7 +134,10 @@ function Column({
 
       {onAddTask && (
         <div className="add-task" onClick={() => onAddTask(id)}>
-          <CiCirclePlus size={30} />
+          <CiCirclePlus
+            size={30}
+            className="board-icon"
+          />
         </div>
       )}
 

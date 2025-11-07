@@ -38,7 +38,7 @@ function FloatingMenu({ onAddTask, onAddColumn }) {
                 onClick={() => setOpen((prev) => !prev)}
                 aria-label="Abrir menu de ações"
             >
-                <CiCirclePlus size={24} className="add-component" />
+                <CiCirclePlus size={24} className="add-component board-icon" />
             </button>
 
             {open && (

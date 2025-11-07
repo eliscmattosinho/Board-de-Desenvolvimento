@@ -5,28 +5,30 @@
   width: 100%;
   padding: 6px;
   border-radius: 8px;
-  transition: background-color 0.3s ease-in-out;
-}
+  border: transparent;
+  cursor: pointer;
 
-.add-task svg {
-  background: none;
+  transition: all 0.3s ease-in-out;
 }
 
 .add-task:hover {
-  background-color: #aaaaaa3e;
-  border: 1px solid #efefef;
-  cursor: pointer;
+  background-color: var(--hover-green);
+}
+
+.add-task:hover * {
+  color: var(--global-white);
 }
 
 .task-placeholder {
   height: 0;
   padding: 20px;
   width: 100%;
-  border: 2px dashed #3498db;
+  border: 2px dashed var(--global-dark-blue);
   border-radius: 8px;
   background-color: rgba(52, 152, 219, 0.1);
   overflow: hidden;
-  transition: height 0.2s ease, padding 0.2s ease;
+
+  transition: all 0.8s ease-in-out;
 }
 
 .task-placeholder.active {
@@ -35,19 +37,22 @@
 }
 
 .item.task-item {
-  transition: transform 0.2s ease, margin 0.2s ease;
+  transition: all 0.2s ease-in-out;
 }
 
 /* Título da coluna */
 .col-title-board {
   background: var(--col-bg, transparent);
   border: 1px solid var(--col-border, transparent);
+  color: var(--col-font, transparent);
 }
 
 /* Círculo */
 .col-circle {
   background: var(--col-bg, transparent);
   border: 2px solid var(--col-border, transparent);
+  color: var(--col-font, transparent);
+
   display: inline-block;
   width: 12px;
   height: 12px;

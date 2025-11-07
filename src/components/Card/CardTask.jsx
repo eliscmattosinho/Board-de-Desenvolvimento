@@ -107,7 +107,9 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
           <h2 className="w-600">Card<span>#{task.id}</span></h2>
         </div>
 
-        <div className="card-content-wrapper">
+        <div
+          className={`card-content-wrapper ${shouldAnimate ? "is-animating" : ""}`}
+        >
           {isCreating ? (
             <div className="content-inner">
               <CardEdit
@@ -159,7 +161,7 @@ function CardTask({ task, onClose, activeView, columns, moveTask, updateTask, de
 
         <button
           type="button"
-          className="modal-close"
+          className="btn-close"
           onClick={handleClose}
           data-tooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >

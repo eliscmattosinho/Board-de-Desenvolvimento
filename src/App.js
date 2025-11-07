@@ -1,10 +1,13 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import Building from "./pages/Building";
 import Boards from "./pages/Boards";
 import NotFound from "./pages/NotFound";
 import ScreenBlockage from "./pages/ScreenBlockage";
+
 import RouteChangeTracker from "./components/RouteChangeTracker";
+import { ThemeProvider } from "./context/ThemeContext";
 import useScreenBlocker from "./hooks/useScreenBlocker";
 
 function AppContent() {
@@ -24,13 +27,15 @@ function AppContent() {
 
 function App() {
   return (
-    <Router basename="/development-board">
-      <RouteChangeTracker>
-        <div className="App">
-          <AppContent />
-        </div>
-      </RouteChangeTracker>
-    </Router>
+    <ThemeProvider>
+      <Router basename="/development-board">
+        <RouteChangeTracker>
+          <div className="App">
+            <AppContent />
+          </div>
+        </RouteChangeTracker>
+      </Router>
+    </ThemeProvider>
   );
 }
 

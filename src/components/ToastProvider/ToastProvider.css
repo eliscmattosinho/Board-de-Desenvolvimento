@@ -1,0 +1,118 @@
+/* Global toasts */
+.Toastify__toast {
+  box-shadow: var(--item-shadow);
+  border: 1px solid var(--global-green);
+  color: var(--global-white);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  font-size: 12px;
+}
+
+/* Light theme */
+html:not(.dark) .Toastify__toast {
+  background: var(--global-green);
+  border-color: var(--global-white);
+  color: var(--global-white);
+}
+
+/* Dark theme */
+html.dark .Toastify__toast {
+  background: var(--global-white);
+  color: var(--global-black);
+  border-color: var(--global-black);
+}
+
+/* Progress bar */
+.Toastify__progress-bar {
+  background: var(--global-white);
+}
+
+.dark .Toastify__progress-bar {
+  background: var(--global-white);
+}
+
+/* Close btn */
+.Toastify__close-button {
+  color: var(--global-white);
+}
+
+.dark .Toastify__close-button {
+  color: var(--global-black);
+}
+
+/* Warning */
+.Toastify__toast--warning {
+  background: var(--global-dark-blue);
+  color: var(--global-white);
+  border: 1px solid var(--global-green);
+}
+
+.dark .Toastify__toast--warning {
+  background: var(--global-white);
+  color: var(--global-black);
+  border-color: var(--global-black);
+}
+
+/* Red progress bar just for warning toasts (dark theme) */
+.dark .Toastify__toast--warning .Toastify__progress-bar,
+.dark .Toastify__toast--error .Toastify__progress-bar {
+  background: var(--global-red);
+}
+
+/* Ícones padrão do react-toastify */
+
+/* Info */
+.Toastify__toast--info .Toastify__toast-icon svg {
+  fill: var(--global-white);
+}
+
+.dark .Toastify__toast--info .Toastify__toast-icon svg {
+  fill: var(--global-black);
+}
+
+/* Success */
+.Toastify__toast--success .Toastify__toast-icon svg {
+  fill: var(--global-white);
+}
+
+/* Success dark mode */
+.dark .Toastify__toast--success .Toastify__toast-icon svg {
+  fill: var(--global-green);
+}
+
+/* Error */
+.Toastify__toast--error .Toastify__toast-icon svg {
+  fill: var(--global-red);
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.fadeOut {
+  animation: fadeOut 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}

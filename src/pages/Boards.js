@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
+import { SiCcleaner } from "react-icons/si";
+import { toast, Slide } from "react-toastify";
 
 import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
-
 import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
 import ColumnCreate from "../components/Column/ColumnModal/ColumnCreate";
 import ColumnEdit from "../components/Column/ColumnModal/ColumnEdit";
+import ClearBoardToast from "../components/ToastProvider/toasts/ClearBoardToast";
 
 import useTasks from "../hooks/useTasks";
 import useColumns from "../hooks/useColumns";
@@ -24,7 +26,7 @@ function Boards() {
   const [activeView, setActiveView] = useState("kanban");
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const [tasks, addTask, moveTask, updateTask, deleteTask] = useTasks();
+  const [tasks, addTask, moveTask, updateTask, deleteTask, clearTasks] = useTasks();
 
   const defaultKanban = [
     { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
@@ -82,6 +84,31 @@ function Boards() {
     setColumnModalOpen(false);
   };
 
+  // TODO: deletar por board ao invés de todas as views?
+  const handleClearBoard = () => {
+    if (tasks.length === 0) {
+      toast.warning("Não há tarefas para remover — o board já está vazio!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        closeButton: false,
+        transition: Slide,
+      });
+      return;
+    }
+
+    toast.info(<ClearBoardToast onConfirm={clearTasks} onCancel={() => toast.dismiss()} />, {
+      position: "bottom-right",
+      autoClose: false,
+      closeOnClick: false,
+      draggable: false,
+      pauseOnHover: false,
+      transition: Slide,
+    });
+  };
+
   return (
     <div className="content-block">
       <div id="general-content" className="content">
@@ -90,8 +117,7 @@ function Boards() {
             <FaArrowCircleLeft />
           </button>
           <div className="container-options">
-            < ThemeToggle />
-
+            <ThemeToggle />
             <button className="btn btn-thematic new-board">Novo board</button>
           </div>
         </div>
@@ -110,15 +136,22 @@ function Boards() {
         </div>
 
         <div className="second-section-board">
-          <div className="board-title-container">
-            <h3 id="h3-title" className="title-thematic">
-              {activeView === "kanban" ? "Kanban" : "Scrum"}
-              <span className="task-counter">({tasks.length})</span>
-            </h3>
+          <div className="header-board-section">
+            <div className="board-title-container">
+              <h3 id="h3-title" className="title-thematic">
+                {activeView === "kanban" ? "Kanban" : "Scrum"}
+                <span className="task-counter">({tasks.length})</span>
+              </h3>
+              <FloatingMenu
+                onAddTask={handleAddTask}
+                onAddColumn={() => openColumnModal(activeView, columns[activeView].length)}
+              />
+            </div>
 
-            <FloatingMenu
-              onAddTask={handleAddTask}
-              onAddColumn={() => openColumnModal(activeView, columns[activeView].length)}
+            <SiCcleaner
+              size={30}
+              className="board-cleaner"
+              onClick={handleClearBoard}
             />
           </div>
 
@@ -162,8 +195,14 @@ function Boards() {
         activeView={activeView}
         columns={columns[activeView]}
         moveTask={moveTask}
-        updateTask={(taskId, changes) => { updateTask(taskId, changes); setSelectedTask(null); }}
-        deleteTask={(taskId) => { deleteTask(taskId); setSelectedTask(null); }}
+        updateTask={(taskId, changes) => {
+          updateTask(taskId, changes);
+          setSelectedTask(null);
+        }}
+        deleteTask={(taskId) => {
+          deleteTask(taskId);
+          setSelectedTask(null);
+        }}
       />
 
       {/* Modal de criação/edição de coluna */}

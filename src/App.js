@@ -10,6 +10,8 @@ import RouteChangeTracker from "./components/RouteChangeTracker";
 import { ThemeProvider } from "./context/ThemeContext";
 import useScreenBlocker from "./hooks/useScreenBlocker";
 
+import ToastProvider from "./components/ToastProvider/ToastProvider";
+
 function AppContent() {
   useScreenBlocker(480);
 
@@ -32,6 +34,7 @@ function App() {
         <RouteChangeTracker>
           <div className="App">
             <AppContent />
+            <ToastProvider />
           </div>
         </RouteChangeTracker>
       </Router>

@@ -106,5 +106,14 @@ export default function useTasks() {
     });
   };
 
-  return [tasks, addTask, moveTask, updateTask, deleteTask];
+  const clearTasks = () => {
+    setTasks([]);
+    try {
+      localStorage.removeItem("tasks");
+    } catch (e) {
+      console.warn("Não foi possível limpar tasks do localStorage", e);
+    }
+  };
+
+  return [tasks, addTask, moveTask, updateTask, deleteTask, clearTasks];
 }

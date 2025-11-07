@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { SiCcleaner } from "react-icons/si";
-import { toast, Slide } from "react-toastify";
+import { toast } from "react-toastify";
 
 import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
 import BoardSection from "../components/Board/BoardSection";
@@ -16,6 +16,7 @@ import ClearBoardToast from "../components/ToastProvider/toasts/ClearBoardToast"
 import useTasks from "../hooks/useTasks";
 import useColumns from "../hooks/useColumns";
 import { columnIdToCanonicalStatus } from "../js/boardUtils";
+import { showWarning, showCustom, showSuccess } from "../utils/toastUtils";
 
 import "../App.css";
 import "./Boards.css";
@@ -87,26 +88,22 @@ function Boards() {
   // TODO: deletar por board ao invés de todas as views?
   const handleClearBoard = () => {
     if (tasks.length === 0) {
-      toast.warning("Não há tarefas para remover — o board já está vazio!", {
-        position: "bottom-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        closeButton: false,
-        transition: Slide,
-      });
+      showWarning("Não há tarefas para remover — o board já está vazio!");
       return;
     }
 
-    toast.info(<ClearBoardToast onConfirm={clearTasks} onCancel={() => toast.dismiss()} />, {
-      position: "bottom-right",
-      autoClose: false,
-      closeOnClick: false,
-      draggable: false,
-      pauseOnHover: false,
-      transition: Slide,
-    });
+    showCustom(
+      ({ closeToast }) => (
+        <ClearBoardToast
+          onConfirm={() => {
+            clearTasks();
+            closeToast();
+            showSuccess("Todas as tarefas foram removidas com sucesso!");
+          }}
+          onCancel={closeToast}
+        />
+      )
+    );
   };
 
   return (

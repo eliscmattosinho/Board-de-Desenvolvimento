@@ -1,4 +1,4 @@
-.toast-confirm-content {
+.toastConfirmContent {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -6,19 +6,19 @@
   padding: 10px;
 }
 
-.toast-confirm-container {
+.toastConfirmContainer {
   display: flex;
   justify-content: center;
   gap: 8px;
   margin-top: 10px;
 }
 
-.toast-p {
+.toastText {
   font-size: 14px;
 }
 
-/* Base btn */
-.toast-btn {
+/* Base button */
+.toastBtn {
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
@@ -27,22 +27,22 @@
   transition: all 0.2s ease;
 }
 
-/* Confirm btn */
-.toast-btn-confirm {
+/* Confirm button */
+.toastBtnConfirm {
   background-color: var(--global-red);
   color: var(--global-white);
 }
 
-.toast-btn-confirm:hover {
+.toastBtnConfirm:hover {
   background-color: var(--hover-red);
 }
 
-/* Cancel btn */
-.toast-btn-cancel {
+/* Cancel button */
+.toastBtnCancel {
   background-color: var(--global-gray);
   color: var(--global-white);
 }
 
-.toast-btn-cancel:hover {
+.toastBtnCancel:hover {
   background-color: var(--hover-gray);
 }

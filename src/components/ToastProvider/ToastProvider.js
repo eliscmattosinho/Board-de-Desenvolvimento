@@ -1,14 +1,8 @@
 import React from "react";
-import { ToastContainer, cssTransition } from "react-toastify";
+import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ToastProvider.css";
 import { useTheme } from "../../context/ThemeContext";
-
-const fade = cssTransition({
-  enter: "fadeIn",
-  exit: "fadeOut",
-  duration: [300, 200],
-});
 
 const ToastProvider = () => {
   const { theme } = useTheme();
@@ -20,10 +14,11 @@ const ToastProvider = () => {
       hideProgressBar={false}
       newestOnTop={false}
       closeOnClick
-      pauseOnFocusLoss
+      pauseOnFocusLoss={false}
       draggable
       pauseOnHover
-      transition={fade}
+      closeButton={false}
+      transition={Slide}
       theme={theme === "dark" ? "dark" : "light"}
     />
   );

@@ -1,31 +1,36 @@
 import React from "react";
-import { toast } from "react-toastify";
-import "./ClearBoardToast.css";
+import PropTypes from "prop-types";
+import styles from "./ClearBoardToast.module.css";
 
 const ClearBoardToast = ({ onConfirm, onCancel }) => {
   return (
-    <div className="toast-confirm-content">
-      <p className="toast-p">Tem certeza de que deseja limpar todas as tarefas deste board?</p>
-      <div className="toast-confirm-container">
+    <div className={styles.toastConfirmContent}>
+      <p className={styles.toastText}>
+        Tem certeza de que deseja limpar todas as tarefas deste board?
+      </p>
+
+      <div className={styles.toastConfirmContainer}>
         <button
-          className="toast-btn toast-btn-confirm"
-          onClick={() => {
-            onConfirm();
-            toast.dismiss();
-            toast.success("Todas as tarefas foram removidas com sucesso!", {
-              closeButton: false,
-            });
-          }}
+          className={`${styles.toastBtn} ${styles.toastBtnConfirm}`}
+          onClick={onConfirm}
         >
           Sim, limpar
         </button>
 
-        <button className="toast-btn toast-btn-cancel" onClick={onCancel}>
+        <button
+          className={`${styles.toastBtn} ${styles.toastBtnCancel}`}
+          onClick={onCancel}
+        >
           Cancelar
         </button>
       </div>
     </div>
   );
+};
+
+ClearBoardToast.propTypes = {
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default ClearBoardToast;

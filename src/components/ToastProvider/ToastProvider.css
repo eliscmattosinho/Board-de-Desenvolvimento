@@ -84,35 +84,3 @@ html.dark .Toastify__toast {
 .Toastify__toast--error .Toastify__toast-icon svg {
   fill: var(--global-red);
 }
-
-.fadeIn {
-  animation: fadeIn 0.3s ease forwards;
-}
-
-.fadeOut {
-  animation: fadeOut 0.2s ease forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-}

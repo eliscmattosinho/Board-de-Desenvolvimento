@@ -8,9 +8,10 @@ import ScreenBlockage from "./pages/ScreenBlockage";
 
 import RouteChangeTracker from "./components/RouteChangeTracker";
 import { ThemeProvider } from "./context/ThemeContext";
-import useScreenBlocker from "./hooks/useScreenBlocker";
-
+import { TasksProvider } from "./context/TasksContext";
 import ToastProvider from "./components/ToastProvider/ToastProvider";
+
+import useScreenBlocker from "./hooks/useScreenBlocker";
 
 function AppContent() {
   useScreenBlocker(480);
@@ -30,14 +31,16 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <Router basename="/development-board">
-        <RouteChangeTracker>
-          <div className="App">
-            <AppContent />
-            <ToastProvider />
-          </div>
-        </RouteChangeTracker>
-      </Router>
+      <TasksProvider>
+        <Router basename="/development-board">
+          <RouteChangeTracker>
+            <div className="App">
+              <AppContent />
+              <ToastProvider />
+            </div>
+          </RouteChangeTracker>
+        </Router>
+      </TasksProvider>
     </ThemeProvider>
   );
 }

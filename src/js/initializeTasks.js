@@ -1,34 +1,35 @@
 import { canonicalStatuses } from "./boardUtils";
 import { loadTasks } from "./tasksLoader";
 
+/**
+ * Inicializa tasks do backend fake ou sessionStorage
+ * Garante IDs sequenciais curtos e persistência do próximo ID (testar dupl)
+ */
 export async function initializeTasks() {
-  // Limpa storage antigo (se houver)
-  localStorage.removeItem("tasks");
-
   try {
+    // Tenta carregar do sessionStorage
+    const saved = sessionStorage.getItem("tasks");
+    if (saved) {
+      return JSON.parse(saved);
+    }
+
+    // Carrega do backend fake
     const loaded = await loadTasks();
     if (!loaded || !loaded.length) return [];
 
-    // Normaliza status e remove espaços extras
-    const normalized = loaded.map((t, index) => {
-      let status = t.status.trim();
+    // Normaliza e cria IDs sequenciais curtos
+    const normalized = loaded.map((t, i) => ({
+      id: String(i + 1),
+      title: t.title || "Sem título",
+      description: t.description || "Sem descrição",
+      status: canonicalStatuses.includes(t.status?.trim()) ? t.status.trim() : "Backlog",
+      order: i,
+    }));
 
-      // Garante que o status é canônico
-      if (!canonicalStatuses.includes(status)) {
-        console.warn(`Task #${t.id} com status inválido: "${status}". Corrigindo para "Backlog".`);
-        status = "Backlog";
-      }
+    // Persiste tasks e próximo ID no sessionStorage
+    sessionStorage.setItem("tasks", JSON.stringify(normalized));
+    sessionStorage.setItem("tasksNextId", String(normalized.length + 1));
 
-      return {
-        id: t.id || `${index + 1}`,
-        title: t.title.trim(),
-        description: t.description?.trim() || "Sem descrição.",
-        status,
-      };
-    });
-
-    // Salva no localStorage
-    localStorage.setItem("tasks", JSON.stringify(normalized));
     return normalized;
   } catch (err) {
     console.error("Erro ao inicializar tasks:", err);

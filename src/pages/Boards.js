@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { SiCcleaner } from "react-icons/si";
-import { toast } from "react-toastify";
 
 import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
 import BoardSection from "../components/Board/BoardSection";
@@ -13,7 +12,7 @@ import ColumnCreate from "../components/Column/ColumnModal/ColumnCreate";
 import ColumnEdit from "../components/Column/ColumnModal/ColumnEdit";
 import ClearBoardToast from "../components/ToastProvider/toasts/ClearBoardToast";
 
-import useTasks from "../hooks/useTasks";
+import { useTasks } from "../context/TasksContext";
 import useColumns from "../hooks/useColumns";
 import { columnIdToCanonicalStatus } from "../js/boardUtils";
 import { showWarning, showCustom, showSuccess } from "../utils/toastUtils";
@@ -27,7 +26,7 @@ function Boards() {
   const [activeView, setActiveView] = useState("kanban");
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const [tasks, addTask, moveTask, updateTask, deleteTask, clearTasks] = useTasks();
+  const { tasks, addTask, moveTask, updateTask, deleteTask, clearTasks } = useTasks();
 
   const defaultKanban = [
     { id: "to-do", title: "A Fazer", className: "kanban-column todo" },

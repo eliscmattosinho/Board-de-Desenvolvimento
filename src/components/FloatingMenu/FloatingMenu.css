@@ -38,7 +38,7 @@
     left: -6px;
     width: 12px;
     height: 12px;
-    background-color: var(--global-green);
+    background-color: var(--bg-component);
     transform: rotate(45deg);
     z-index: -1;
 }
@@ -62,7 +62,16 @@
 .menu-item:hover {
     background: var(--hover-component);
     color: var(--global-green);
-    transform: none;
+}
+
+.dark .menu-item {
+    border: 1px solid var(--global-black);
+    color: var(--global-black);
+}
+
+.dark .menu-item:hover {
+    background: var(--global-black);
+    color: var(--global-white);
 }
 
 @keyframes fadeIn {

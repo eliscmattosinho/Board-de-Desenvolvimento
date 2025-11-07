@@ -51,8 +51,17 @@
 }
 
 .col-add-last:hover {
-  background: rgba(45, 164, 74, 0.714);
+  background: var(--hover-green);
   color: var(--hover-text-color);
+}
+
+.dark .col-add-last {
+  border: 1px solid var(--global-white);
+  color: var(--global-white);
+}
+
+.dark .col-add-last:hover {
+  background-color: none;
 }
 
 .add-col:hover {

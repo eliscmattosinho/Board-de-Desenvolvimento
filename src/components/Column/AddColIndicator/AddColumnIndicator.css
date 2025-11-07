@@ -29,6 +29,10 @@
   opacity: 0.7;
 }
 
+.dark .col-line {
+  background-color: var(--global-white);
+}
+
 .col-line:first-child {
   left: 50%;
   top: 0;

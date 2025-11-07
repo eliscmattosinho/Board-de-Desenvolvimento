@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
+import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
+
 import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
@@ -87,7 +89,11 @@ function Boards() {
           <button onClick={() => navigate("/")} className="board-icon back-btn">
             <FaArrowCircleLeft />
           </button>
-          <button className="btn btn-thematic new-board">Novo board</button>
+          <div className="container-options">
+            < ThemeToggle />
+
+            <button className="btn btn-thematic new-board">Novo board</button>
+          </div>
         </div>
 
         <div className="first-section-board">

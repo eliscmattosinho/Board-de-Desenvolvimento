@@ -9,7 +9,6 @@ function Column({
   title,
   className,
   onDrop,
-  onDragOver,
   tasks,
   onTaskClick,
   onDragStart,
@@ -17,7 +16,7 @@ function Column({
   onEdit,
   onRemove,
   color,
-  applyTo
+  applyTo,
 }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
@@ -26,19 +25,18 @@ function Column({
   const colKey = className.split(" ")[1];
   const defaultStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
 
-  // Se o usuário definiu uma cor, usa ela; senão usa o padrão
   const colStyle = {
-  bg: applyTo === "fundo" && color ? color : defaultStyle.bg,
-  border: applyTo === "borda" && color ? color : defaultStyle.border,
-  color:
-    applyTo === "fundo"
-      ? "#efefef"
-      : applyTo === "borda" && color
-      ? color
-      : defaultStyle.color,
-};
+    bg: applyTo === "fundo" && color ? color : defaultStyle.bg,
+    border: applyTo === "borda" && color ? color : defaultStyle.border,
+    color:
+      applyTo === "fundo"
+        ? "#efefef"
+        : applyTo === "borda" && color
+          ? color
+          : defaultStyle.color,
+  };
 
-
+  // Drag & drop handlers
   const handleDropTask = (e, targetTaskId, position = null) => {
     e.preventDefault();
     setDragOverIndex(null);
@@ -132,12 +130,10 @@ function Column({
         {tasks.length === 0 && <div className="task-placeholder active"></div>}
       </div>
 
+      {/* Botão para adicionar tarefa */}
       {onAddTask && (
         <div className="add-task" onClick={() => onAddTask(id)}>
-          <CiCirclePlus
-            size={30}
-            className="board-icon"
-          />
+          <CiCirclePlus size={30} className="board-icon" />
         </div>
       )}
 

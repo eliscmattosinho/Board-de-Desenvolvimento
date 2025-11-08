@@ -8,8 +8,7 @@ import BoardSection from "../components/Board/BoardSection";
 import CardTask from "../components/Card/CardTask";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
-import ColumnCreate from "../components/Column/ColumnModal/ColumnCreate";
-import ColumnEdit from "../components/Column/ColumnModal/ColumnEdit";
+import ColumnModal from "../components/Column/ColumnModal/ColumnModal";
 import ClearBoardToast from "../components/ToastProvider/toasts/ClearBoardToast";
 
 import { useTasks } from "../context/TasksContext";
@@ -44,7 +43,7 @@ function Boards() {
 
   const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
 
-  // Modal de criar/editar coluna
+  // Modal unificado
   const [columnModalOpen, setColumnModalOpen] = useState(false);
   const [columnModalIndex, setColumnModalIndex] = useState(0);
   const [columnModalView, setColumnModalView] = useState("kanban");
@@ -84,7 +83,6 @@ function Boards() {
     setColumnModalOpen(false);
   };
 
-  // TODO: deletar por board ao invés de todas as views?
   const handleClearBoard = () => {
     if (tasks.length === 0) {
       showWarning("Não há tarefas para remover — o board já está vazio!");
@@ -140,15 +138,13 @@ function Boards() {
               </h3>
               <FloatingMenu
                 onAddTask={handleAddTask}
-                onAddColumn={() => openColumnModal(activeView, columns[activeView].length)}
+                onAddColumn={() =>
+                  openColumnModal(activeView, columns[activeView].length)
+                }
               />
             </div>
 
-            <SiCcleaner
-              size={30}
-              className="board-cleaner"
-              onClick={handleClearBoard}
-            />
+            <SiCcleaner size={30} className="board-cleaner" onClick={handleClearBoard} />
           </div>
 
           <div className="tables-block">
@@ -161,7 +157,9 @@ function Boards() {
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
-              onAddColumn={(index, column) => openColumnModal("kanban", index, column)}
+              onAddColumn={(index, column) =>
+                openColumnModal("kanban", index, column)
+              }
               removeColumn={removeColumn}
               activeView="kanban"
               isActive={activeView === "kanban"}
@@ -176,7 +174,9 @@ function Boards() {
               onTaskClick={setSelectedTask}
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
-              onAddColumn={(index, column) => openColumnModal("scrum", index, column)}
+              onAddColumn={(index, column) =>
+                openColumnModal("scrum", index, column)
+              }
               removeColumn={removeColumn}
               activeView="scrum"
               isActive={activeView === "scrum"}
@@ -201,21 +201,14 @@ function Boards() {
         }}
       />
 
-      {/* Modal de criação/edição de coluna */}
-      {editingColumn ? (
-        <ColumnEdit
-          isOpen={columnModalOpen}
-          onClose={() => setColumnModalOpen(false)}
-          onSave={handleSaveColumn}
-          columnData={editingColumn}
-        />
-      ) : (
-        <ColumnCreate
-          isOpen={columnModalOpen}
-          onClose={() => setColumnModalOpen(false)}
-          onSave={handleSaveColumn}
-        />
-      )}
+      {/* Modal unificado de criação/edição de coluna */}
+      <ColumnModal
+        isOpen={columnModalOpen}
+        onClose={() => setColumnModalOpen(false)}
+        onSave={handleSaveColumn}
+        columnData={editingColumn} // null = criar, objeto = editar
+        mode={editingColumn ? "edit" : "create"}
+      />
     </div>
   );
 }

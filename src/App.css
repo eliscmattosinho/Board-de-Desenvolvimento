@@ -120,18 +120,6 @@ button {
   transform: scale(1.05);
 }
 
-.modal-btn {
-  border: none;
-  border-radius: 6px;
-  padding: 10px 15px;
-
-  transition: all 0.3s ease-in-out;
-}
-
-.modal-btn:hover {
-  cursor: pointer;
-}
-
 .btn-save {
   width: fit-content;
   background: var(--global-green);
@@ -198,6 +186,10 @@ button.btn-cancel {
 
 .dark .board-icon {
   color: var(--global-white);
+}
+
+.text-alert {
+  color: var(--global-red);
 }
 
 .w-600 {

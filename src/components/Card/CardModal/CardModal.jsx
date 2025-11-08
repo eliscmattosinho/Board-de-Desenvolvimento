@@ -31,6 +31,12 @@ export default function CardModal({
     const currentColumnId = status;
     const { openModal, closeModal } = useModal();
 
+    const modalTitle = (
+        <>
+            Card <span className="task-id">#{task.id}</span>
+        </>
+    );
+
     // Detecta alterações nos campos
     useEffect(() => {
         if (!editMode || !task) return;
@@ -120,13 +126,13 @@ export default function CardModal({
 
     return (
         <Modal
-            title={`Card #${task.id}`}
+            title={modalTitle}
             onClose={handleClose}
             width="600px"
             showHeader={true}
             closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
-            <div className={`card-content-wrapper ${isAnimating ? "is-animating" : ""}`}>
+            <div className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""}`}>
                 {isCreating ? (
                     <CardEditView
                         title={title}

@@ -41,16 +41,16 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
             closeTooltip={mode === "edit" ? "Fechar" : "Cancelar criação"}
         >
             <div
-                className="col-create-content"
+                className="modal-content create-column-modal"
                 onClick={() => showPicker && setShowPicker(false)}
             >
-                <div className="col-title-block">
-                    <label className="col-title w-600" htmlFor="column-title">
+                <div className="modal-field col-title-block">
+                    <label className="input-title" htmlFor="column-title">
                         Título:
                     </label>
                     <input
                         id="column-title"
-                        className="input input-title"
+                        className="input-entry input-title"
                         placeholder="Título da coluna"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -58,7 +58,7 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                 </div>
 
                 <div className="col-color-block">
-                    <label className="col-color w-600" htmlFor="column-color">
+                    <label className="input-title col-color" htmlFor="column-color">
                         Cor da coluna:
                     </label>
                     <div className="color-input-wrapper">
@@ -70,7 +70,7 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                         <input
                             ref={inputRef}
                             id="column-color"
-                            className="input input-color"
+                            className="input-entry input-color"
                             value={color.toUpperCase()}
                             onChange={(e) => setColor(e.target.value)}
                             placeholder="#000000 ou rgba(255,0,0,1)"
@@ -89,13 +89,13 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     )}
                 </div>
 
-                <div className="col-description-block">
-                    <label className="col-description w-600" htmlFor="column-description">
+                <div className="modal-field col-description-block">
+                    <label className="input-title col-description" htmlFor="column-description">
                         Descrição:
                     </label>
                     <textarea
                         id="column-description"
-                        className="input textarea-description"
+                        className="input-entry textarea-description"
                         placeholder="Descrição (opcional)"
                         rows={4}
                         value={description}

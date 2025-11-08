@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "../Modal";
-import styles from "./ConfirmDeleteModal.module.css";
+import "./ConfirmDeleteModal.css";
 
 export default function ConfirmDeleteModal({
     isOpen,
@@ -13,18 +13,22 @@ export default function ConfirmDeleteModal({
     const entityText = type === "column" ? "coluna" : "tarefa";
 
     return (
-        <Modal title="" onClose={onCancel} width="360px">
-            <div className={styles.confirmDeleteContent}>
-                <h3 className={styles.confirmTitle}>Excluir {entityText}</h3>
-                <p className={styles.confirmMessage}>
+        <Modal
+            onClose={onCancel}
+            width="360px"
+            showHeader={false}
+        >
+            <div className="modal-content modal-delete">
+                <h3 className="modal-title text-alert">Excluir {entityText}</h3>
+                <p>
                     Deseja mesmo excluir a {entityText}? Esta ação não pode ser desfeita.
                 </p>
 
-                <div className={styles.confirmActions}>
-                    <button className={`modal-btn ${styles.btnConfirm}`} onClick={onConfirm}>
+                <div className="modal-actions">
+                    <button className="modal-btn btn-delete" onClick={onConfirm}>
                         Sim, excluir
                     </button>
-                    <button className={`modal-btn ${styles.btnCancel}`} onClick={onCancel}>
+                    <button className="modal-btn btn-cancel" onClick={onCancel}>
                         Cancelar
                     </button>
                 </div>

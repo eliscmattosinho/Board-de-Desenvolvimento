@@ -26,13 +26,13 @@ export default function Modal({
     return (
         <div className="modal" onClick={onClose}>
             <div
-                className={`modal-content ${className}`}
+                className={`modal-container ${className}`}
                 style={{ maxWidth: width }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {showHeader && (
                     <div className="modal-header-row">
-                        {title && <h2 className="w-600">{title}</h2>}
+                        {title && <h2 className="modal-title w-600">{title}</h2>}
                     </div>
                 )}
 

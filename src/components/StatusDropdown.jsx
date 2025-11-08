@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { IoIosArrowDown } from "react-icons/io";
 import { columnStyles } from "../constants/columnStyles";
+import "./StatusDropdown.css"
 
 export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
   const [open, setOpen] = useState(false);
@@ -123,7 +124,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
             }}
           ></span>
 
-          {currentCol?.title || "Selecione"}
+          <span className="status-value">{currentCol?.title || "Selecione"}</span>
           <IoIosArrowDown
             size={15}
             className={`dropdown-icon ${open ? "open" : ""}`}

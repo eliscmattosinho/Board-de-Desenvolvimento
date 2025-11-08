@@ -62,9 +62,7 @@
     right: 10px;
     background: transparent;
     border: none;
-}
 
-.btn-close {
     transition: transform 0.3s ease-in-out;
 }
 
@@ -262,6 +260,7 @@ button[data-tooltip]:hover::before {
 
 .card-content-wrapper {
     position: relative;
+    /* @TODO */
     transition: height 0.4s ease;
 }
 

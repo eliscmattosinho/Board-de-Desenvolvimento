@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { CSSTransition, SwitchTransition } from "react-transition-group";
-import StatusDropdown from "../../StatusDropdown";
 import ConfirmDeleteModal from "../DeleteTaskModal/ConfirmDeleteModal";
 import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../js/boardUtils";
 import useTaskForm from "../../../hooks/useTaskForm";
+
+import CardEditView from "./CardEditView";
+import CardTransition from "./CardTransition";
+import CardActions from "./CardActions";
 import "./CardModal.css";
 
 export default function CardModal({ task, onClose, activeView, columns, moveTask, updateTask, deleteTask }) {
@@ -12,12 +14,14 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
 
     const [editMode, setEditMode] = useState(isCreating);
     const [shouldAnimate, setShouldAnimate] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
     const [dirty, setDirty] = useState(false);
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
     const { title, setTitle, description, setDescription, status, setStatus } = useTaskForm(task, columns, activeView);
     const currentColumnId = status;
 
+    // Detecta alterações nos campos para marcar dirty
     useEffect(() => {
         if (!editMode || !task) return;
 
@@ -35,6 +39,11 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
 
     if (!task) return null;
 
+    const triggerAnimation = () => {
+        setShouldAnimate(true);
+        setIsAnimating(true);
+    };
+
     const handleSelect = (colId) => {
         if (editMode) setStatus(colId);
         else {
@@ -44,7 +53,7 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
     };
 
     const handleEditClick = () => {
-        setShouldAnimate(true);
+        triggerAnimation();
         setEditMode(true);
     };
 
@@ -62,11 +71,13 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
             isNew: false,
         });
 
+        triggerAnimation();
         setEditMode(false);
         setDirty(false);
     };
 
     const handleCancel = () => {
+        triggerAnimation();
         setTitle(task.title || "");
         setDescription(task.description || "");
         const originalColId = columns.find(
@@ -75,7 +86,6 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
         setStatus(originalColId || columns[0]?.id || "");
         setEditMode(false);
         setDirty(false);
-        setShouldAnimate(true);
     };
 
     const handleDelete = () => setShowConfirmDelete(true);
@@ -90,6 +100,7 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
         if (isCreating && !(title.trim() || description.trim())) deleteTask(task.id);
         setEditMode(false);
         setShouldAnimate(false);
+        setIsAnimating(false);
         onClose();
     };
 
@@ -97,12 +108,13 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
         <div className="modal">
             <div className="modal-content">
                 <div className="modal-header-row">
-                    <h2 className="w-600">Card<span>#{task.id}</span></h2>
+                    <h2 className="w-600">
+                        Card<span>#{task.id}</span>
+                    </h2>
                 </div>
 
                 <div
-                    className="card-content-wrapper"
-                    style={{ overflow: shouldAnimate ? "hidden" : "visible" }}
+                    className={`card-content-wrapper ${isAnimating ? "is-animating" : ""}`}
                 >
                     {isCreating ? (
                         <CardEditView
@@ -119,7 +131,10 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
                         <CardTransition
                             editMode={editMode}
                             shouldAnimate={shouldAnimate}
-                            onAnimationEnd={() => setShouldAnimate(false)}
+                            onAnimationEnd={() => {
+                                setShouldAnimate(false);
+                                setIsAnimating(false);
+                            }}
                             title={title}
                             setTitle={setTitle}
                             description={description}
@@ -156,122 +171,6 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
                 onConfirm={confirmDelete}
                 onCancel={cancelDelete}
             />
-        </div>
-    );
-}
-
-function CardEditView({ title, setTitle, description, setDescription, columns, currentColumnId, onSelect, isCreating }) {
-    return (
-        <div className={`card-edit ${isCreating ? "card-create" : ""}`}>
-            <div className="title-block">
-                <label className="card-title w-600">Título:</label>
-                <input
-                    className="input input-title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Título da tarefa"
-                />
-            </div>
-
-            <div className="status-block">
-                <label className="card-title w-600">Status:</label>
-                <StatusDropdown columns={columns} currentColumnId={currentColumnId} onSelect={onSelect} />
-            </div>
-
-            <div className="description-block">
-                <label className="card-title w-600">Descrição:</label>
-                <textarea
-                    className="input textarea-description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Descrição (opcional)"
-                    rows={4}
-                />
-            </div>
-        </div>
-    );
-}
-
-function CardTransition({ editMode, shouldAnimate, onAnimationEnd, title, setTitle, description, setDescription, columns, currentColumnId, onSelect }) {
-    const contentRef = useRef(null);
-
-    const EditView = (
-        <CardEditView
-            title={title}
-            setTitle={setTitle}
-            description={description}
-            setDescription={setDescription}
-            columns={columns}
-            currentColumnId={currentColumnId}
-        />
-    );
-
-    const View = (
-        <div className="card-view">
-            <h3 className="task-name w-600">{title}</h3>
-            <div className="status-block">
-                <label className="card-title w-600">Status:</label>
-                <StatusDropdown columns={columns} currentColumnId={currentColumnId} onSelect={onSelect} />
-            </div>
-            <div className="description-section">
-                <h3 className="card-title w-600">Descrição:</h3>
-                {description || "Nenhuma descrição disponível."}
-            </div>
-        </div>
-    );
-
-    return (
-        <SwitchTransition mode="out-in">
-            <CSSTransition
-                key={editMode ? "edit" : "view"}
-                nodeRef={contentRef}
-                timeout={400}
-                classNames="slide"
-                in={shouldAnimate}
-                onEntered={onAnimationEnd}
-            >
-                <div className="content-inner" ref={contentRef}>
-                    {editMode ? EditView : View}
-                </div>
-            </CSSTransition>
-        </SwitchTransition>
-    );
-}
-
-function CardActions({ editMode, isCreating, dirty, onSave, onCancel, onEdit, onDelete }) {
-    return (
-        <div className="modal-actions">
-            {!editMode && !isCreating && (
-                <button type="button" className="modal-btn btn-edit" onClick={onEdit} data-tooltip="Editar tarefa">
-                    Editar
-                </button>
-            )}
-
-            {editMode && (
-                <>
-                    <button
-                        type="button"
-                        className={`modal-btn btn-save ${dirty || isCreating ? "active" : "disabled"}`}
-                        onClick={onSave}
-                        disabled={!dirty && !isCreating}
-                        data-tooltip="Salvar alterações"
-                    >
-                        Salvar
-                    </button>
-
-                    {!isCreating && (
-                        <button type="button" className="modal-btn btn-cancel" onClick={onCancel} data-tooltip="Descartar edição">
-                            Cancelar
-                        </button>
-                    )}
-                </>
-            )}
-
-            {!isCreating && (
-                <button type="button" className="modal-btn btn-delete" onClick={onDelete} data-tooltip="Excluir tarefa">
-                    Excluir
-                </button>
-            )}
         </div>
     );
 }

@@ -1,27 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { IoIosCloseCircleOutline } from "react-icons/io";
-import ConfirmDeleteModal from "../DeleteTaskModal/ConfirmDeleteModal";
 import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../js/boardUtils";
 import useTaskForm from "../../../hooks/useTaskForm";
+import { useModal } from "../../../context/ModalContext";
 
+import Modal from "../../Modal/Modal";
+import ConfirmDeleteModal from "../../Modal/DeleteModal/ConfirmDeleteModal";
 import CardEditView from "./CardEditView";
 import CardTransition from "./CardTransition";
 import CardActions from "./CardActions";
 import "./CardModal.css";
 
-export default function CardModal({ task, onClose, activeView, columns, moveTask, updateTask, deleteTask }) {
+export default function CardModal({
+    task,
+    activeView,
+    columns,
+    moveTask,
+    updateTask,
+    deleteTask,
+}) {
     const isCreating = !!task?.isNew;
 
     const [editMode, setEditMode] = useState(isCreating);
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const [dirty, setDirty] = useState(false);
-    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
-    const { title, setTitle, description, setDescription, status, setStatus } = useTaskForm(task, columns, activeView);
+    const { title, setTitle, description, setDescription, status, setStatus } =
+        useTaskForm(task, columns, activeView);
+
     const currentColumnId = status;
+    const { openModal, closeModal } = useModal();
 
-    // Detecta alterações nos campos para marcar dirty
+    // Detecta alterações nos campos
     useEffect(() => {
         if (!editMode || !task) return;
 
@@ -88,89 +98,74 @@ export default function CardModal({ task, onClose, activeView, columns, moveTask
         setDirty(false);
     };
 
-    const handleDelete = () => setShowConfirmDelete(true);
-    const confirmDelete = () => {
-        deleteTask(task.id);
-        handleClose();
-        setShowConfirmDelete(false);
+    const handleDelete = () => {
+        openModal(ConfirmDeleteModal, {
+            type: "task",
+            onConfirm: () => {
+                deleteTask(task.id);
+                closeModal();
+                handleClose();
+            },
+            onCancel: closeModal,
+        });
     };
-    const cancelDelete = () => setShowConfirmDelete(false);
 
     const handleClose = () => {
         if (isCreating && !(title.trim() || description.trim())) deleteTask(task.id);
         setEditMode(false);
         setShouldAnimate(false);
         setIsAnimating(false);
-        onClose();
+        closeModal();
     };
 
     return (
-        <div className="modal">
-            <div className="modal-content">
-                <div className="modal-header-row">
-                    <h2 className="w-600">
-                        Card<span>#{task.id}</span>
-                    </h2>
-                </div>
-
-                <div
-                    className={`card-content-wrapper ${isAnimating ? "is-animating" : ""}`}
-                >
-                    {isCreating ? (
-                        <CardEditView
-                            title={title}
-                            setTitle={setTitle}
-                            description={description}
-                            setDescription={setDescription}
-                            columns={columns}
-                            currentColumnId={currentColumnId}
-                            onSelect={handleSelect}
-                            isCreating={true}
-                        />
-                    ) : (
-                        <CardTransition
-                            editMode={editMode}
-                            shouldAnimate={shouldAnimate}
-                            onAnimationEnd={() => {
-                                setShouldAnimate(false);
-                                setIsAnimating(false);
-                            }}
-                            title={title}
-                            setTitle={setTitle}
-                            description={description}
-                            setDescription={setDescription}
-                            columns={columns}
-                            currentColumnId={currentColumnId}
-                            onSelect={handleSelect}
-                        />
-                    )}
-                </div>
-
-                <CardActions
-                    editMode={isCreating || editMode}
-                    isCreating={isCreating}
-                    dirty={dirty}
-                    onSave={handleSave}
-                    onCancel={handleCancel}
-                    onEdit={handleEditClick}
-                    onDelete={handleDelete}
-                />
-
-                <button
-                    type="button"
-                    className="btn-close"
-                    onClick={handleClose}
-                    data-tooltip={isCreating ? "O card não será salvo" : "Fechar"}
-                >
-                    <IoIosCloseCircleOutline size={25} />
-                </button>
+        <Modal
+            title={`Card #${task.id}`}
+            onClose={handleClose}
+            width="600px"
+            showHeader={true}
+            closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
+        >
+            <div className={`card-content-wrapper ${isAnimating ? "is-animating" : ""}`}>
+                {isCreating ? (
+                    <CardEditView
+                        title={title}
+                        setTitle={setTitle}
+                        description={description}
+                        setDescription={setDescription}
+                        columns={columns}
+                        currentColumnId={currentColumnId}
+                        onSelect={handleSelect}
+                        isCreating={true}
+                    />
+                ) : (
+                    <CardTransition
+                        editMode={editMode}
+                        shouldAnimate={shouldAnimate}
+                        onAnimationEnd={() => {
+                            setShouldAnimate(false);
+                            setIsAnimating(false);
+                        }}
+                        title={title}
+                        setTitle={setTitle}
+                        description={description}
+                        setDescription={setDescription}
+                        columns={columns}
+                        currentColumnId={currentColumnId}
+                        onSelect={handleSelect}
+                    />
+                )}
             </div>
 
-            <ConfirmDeleteModal
-                isOpen={showConfirmDelete}
-                onConfirm={confirmDelete}
-                onCancel={cancelDelete}
+            <CardActions
+                editMode={isCreating || editMode}
+                isCreating={isCreating}
+                dirty={dirty}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                onEdit={handleEditClick}
+                onDelete={handleDelete}
             />
-        </div>
+        </Modal>
     );
 }

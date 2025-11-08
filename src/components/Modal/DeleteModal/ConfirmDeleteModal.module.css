@@ -1,0 +1,53 @@
+.confirmDeleteContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+  padding: 10px;
+  max-width: 360px;
+}
+
+.confirmTitle {
+  font-size: 18px;
+  color: var(--global-red);
+}
+
+.confirmMessage {
+  font-size: 14px;
+  color: var(--global-black);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btnConfirm {
+  background: var(--global-red);
+  color: var(--global-white);
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btnConfirm:hover {
+  background: var(--hover-red);
+  color: var(--global-white);
+}
+
+.btnCancel {
+  background: var(--global-light-gray);
+  color: var(--global-black);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btnCancel:hover {
+  background: var(--hover-gray);
+}

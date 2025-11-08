@@ -5,7 +5,7 @@ import { SiCcleaner } from "react-icons/si";
 
 import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
 import BoardSection from "../components/Board/BoardSection";
-import CardTask from "../components/Card/CardTask";
+import CardModal from "../components/Card/CardModal/CardModal";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
 import ColumnModal from "../components/Column/ColumnModal/ColumnModal";
@@ -185,7 +185,8 @@ function Boards() {
         </div>
       </div>
 
-      <CardTask
+      {/* Modal unificado de cards */}
+      <CardModal
         task={selectedTask}
         onClose={() => setSelectedTask(null)}
         activeView={activeView}

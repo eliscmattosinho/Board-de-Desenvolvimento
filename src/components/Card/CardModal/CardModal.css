@@ -266,7 +266,7 @@ button[data-tooltip]:hover::before {
 }
 
 .card-content-wrapper.is-animating {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .content-inner {

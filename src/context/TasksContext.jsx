@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 
 import { getCachedTasks, resetTasksCache } from "../js/tasksLoader";
 import { initializeTasks } from "../js/initializeTasks";
-import { columnIdToCanonicalStatus } from "../js/boardUtils";
+import { columnIdToCanonicalStatus } from "../utils/boardUtils";
 
 
 const TasksContext = createContext();

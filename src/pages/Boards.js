@@ -14,7 +14,7 @@ import ColumnModal from "../components/Column/ColumnModal/ColumnModal";
 import { useTasks } from "../context/TasksContext";
 import { useModal } from "../context/ModalContext";
 import useColumns from "../hooks/useColumns";
-import { columnIdToCanonicalStatus } from "../js/boardUtils";
+import { columnIdToCanonicalStatus } from "../utils/boardUtils";
 import { showWarning, showCustom, showSuccess } from "../utils/toastUtils";
 
 import "../App.css";

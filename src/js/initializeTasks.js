@@ -1,4 +1,4 @@
-import { canonicalStatuses } from "./boardUtils";
+import { canonicalStatuses } from "../utils/boardUtils";
 import { loadTasks } from "./tasksLoader";
 
 /**

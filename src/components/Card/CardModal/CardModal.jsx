@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../js/boardUtils";
+import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../utils/boardUtils";
 import { showWarning } from "../../../utils/toastUtils";
 import useTaskForm from "../../../hooks/useTaskForm";
 import { useModal } from "../../../context/ModalContext";

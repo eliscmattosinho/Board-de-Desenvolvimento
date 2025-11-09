@@ -5,7 +5,7 @@ import ConfirmDeleteModal from "../Modal/DeleteModal/ConfirmDeleteModal";
 import { useModal } from "../../context/ModalContext";
 import "./BoardSection.css";
 import { CiCirclePlus } from "react-icons/ci";
-import { getDisplayStatus } from "../../js/boardUtils";
+import { getDisplayStatus } from "../../utils/boardUtils";
 
 function BoardSection({
   id,

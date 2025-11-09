@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getDisplayStatus } from "../js/boardUtils";
+import { getDisplayStatus } from "../utils/boardUtils";
 
 export default function useTaskForm(task, columns, activeView) {
     const [title, setTitle] = useState("");

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../js/boardUtils";
+import { showWarning } from "../../../utils/toastUtils";
 import useTaskForm from "../../../hooks/useTaskForm";
 import { useModal } from "../../../context/ModalContext";
 
@@ -83,8 +84,8 @@ export default function CardModal({
     const handleSave = () => {
         const trimmedTitle = title.trim();
 
-        if (!trimmedTitle) return alert("O título não pode ficar vazio.");
-        if (!status) return alert("Escolha uma coluna antes de salvar.");
+        if (!trimmedTitle) return showWarning("O título não pode ficar vazio.");
+        if (!status) return showWarning("Escolha uma coluna antes de salvar.");
 
         const canonicalStatus = columnIdToCanonicalStatus(status);
 

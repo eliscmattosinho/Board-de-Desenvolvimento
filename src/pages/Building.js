@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import "./Building.css";
+
 import builder from "../assets/images/builder.svg";
+
+import "./Building.css";
 
 function Building() {
   const navigate = useNavigate();

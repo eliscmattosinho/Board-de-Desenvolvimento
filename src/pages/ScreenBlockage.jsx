@@ -1,6 +1,8 @@
 import React from "react";
-import "./ScreenBlockage.css";
+
 import screenBlockage from "../assets/images/screen-blockage.svg";
+
+import "./ScreenBlockage.css";
 
 export default function ScreenBlockage() {
     return (

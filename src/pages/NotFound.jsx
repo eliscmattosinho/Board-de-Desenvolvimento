@@ -1,7 +1,10 @@
 import React from "react";
+
 import { Link } from "react-router-dom";
-import "./NotFound.css";
+
 import error from "../assets/images/404.svg";
+
+import "./NotFound.css";
 
 export default function NotFound() {
     return (

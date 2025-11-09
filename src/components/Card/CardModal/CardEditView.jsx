@@ -1,4 +1,5 @@
 import React from "react";
+
 import StatusDropdown from "../../StatusDropdown";
 
 export default function CardEditView({ title, setTitle, description, setDescription, columns, currentColumnId, onSelect, isCreating }) {

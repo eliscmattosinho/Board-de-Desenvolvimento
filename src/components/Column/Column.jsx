@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import TaskItem from "./TaskItem";
+
 import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
-import { columnStyles } from "../../constants/columnStyles.js";
+
+import { columnStyles } from "../../constants/columnStyles";
+import TaskItem from "./TaskItem";
+
 import "./Column.css";
 
 function Column({

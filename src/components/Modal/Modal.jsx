@@ -1,5 +1,7 @@
 import React from "react";
+
 import { IoIosCloseCircleOutline } from "react-icons/io";
+
 import "./Modal.css";
 
 /**

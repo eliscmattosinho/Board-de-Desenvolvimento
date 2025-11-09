@@ -1,8 +1,11 @@
 import React, { useState, useRef } from "react";
-import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel.jsx";
+
 import useColumnForm from "../../../hooks/useColumnForm.js";
-import Modal from "../../Modal/Modal.jsx";
 import { useModal } from "../../../context/ModalContext";
+
+import Modal from "../../Modal/Modal";
+import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";
+
 import "./ColumnModal.css";
 
 export default function ColumnModal({ onSave, columnData, mode = "create" }) {

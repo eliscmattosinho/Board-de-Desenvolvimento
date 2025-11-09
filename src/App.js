@@ -1,4 +1,5 @@
 import React from "react";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Building from "./pages/Building";
@@ -7,11 +8,11 @@ import NotFound from "./pages/NotFound";
 import ScreenBlockage from "./pages/ScreenBlockage";
 
 import RouteChangeTracker from "./components/RouteChangeTracker";
+import ToastProvider from "./components/ToastProvider/ToastProvider";
 
 import { ThemeProvider } from "./context/ThemeContext";
 import { ModalProvider } from "./context/ModalContext";
 import { TasksProvider } from "./context/TasksContext";
-import ToastProvider from "./components/ToastProvider/ToastProvider";
 
 import useScreenBlocker from "./hooks/useScreenBlocker";
 

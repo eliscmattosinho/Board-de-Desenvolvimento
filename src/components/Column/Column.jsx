@@ -4,21 +4,29 @@ import TaskItem from "./TaskItem";
 import { columnStyles } from "../../constants/columnStyles";
 import "./Column.css";
 
-const ColumnHeader = React.memo(({ title, tasksLength, hovered, onEdit, onRemove }) => (
-  <div className="title-col-board">
-    <div className="col-title-flex">
-      {hovered && onRemove && (
-        <CiTrash className="col-icon-left" size={20} onClick={onRemove} />
-      )}
-      <h4 className="col-title-board">
-        {title} <span className="task-counter">({tasksLength})</span>
-      </h4>
-      {hovered && onEdit && (
-        <CiEdit className="col-icon-right" size={20} onClick={onEdit} />
-      )}
+const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove }) => {
+  const [hovered, setHovered] = React.useState(false);
+
+  return (
+    <div
+      className="title-col-board"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="col-title-flex">
+        {hovered && onRemove && (
+          <CiTrash className="col-icon-left" size={20} onClick={onRemove} />
+        )}
+        <h4 className="col-title-board">
+          {title} <span className="task-counter">({tasksLength})</span>
+        </h4>
+        {hovered && onEdit && (
+          <CiEdit className="col-icon-right" size={20} onClick={onEdit} />
+        )}
+      </div>
     </div>
-  </div>
-));
+  );
+});
 
 function Column({
   id,
@@ -36,7 +44,6 @@ function Column({
 }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
-  const [hovered, setHovered] = useState(false);
 
   const colKey = className.split(" ")[1];
   const defaultStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
@@ -77,8 +84,20 @@ function Column({
   }, []);
 
   const handleAddTaskClick = useCallback(() => onAddTask(id), [id, onAddTask]);
-  const handleEditClick = useCallback((e) => { e.stopPropagation(); onEdit?.(); }, [onEdit]);
-  const handleRemoveClick = useCallback((e) => { e.stopPropagation(); onRemove?.(); }, [onRemove]);
+  const handleEditClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      onEdit?.();
+    },
+    [onEdit]
+  );
+  const handleRemoveClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      onRemove?.();
+    },
+    [onRemove]
+  );
 
   const renderedTasks = useMemo(() => {
     if (!tasks || tasks.length === 0) return null;
@@ -124,13 +143,10 @@ function Column({
         "--col-border": colStyle.border,
         "--col-font": colStyle.color,
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       <ColumnHeader
         title={title}
         tasksLength={tasks.length}
-        hovered={hovered}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
       />

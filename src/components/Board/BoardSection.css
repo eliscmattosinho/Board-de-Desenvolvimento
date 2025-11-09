@@ -5,29 +5,8 @@
   gap: 1rem;
   padding-bottom: 10px;
   width: 100%;
-  height: 350px;
+  height: 450px;
   overflow: visible;
-}
-
-.board::-webkit-scrollbar {
-  height: 7px;
-}
-
-.board::-webkit-scrollbar-thumb,
-.col-items::-webkit-scrollbar-thumb {
-  background-color: #848484;
-  border-radius: 5px;
-}
-
-.board::-webkit-scrollbar-thumb:hover,
-.kanban-items::-webkit-scrollbar-thumb:hover,
-.scrum-items::-webkit-scrollbar-thumb:hover,
-.col-items::-webkit-scrollbar-thumb:hover {
-  cursor: pointer;
-}
-
-.board {
-  display: none;
 }
 
 .board.active {

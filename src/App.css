@@ -11,6 +11,7 @@
 
   --global-white: #efefef;
   --global-gray: #9b9b9b;
+  --light-gray: #c4c4c4;
   --hover-gray: #666666;
 
   --global-red: #d73a49;
@@ -200,6 +201,35 @@ button.btn-cancel {
 
 .none {
   display: none;
+}
+
+/* Estilização da barra de rolagem */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background-color: var(--light-gray);
+}
+
+.dark *::-webkit-scrollbar-track {
+  background-color: var(--global-gray);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--global-gray);
+  border-radius: 6px;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: var(--global-white);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  background-color: var(--hover-gray);
 }
 
 @media (min-width: 320px) and (max-width: 768px) {

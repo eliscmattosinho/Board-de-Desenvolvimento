@@ -8,6 +8,12 @@
     font-weight: 600;
 }
 
+.description-text {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
 /* Prevent textarea from exceeding parent width */
 .textarea-description {
     box-sizing: border-box;

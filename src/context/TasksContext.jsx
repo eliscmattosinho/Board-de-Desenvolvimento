@@ -107,10 +107,13 @@ export const TasksProvider = ({ children }) => {
     return () => { mounted = false; };
   }, []);
 
+  // Cria um draft de task temporária (sem consumir nextId)
   const addTask = useCallback((columnId = null) => {
     const canonicalStatus = columnId ? columnIdToCanonicalStatus(columnId) : "Backlog";
-    const newTask = {
-      id: String(state.nextId),
+    const tempId = `${state.nextId}`;
+
+    return {
+      id: tempId,
       title: "",
       description: "",
       status: canonicalStatus,
@@ -118,9 +121,18 @@ export const TasksProvider = ({ children }) => {
       isNew: true,
       createdAt: new Date().toISOString(),
     };
+  }, [state.nextId, state.tasks.length]);
+
+  // Salva task oficial (ID real)
+  const saveNewTask = useCallback((task) => {
+    const newTask = {
+      ...task,
+      id: String(state.nextId),
+      isNew: false,
+    };
     dispatch({ type: ACTIONS.ADD_TASK, task: newTask });
     return newTask;
-  }, [state.nextId, state.tasks.length]);
+  }, [state.nextId]);
 
   const moveTask = useCallback((taskId, status, targetTaskId = null, position = null) => {
     dispatch({ type: ACTIONS.MOVE_TASK, taskId, status, targetTaskId, position });
@@ -143,6 +155,7 @@ export const TasksProvider = ({ children }) => {
       value={{
         tasks: state.tasks,
         addTask,
+        saveNewTask,
         moveTask,
         updateTask,
         deleteTask,

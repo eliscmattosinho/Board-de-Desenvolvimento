@@ -26,7 +26,7 @@ function Boards() {
   const [activeView, setActiveView] = useState("kanban");
 
   const { openModal } = useModal();
-  const { tasks, addTask, moveTask, updateTask, deleteTask, clearTasks } = useTasks();
+  const { tasks, addTask, moveTask, clearTasks } = useTasks();
 
   const defaultKanban = [
     { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
@@ -63,16 +63,17 @@ function Boards() {
   }, [tasks]);
 
   const handleAddTask = useCallback((columnId = null) => {
-    const newTask = addTask(columnId, activeView);
+    // Cria um draft com ID temporário
+    const newTask = addTask(columnId);
+
+    // Abre o modal passando o draft
     openModal(CardModal, {
       task: { ...newTask, isNew: true },
       activeView,
       columns: columns[activeView],
       moveTask,
-      updateTask,
-      deleteTask,
     });
-  }, [addTask, activeView, columns, moveTask, updateTask, deleteTask, openModal]);
+  }, [addTask, activeView, columns, moveTask, openModal]);
 
   const handleClearBoard = useCallback(() => {
     if (tasks.length === 0) {
@@ -98,10 +99,8 @@ function Boards() {
       activeView,
       columns: columns[activeView],
       moveTask,
-      updateTask,
-      deleteTask,
     });
-  }, [activeView, columns, moveTask, updateTask, deleteTask, openModal]);
+  }, [activeView, columns, moveTask, openModal]);
 
   const handleAddColumn = useCallback((index, column) => {
     openModal(ColumnModal, {

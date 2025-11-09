@@ -45,35 +45,40 @@ function Boards() {
   const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
 
   const allowDrop = useCallback((e) => e.preventDefault(), []);
+  const handleDragStart = useCallback((e, taskId) => e.dataTransfer.setData("text/plain", taskId), []);
 
-  const handleDragStart = useCallback((e, taskId) => {
-    e.dataTransfer.setData("text/plain", taskId);
-  }, []);
+  /**
+   * Lógica de movimentação de tarefas entre colunas
+   * Mantém equivalência indireta entre Kanban ↔ Scrum
+   */
+  const handleDrop = useCallback(
+    (e, columnId, targetTaskId = null) => {
+      e.preventDefault();
+      const taskId = e.dataTransfer.getData("text/plain");
+      if (!taskId) return;
 
-  const handleDrop = useCallback((e, columnId, targetTaskId = null) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData("text/plain");
-    if (!taskId) return;
-    const canonicalStatus = columnIdToCanonicalStatus(columnId);
-    moveTask(taskId, canonicalStatus, targetTaskId);
-  }, [moveTask]);
+      // Identifica o status canônico
+      const canonicalStatus = columnIdToCanonicalStatus(columnId);
+      moveTask(taskId, canonicalStatus, targetTaskId);
+    },
+    [moveTask]
+  );
 
-  const orderedTasks = useMemo(() => {
-    return [...tasks].sort((a, b) => a.order - b.order);
-  }, [tasks]);
+  // Ordena tarefas por posição
+  const orderedTasks = useMemo(() => [...tasks].sort((a, b) => a.order - b.order), [tasks]);
 
-  const handleAddTask = useCallback((columnId = null) => {
-    // Cria um draft com ID temporário
-    const newTask = addTask(columnId);
-
-    // Abre o modal passando o draft
-    openModal(CardModal, {
-      task: { ...newTask, isNew: true },
-      activeView,
-      columns: columns[activeView],
-      moveTask,
-    });
-  }, [addTask, activeView, columns, moveTask, openModal]);
+  const handleAddTask = useCallback(
+    (columnId = null) => {
+      const newTask = addTask(columnId);
+      openModal(CardModal, {
+        task: { ...newTask, isNew: true },
+        activeView,
+        columns: columns[activeView],
+        moveTask,
+      });
+    },
+    [addTask, activeView, columns, moveTask, openModal]
+  );
 
   const handleClearBoard = useCallback(() => {
     if (tasks.length === 0) {
@@ -93,28 +98,34 @@ function Boards() {
     ));
   }, [tasks.length, clearTasks]);
 
-  const handleTaskClick = useCallback((task) => {
-    openModal(CardModal, {
-      task,
-      activeView,
-      columns: columns[activeView],
-      moveTask,
-    });
-  }, [activeView, columns, moveTask, openModal]);
+  const handleTaskClick = useCallback(
+    (task) => {
+      openModal(CardModal, {
+        task,
+        activeView,
+        columns: columns[activeView],
+        moveTask,
+      });
+    },
+    [activeView, columns, moveTask, openModal]
+  );
 
-  const handleAddColumn = useCallback((index, column) => {
-    openModal(ColumnModal, {
-      mode: column ? "edit" : "create",
-      columnData: column,
-      onSave: (data) => {
-        if (column) {
-          renameColumn(activeView, column.id, data);
-        } else {
-          addColumn(activeView, index, data);
-        }
-      },
-    });
-  }, [activeView, renameColumn, addColumn, openModal]);
+  const handleAddColumn = useCallback(
+    (index, column) => {
+      openModal(ColumnModal, {
+        mode: column ? "edit" : "create",
+        columnData: column,
+        onSave: (data) => {
+          if (column) {
+            renameColumn(activeView, column.id, data);
+          } else {
+            addColumn(activeView, index, data);
+          }
+        },
+      });
+    },
+    [activeView, renameColumn, addColumn, openModal]
+  );
 
   return (
     <div className="content-block">

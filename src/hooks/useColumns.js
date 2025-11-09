@@ -1,5 +1,15 @@
 import { useState } from "react";
 
+/**
+ * @Hook useColumns
+ * 
+ * Gerencia o estado das colunas de cada board (Kanban e Scrum).
+ * Suporta:
+ *  - Adição, remoção e renomeação de colunas
+ *  - Cores aplicadas ao fundo ou à borda
+ *  - Total compatibilidade com o espelhamento 1:1
+ */
+
 export default function useColumns(defaultKanban, defaultScrum) {
   const [columns, setColumns] = useState({
     kanban: defaultKanban || [],
@@ -16,8 +26,14 @@ export default function useColumns(defaultKanban, defaultScrum) {
         description: columnData?.description || "",
         className: `${view}-column new`,
         styleVars: {
-          bg: columnData?.applyTo === "fundo" ? columnData?.color || "#EFEFEF" : "transparent",
-          border: columnData?.applyTo === "borda" ? columnData?.color || "#CCCCCC" : "transparent",
+          bg:
+            columnData?.applyTo === "fundo"
+              ? columnData?.color || "#EFEFEF"
+              : "transparent",
+          border:
+            columnData?.applyTo === "borda"
+              ? columnData?.color || "#CCCCCC"
+              : "transparent",
         },
       };
 
@@ -42,12 +58,14 @@ export default function useColumns(defaultKanban, defaultScrum) {
             color: newData.color ?? col.color,
             applyTo: newData.applyTo ?? col.applyTo,
             styleVars: {
-              bg: (newData.applyTo ?? col.applyTo) === "fundo"
-                ? newData.color ?? col.color
-                : col.styleVars?.bg ?? "transparent",
-              border: (newData.applyTo ?? col.applyTo) === "borda"
-                ? newData.color ?? col.color
-                : col.styleVars?.border ?? "transparent",
+              bg:
+                (newData.applyTo ?? col.applyTo) === "fundo"
+                  ? newData.color ?? col.color
+                  : col.styleVars?.bg ?? "transparent",
+              border:
+                (newData.applyTo ?? col.applyTo) === "borda"
+                  ? newData.color ?? col.color
+                  : col.styleVars?.border ?? "transparent",
             },
           }
           : col
@@ -55,7 +73,6 @@ export default function useColumns(defaultKanban, defaultScrum) {
       return { ...prev, [view]: updatedView };
     });
   };
-
 
   const removeColumn = (view, id) => {
     setColumns((prev) => {

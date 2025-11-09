@@ -3,12 +3,12 @@ import { columnStyles } from "../constants/columnStyles.js";
 
 export default function useColumnForm(columnData) {
     const [title, setTitle] = useState("");
-    const [color, setColor] = useState("#02773aff");
+    const [color, setColor] = useState("#02773a");
     const [description, setDescription] = useState("");
     const [applyTo, setApplyTo] = useState("fundo");
 
     const determineColor = (colData) => {
-        if (!colData) return { color: "#02773aff", applyTo: "fundo" };
+        if (!colData) return { color: "#02773a", applyTo: "fundo" };
 
         if (colData.color) return { color: colData.color, applyTo: colData.applyTo || "fundo" };
 
@@ -21,7 +21,7 @@ export default function useColumnForm(columnData) {
             }
         }
 
-        return { color: "#02773aff", applyTo: "fundo" };
+        return { color: "#02773a", applyTo: "fundo" };
     };
 
     useEffect(() => {

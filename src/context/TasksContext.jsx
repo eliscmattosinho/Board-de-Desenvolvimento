@@ -18,6 +18,7 @@ function tasksReducer(state, action) {
   switch (action.type) {
     case ACTIONS.SET_TASKS:
       return { ...state, tasks: action.tasks, nextId: action.nextId };
+
     case ACTIONS.ADD_TASK: {
       const newTask = action.task;
       const updated = [...state.tasks, newTask];
@@ -25,6 +26,7 @@ function tasksReducer(state, action) {
       sessionStorage.setItem("tasksNextId", String(state.nextId + 1));
       return { tasks: updated, nextId: state.nextId + 1 };
     }
+
     case ACTIONS.MOVE_TASK: {
       const { taskId, status, targetTaskId, position } = action;
       const task = state.tasks.find(t => String(t.id) === String(taskId));
@@ -46,12 +48,14 @@ function tasksReducer(state, action) {
       sessionStorage.setItem("tasks", JSON.stringify(reordered));
       return { ...state, tasks: reordered };
     }
+
     case ACTIONS.UPDATE_TASK: {
       const { taskId, changes } = action;
       const updated = state.tasks.map(t => String(t.id) === String(taskId) ? { ...t, ...changes } : t);
       sessionStorage.setItem("tasks", JSON.stringify(updated));
       return { ...state, tasks: updated };
     }
+
     case ACTIONS.DELETE_TASK: {
       const { taskId } = action;
       const updated = state.tasks
@@ -60,11 +64,13 @@ function tasksReducer(state, action) {
       sessionStorage.setItem("tasks", JSON.stringify(updated));
       return { ...state, tasks: updated };
     }
+
     case ACTIONS.CLEAR_TASKS:
       sessionStorage.removeItem("tasks");
       sessionStorage.removeItem("tasksNextId");
       resetTasksCache();
       return { tasks: [], nextId: 1 };
+
     default:
       return state;
   }

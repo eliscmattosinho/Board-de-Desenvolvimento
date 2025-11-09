@@ -5,14 +5,14 @@ import { SiCcleaner } from "react-icons/si";
 
 import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
 import BoardSection from "../components/Board/BoardSection";
-import CardTask from "../components/Card/CardTask";
+import CardModal from "../components/Card/CardModal/CardModal";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
-import ColumnCreate from "../components/Column/ColumnModal/ColumnCreate";
-import ColumnEdit from "../components/Column/ColumnModal/ColumnEdit";
 import ClearBoardToast from "../components/ToastProvider/toasts/ClearBoardToast";
+import ColumnModal from "../components/Column/ColumnModal/ColumnModal";
 
 import { useTasks } from "../context/TasksContext";
+import { useModal } from "../context/ModalContext";
 import useColumns from "../hooks/useColumns";
 import { columnIdToCanonicalStatus } from "../js/boardUtils";
 import { showWarning, showCustom, showSuccess } from "../utils/toastUtils";
@@ -24,8 +24,8 @@ import svgBoard from "../assets/images/svg-board.svg";
 function Boards() {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("kanban");
-  const [selectedTask, setSelectedTask] = useState(null);
 
+  const { openModal } = useModal();
   const { tasks, addTask, moveTask, updateTask, deleteTask, clearTasks } = useTasks();
 
   const defaultKanban = [
@@ -44,12 +44,6 @@ function Boards() {
 
   const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
 
-  // Modal de criar/editar coluna
-  const [columnModalOpen, setColumnModalOpen] = useState(false);
-  const [columnModalIndex, setColumnModalIndex] = useState(0);
-  const [columnModalView, setColumnModalView] = useState("kanban");
-  const [editingColumn, setEditingColumn] = useState(null);
-
   const allowDrop = (e) => e.preventDefault();
   const handleDragStart = (e, taskId) => e.dataTransfer.setData("text/plain", taskId);
 
@@ -65,49 +59,38 @@ function Boards() {
 
   const handleAddTask = (columnId = null) => {
     const newTask = addTask(columnId, activeView);
-    setSelectedTask({ ...newTask, isNew: true });
+    openModal(CardModal, {
+      task: { ...newTask, isNew: true },
+      activeView,
+      columns: columns[activeView],
+      moveTask,
+      updateTask,
+      deleteTask,
+    });
   };
 
-  const openColumnModal = (view, index, column = null) => {
-    setColumnModalView(view);
-    setColumnModalIndex(index);
-    setEditingColumn(column); // null = criar, objeto = editar
-    setColumnModalOpen(true);
-  };
-
-  const handleSaveColumn = (columnData) => {
-    if (editingColumn) {
-      renameColumn(columnModalView, editingColumn.id, columnData);
-    } else {
-      addColumn(columnModalView, columnModalIndex, columnData);
-    }
-    setColumnModalOpen(false);
-  };
-
-  // TODO: deletar por board ao invés de todas as views?
   const handleClearBoard = () => {
     if (tasks.length === 0) {
       showWarning("Não há tarefas para remover — o board já está vazio!");
       return;
     }
 
-    showCustom(
-      ({ closeToast }) => (
-        <ClearBoardToast
-          onConfirm={() => {
-            clearTasks();
-            closeToast();
-            showSuccess("Todas as tarefas foram removidas com sucesso!");
-          }}
-          onCancel={closeToast}
-        />
-      )
-    );
+    showCustom(({ closeToast }) => (
+      <ClearBoardToast
+        onConfirm={() => {
+          clearTasks();
+          closeToast();
+          showSuccess("Todas as tarefas foram removidas com sucesso!");
+        }}
+        onCancel={closeToast}
+      />
+    ));
   };
 
   return (
     <div className="content-block">
       <div id="general-content" className="content">
+        {/* Botão voltar + tema */}
         <div className="btn-container back-button">
           <button onClick={() => navigate("/")} className="board-icon back-btn">
             <FaArrowCircleLeft />
@@ -118,6 +101,7 @@ function Boards() {
           </div>
         </div>
 
+        {/* Seção introdutória */}
         <div className="first-section-board">
           <div className="text-content-intro">
             <div className="titles-content">
@@ -131,6 +115,7 @@ function Boards() {
           </div>
         </div>
 
+        {/* Seção principal */}
         <div className="second-section-board">
           <div className="header-board-section">
             <div className="board-title-container">
@@ -138,19 +123,23 @@ function Boards() {
                 {activeView === "kanban" ? "Kanban" : "Scrum"}
                 <span className="task-counter">({tasks.length})</span>
               </h3>
+
               <FloatingMenu
                 onAddTask={handleAddTask}
-                onAddColumn={() => openColumnModal(activeView, columns[activeView].length)}
+                onAddColumn={() =>
+                  openModal(ColumnModal, {
+                    mode: "create",
+                    onSave: (data) =>
+                      addColumn(activeView, columns[activeView].length, data),
+                  })
+                }
               />
             </div>
 
-            <SiCcleaner
-              size={30}
-              className="board-cleaner"
-              onClick={handleClearBoard}
-            />
+            <SiCcleaner size={30} className="board-cleaner" onClick={handleClearBoard} />
           </div>
 
+          {/* Seções Kanban e Scrum */}
           <div className="tables-block">
             <BoardSection
               id="kanban"
@@ -158,10 +147,31 @@ function Boards() {
               tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
-              onTaskClick={setSelectedTask}
+              onTaskClick={(task) =>
+                openModal(CardModal, {
+                  task,
+                  activeView,
+                  columns: columns.kanban,
+                  moveTask,
+                  updateTask,
+                  deleteTask,
+                })
+              }
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
-              onAddColumn={(index, column) => openColumnModal("kanban", index, column)}
+              onAddColumn={(index, column) =>
+                openModal(ColumnModal, {
+                  mode: column ? "edit" : "create",
+                  columnData: column,
+                  onSave: (data) => {
+                    if (column) {
+                      renameColumn("kanban", column.id, data);
+                    } else {
+                      addColumn("kanban", index, data);
+                    }
+                  },
+                })
+              }
               removeColumn={removeColumn}
               activeView="kanban"
               isActive={activeView === "kanban"}
@@ -173,10 +183,31 @@ function Boards() {
               tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
-              onTaskClick={setSelectedTask}
+              onTaskClick={(task) =>
+                openModal(CardModal, {
+                  task,
+                  activeView,
+                  columns: columns.scrum,
+                  moveTask,
+                  updateTask,
+                  deleteTask,
+                })
+              }
               onDragStart={handleDragStart}
               onAddTask={handleAddTask}
-              onAddColumn={(index, column) => openColumnModal("scrum", index, column)}
+              onAddColumn={(index, column) =>
+                openModal(ColumnModal, {
+                  mode: column ? "edit" : "create",
+                  columnData: column,
+                  onSave: (data) => {
+                    if (column) {
+                      renameColumn("scrum", column.id, data);
+                    } else {
+                      addColumn("scrum", index, data);
+                    }
+                  },
+                })
+              }
               removeColumn={removeColumn}
               activeView="scrum"
               isActive={activeView === "scrum"}
@@ -184,38 +215,6 @@ function Boards() {
           </div>
         </div>
       </div>
-
-      <CardTask
-        task={selectedTask}
-        onClose={() => setSelectedTask(null)}
-        activeView={activeView}
-        columns={columns[activeView]}
-        moveTask={moveTask}
-        updateTask={(taskId, changes) => {
-          updateTask(taskId, changes);
-          setSelectedTask(null);
-        }}
-        deleteTask={(taskId) => {
-          deleteTask(taskId);
-          setSelectedTask(null);
-        }}
-      />
-
-      {/* Modal de criação/edição de coluna */}
-      {editingColumn ? (
-        <ColumnEdit
-          isOpen={columnModalOpen}
-          onClose={() => setColumnModalOpen(false)}
-          onSave={handleSaveColumn}
-          columnData={editingColumn}
-        />
-      ) : (
-        <ColumnCreate
-          isOpen={columnModalOpen}
-          onClose={() => setColumnModalOpen(false)}
-          onSave={handleSaveColumn}
-        />
-      )}
     </div>
   );
 }

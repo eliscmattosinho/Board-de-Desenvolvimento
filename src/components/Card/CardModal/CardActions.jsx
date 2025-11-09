@@ -13,8 +13,7 @@ export default function CardActions({ editMode, isCreating, dirty, onSave, onCan
                 <>
                     <button
                         type="button"
-                        className={`modal-btn btn-save ${dirty || isCreating ? "active" : "disabled"
-                            }`}
+                        className={`modal-btn btn-save ${dirty || isCreating ? "active" : "disabled"}`}
                         onClick={onSave}
                         disabled={!dirty && !isCreating}
                         data-tooltip="Salvar alterações"
@@ -23,12 +22,7 @@ export default function CardActions({ editMode, isCreating, dirty, onSave, onCan
                     </button>
 
                     {!isCreating && (
-                        <button
-                            type="button"
-                            className="modal-btn btn-cancel"
-                            onClick={onCancel}
-                            data-tooltip="Descartar edição"
-                        >
+                        <button type="button" className="modal-btn btn-cancel" onClick={onCancel} data-tooltip="Descartar edição">
                             Cancelar
                         </button>
                     )}

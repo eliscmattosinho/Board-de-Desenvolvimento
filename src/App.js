@@ -7,7 +7,9 @@ import NotFound from "./pages/NotFound";
 import ScreenBlockage from "./pages/ScreenBlockage";
 
 import RouteChangeTracker from "./components/RouteChangeTracker";
+
 import { ThemeProvider } from "./context/ThemeContext";
+import { ModalProvider } from "./context/ModalContext";
 import { TasksProvider } from "./context/TasksContext";
 import ToastProvider from "./components/ToastProvider/ToastProvider";
 
@@ -34,10 +36,12 @@ function App() {
       <TasksProvider>
         <Router basename="/development-board">
           <RouteChangeTracker>
-            <div className="App">
-              <AppContent />
-              <ToastProvider />
-            </div>
+            <ModalProvider>
+              <div className="App">
+                <AppContent />
+                <ToastProvider />
+              </div>
+            </ModalProvider>
           </RouteChangeTracker>
         </Router>
       </TasksProvider>

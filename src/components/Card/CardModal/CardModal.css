@@ -1,0 +1,56 @@
+.task-id {
+    color: var(--global-gray);
+    font-size: 16px;
+}
+
+.task-name {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Prevent textarea from exceeding parent width */
+.textarea-description {
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 100%;
+    resize: vertical;
+}
+
+/* @TODO: textarea-description slider-thumb */
+
+.card-content-wrapper {
+    position: relative;
+    /* @TODO height */
+    transition: height 0.4s ease;
+}
+
+.card-content-wrapper.is-animating {
+    overflow: hidden;
+}
+
+.content-inner {
+    width: 100%;
+}
+
+/* Animação de slide para troca de modo */
+.slide-enter {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.slide-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.slide-exit {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.slide-exit-active {
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}

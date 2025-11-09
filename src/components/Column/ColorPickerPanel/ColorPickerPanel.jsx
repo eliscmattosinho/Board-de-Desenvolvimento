@@ -121,7 +121,7 @@ export default function ColorPickerPanel({ color, setColor, applyTo, setApplyTo,
 
             <input
                 id="picker-hex-input"
-                className="picker-hex-input"
+                className="input-entry picker-hex-input"
                 value={color.toUpperCase()}
                 onChange={(e) => setColor(e.target.value)}
             />

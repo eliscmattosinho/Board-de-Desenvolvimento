@@ -1,0 +1,8 @@
+.modal-delete {
+  align-items: center;
+  text-align: center;
+}
+
+.modal-delete .modal-actions {
+  gap: 2rem;
+}

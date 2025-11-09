@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
 import Column from "../Column/Column";
 import AddColumnIndicator from "../Column/AddColIndicator/AddColumnIndicator";
-import ConfirmDeleteModal from "../Card/DeleteTaskModal/ConfirmDeleteModal";
+import ConfirmDeleteModal from "../Modal/DeleteModal/ConfirmDeleteModal";
+import { useModal } from "../../context/ModalContext";
 import "./BoardSection.css";
 import { CiCirclePlus } from "react-icons/ci";
 import { getDisplayStatus } from "../../js/boardUtils";
@@ -21,8 +22,7 @@ function BoardSection({
   isActive,
 }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [colToDelete, setColToDelete] = useState(null);
+  const { openModal, closeModal } = useModal();
 
   const handleColumnHover = useCallback(
     (action, index = null) => {
@@ -39,6 +39,17 @@ function BoardSection({
     },
     []
   );
+
+  const handleDeleteColumn = (col) => {
+    openModal(ConfirmDeleteModal, {
+      type: "column",
+      onConfirm: () => {
+        removeColumn(activeView, col.id);
+        closeModal();
+      },
+      onCancel: closeModal,
+    });
+  };
 
   return (
     <div id={id} className={`board ${id}-board ${isActive ? "active" : ""}`}>
@@ -62,10 +73,7 @@ function BoardSection({
               color={col.color}
               applyTo={col.applyTo}
               onEdit={() => onAddColumn(index, col)}
-              onRemove={() => {
-                setColToDelete(col);
-                setShowDeleteModal(true);
-              }}
+              onRemove={() => handleDeleteColumn(col)}
             />
 
             {index < columns.length - 1 && (
@@ -93,23 +101,6 @@ function BoardSection({
         <CiCirclePlus className="add-col" size={30} />
         <p>Criar nova coluna</p>
       </div>
-
-      {/* Modal de confirmação de exclusão */}
-      <ConfirmDeleteModal
-        isOpen={showDeleteModal}
-        type="column"
-        onConfirm={() => {
-          if (colToDelete) {
-            removeColumn(activeView, colToDelete.id);
-            setColToDelete(null);
-          }
-          setShowDeleteModal(false);
-        }}
-        onCancel={() => {
-          setShowDeleteModal(false);
-          setColToDelete(null);
-        }}
-      />
     </div>
   );
 }

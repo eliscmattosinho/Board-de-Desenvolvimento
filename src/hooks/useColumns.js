@@ -10,7 +10,7 @@ export default function useColumns(defaultKanban, defaultScrum) {
     setColumns((prev) => {
       const newColumn = {
         id: `col-${Date.now()}`,
-        title: columnData?.title || "Nova Coluna",
+        title: columnData?.title || "Nova coluna",
         color: columnData?.color || "#EFEFEF",
         applyTo: columnData?.applyTo || "fundo",
         description: columnData?.description || "",

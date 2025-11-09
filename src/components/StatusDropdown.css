@@ -1,0 +1,92 @@
+/* Status label */
+.status-block {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.status-value {
+    font-size: 14px;
+}
+
+/* Dropdown customizado */
+.custom-dropdown {
+    position: relative;
+    min-width: fit-content;
+    margin-left: 5px;
+    background: transparent;
+}
+
+.dropdown-selected {
+    padding: 5px;
+    color: var(--global-black);
+    border: 1px solid var(--global-gray);
+    border-radius: 6px;
+    background: var(--global-white);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dropdown-selected:hover {
+    box-shadow: var(--on-focus);
+}
+
+.dropdown-selected svg path {
+    color: var(--global-black);
+}
+
+.dropdown-icon {
+    font-size: 18px;
+    margin-left: 5px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-icon.open {
+    transform: rotate(180deg);
+}
+
+.dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    min-width: max-content;
+    border: 1px solid var(--global-gray);
+    border-radius: 6px;
+    background-color: var(--global-white);
+    margin-top: 4px;
+    box-shadow: var(--item-shadow);
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dropdown-option {
+    background-color: var(--global-white);
+    color: var(--global-black);
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 14px;
+
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-option:hover {
+    background-color: var(--global-black);
+    color: var(--global-white);
+}
+
+/* portal styling (on body) */
+.dropdown-options-portal {
+    border: 1px solid var(--global-gray);
+    border-radius: 6px;
+    background-color: var(--bg-color);
+    margin-top: 4px;
+    box-shadow: var(--item-shadow);
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 14px;
+}

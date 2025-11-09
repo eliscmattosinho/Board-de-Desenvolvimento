@@ -159,6 +159,8 @@ button.btn-cancel {
   font-weight: 600;
 }
 
+/* @TODO TAB NAV OUTLINE */
+
 .title-thematic,
 .btn-thematic {
   background: var(--btn-thematic-text);

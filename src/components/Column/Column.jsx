@@ -1,11 +1,24 @@
-import React, { useState } from "react";
-
+import React, { useState, useCallback, useMemo } from "react";
 import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
-
-import { columnStyles } from "../../constants/columnStyles";
 import TaskItem from "./TaskItem";
-
+import { columnStyles } from "../../constants/columnStyles";
 import "./Column.css";
+
+const ColumnHeader = React.memo(({ title, tasksLength, hovered, onEdit, onRemove }) => (
+  <div className="title-col-board">
+    <div className="col-title-flex">
+      {hovered && onRemove && (
+        <CiTrash className="col-icon-left" size={20} onClick={onRemove} />
+      )}
+      <h4 className="col-title-board">
+        {title} <span className="task-counter">({tasksLength})</span>
+      </h4>
+      {hovered && onEdit && (
+        <CiEdit className="col-icon-right" size={20} onClick={onEdit} />
+      )}
+    </div>
+  </div>
+));
 
 function Column({
   id,
@@ -39,27 +52,68 @@ function Column({
           : defaultStyle.color,
   };
 
-  // Drag & drop handlers
-  const handleDropTask = (e, targetTaskId, position = null) => {
-    e.preventDefault();
-    setDragOverIndex(null);
-    setDragPosition(null);
-    onDrop(e, id, targetTaskId, position);
-  };
+  const handleDropTask = useCallback(
+    (e, targetTaskId = null, position = null) => {
+      e.preventDefault();
+      setDragOverIndex(null);
+      setDragPosition(null);
+      onDrop(e, id, targetTaskId, position);
+    },
+    [id, onDrop]
+  );
 
-  const handleDragOverTask = (e, taskId) => {
+  const handleDragOverTask = useCallback((e, taskId) => {
     e.preventDefault();
     const bounding = e.currentTarget.getBoundingClientRect();
     const offset = e.clientY - bounding.top;
     const position = offset < bounding.height / 2 ? "above" : "below";
     setDragOverIndex(taskId);
     setDragPosition(position);
-  };
+  }, []);
 
-  const handleDragLeaveTask = () => {
+  const handleDragLeaveTask = useCallback(() => {
     setDragOverIndex(null);
     setDragPosition(null);
-  };
+  }, []);
+
+  const handleAddTaskClick = useCallback(() => onAddTask(id), [id, onAddTask]);
+  const handleEditClick = useCallback((e) => { e.stopPropagation(); onEdit?.(); }, [onEdit]);
+  const handleRemoveClick = useCallback((e) => { e.stopPropagation(); onRemove?.(); }, [onRemove]);
+
+  const renderedTasks = useMemo(() => {
+    if (!tasks || tasks.length === 0) return null;
+
+    return tasks.map((task) => (
+      <React.Fragment key={task.id}>
+        {dragOverIndex === task.id && dragPosition === "above" && (
+          <div className="task-placeholder active"></div>
+        )}
+
+        <TaskItem
+          task={task}
+          onClick={onTaskClick}
+          onDragStart={onDragStart}
+          onDrop={(e) => handleDropTask(e, task.id, dragPosition)}
+          onDragOver={(e) => handleDragOverTask(e, task.id)}
+          onDragLeave={handleDragLeaveTask}
+          dragPosition={dragOverIndex === task.id ? dragPosition : null}
+        />
+
+        {dragOverIndex === task.id && dragPosition === "below" && (
+          <div className="task-placeholder active"></div>
+        )}
+      </React.Fragment>
+    ));
+  }, [
+    tasks,
+    dragOverIndex,
+    dragPosition,
+    onTaskClick,
+    onDragStart,
+    handleDropTask,
+    handleDragOverTask,
+    handleDragLeaveTask,
+  ]);
 
   return (
     <div
@@ -70,72 +124,24 @@ function Column({
         "--col-border": colStyle.border,
         "--col-font": colStyle.color,
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <div
-        className="title-col-board"
-        onDrop={(e) => handleDropTask(e, null)}
-        onDragOver={(e) => e.preventDefault()}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <div className="col-title-flex">
-          {hovered && onRemove && (
-            <CiTrash
-              className="col-icon-left"
-              size={20}
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemove();
-              }}
-            />
-          )}
+      <ColumnHeader
+        title={title}
+        tasksLength={tasks.length}
+        hovered={hovered}
+        onEdit={handleEditClick}
+        onRemove={handleRemoveClick}
+      />
 
-          <h4 className="col-title-board">
-            {title} <span className="task-counter">({tasks.length})</span>
-          </h4>
-
-          {hovered && onEdit && (
-            <CiEdit
-              className="col-icon-right"
-              size={20}
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit();
-              }}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Lista de tarefas */}
       <div className={`col-items ${colKey}-items ${tasks.length === 0 ? "none" : ""}`}>
-        {tasks.map((task) => (
-          <React.Fragment key={task.id}>
-            {dragOverIndex === task.id && dragPosition === "above" && (
-              <div className="task-placeholder active"></div>
-            )}
-
-            <TaskItem
-              task={task}
-              onClick={onTaskClick}
-              onDragStart={onDragStart}
-              onDrop={(e) => handleDropTask(e, task.id, dragPosition)}
-              onDragOver={(e) => handleDragOverTask(e, task.id)}
-              onDragLeave={handleDragLeaveTask}
-            />
-
-            {dragOverIndex === task.id && dragPosition === "below" && (
-              <div className="task-placeholder active"></div>
-            )}
-          </React.Fragment>
-        ))}
-
+        {renderedTasks}
         {tasks.length === 0 && <div className="task-placeholder active"></div>}
       </div>
 
-      {/* Botão para adicionar tarefa */}
       {onAddTask && (
-        <div className="add-task" onClick={() => onAddTask(id)}>
+        <div className="add-task" onClick={handleAddTaskClick}>
           <CiCirclePlus size={30} className="board-icon" />
         </div>
       )}
@@ -149,4 +155,4 @@ function Column({
   );
 }
 
-export default Column;
+export default React.memo(Column);

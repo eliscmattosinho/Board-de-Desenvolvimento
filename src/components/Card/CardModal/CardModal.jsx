@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-
 import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../utils/boardUtils";
 import { showWarning } from "../../../utils/toastUtils";
 import useTaskForm from "../../../hooks/useTaskForm";
 import { useModal } from "../../../context/ModalContext";
+import { useTasks } from "../../../context/TasksContext";
 
 import Modal from "../../Modal/Modal";
 import ConfirmDeleteModal from "../../Modal/DeleteModal/ConfirmDeleteModal";
@@ -18,8 +18,6 @@ export default function CardModal({
     activeView,
     columns,
     moveTask,
-    updateTask,
-    deleteTask,
 }) {
     const isCreating = !!task?.isNew;
 
@@ -32,6 +30,7 @@ export default function CardModal({
         useTaskForm(task, columns, activeView);
 
     const { openModal, closeModal } = useModal();
+    const { saveNewTask, updateTask, deleteTask } = useTasks();
 
     const modalTitle = (
         <>
@@ -89,12 +88,21 @@ export default function CardModal({
 
         const canonicalStatus = columnIdToCanonicalStatus(status);
 
-        updateTask(task.id, {
-            title: trimmedTitle,
-            description: description.trim(),
-            status: canonicalStatus,
-            isNew: false,
-        });
+        if (task.isNew) {
+            // Salva a task usando o contexto
+            saveNewTask({
+                ...task,
+                title: trimmedTitle,
+                description: description.trim(),
+                status: canonicalStatus,
+            });
+        } else {
+            updateTask(task.id, {
+                title: trimmedTitle,
+                description: description.trim(),
+                status: canonicalStatus,
+            });
+        }
 
         setEditMode(false);
         setDirty(false);
@@ -123,7 +131,9 @@ export default function CardModal({
     };
 
     const handleClose = () => {
+        // Remove task temporária se não foi editada
         if (isCreating && !(title.trim() || description.trim())) deleteTask(task.id);
+
         setEditMode(false);
         setShouldAnimate(false);
         setIsAnimating(false);
@@ -139,8 +149,7 @@ export default function CardModal({
             closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
             <div
-                className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""
-                    }`}
+                className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""}`}
             >
                 {isCreating ? (
                     <CardEditView

@@ -4,9 +4,12 @@ function TaskItem({ task, onClick, onDragStart, onDrop, onDragOver, onDragLeave,
   return (
     <div
       id={task.id}
-      className={`item task-item ${
-        dragPosition === "above" ? "drag-over-above" : dragPosition === "below" ? "drag-over-below" : ""
-      }`}
+      className={`item task-item ${dragPosition === "above"
+          ? "drag-over-above"
+          : dragPosition === "below"
+            ? "drag-over-below"
+            : ""
+        }`}
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
       onClick={() => onClick(task)}
@@ -20,4 +23,12 @@ function TaskItem({ task, onClick, onDragStart, onDrop, onDragOver, onDragLeave,
   );
 }
 
-export default TaskItem;
+// React.memo para evitar re-renderizações desnecessárias
+export default React.memo(TaskItem, (prev, next) => {
+  return (
+    prev.task.id === next.task.id &&
+    prev.task.title === next.task.title &&
+    prev.task.description === next.task.description &&
+    prev.dragPosition === next.dragPosition
+  );
+});

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { SiCcleaner } from "react-icons/si";
@@ -26,7 +26,7 @@ function Boards() {
   const [activeView, setActiveView] = useState("kanban");
 
   const { openModal } = useModal();
-  const { tasks, addTask, moveTask, updateTask, deleteTask, clearTasks } = useTasks();
+  const { tasks, addTask, moveTask, clearTasks } = useTasks();
 
   const defaultKanban = [
     { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
@@ -44,32 +44,38 @@ function Boards() {
 
   const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
 
-  const allowDrop = (e) => e.preventDefault();
-  const handleDragStart = (e, taskId) => e.dataTransfer.setData("text/plain", taskId);
+  const allowDrop = useCallback((e) => e.preventDefault(), []);
 
-  const handleDrop = (e, columnId, targetTaskId = null) => {
+  const handleDragStart = useCallback((e, taskId) => {
+    e.dataTransfer.setData("text/plain", taskId);
+  }, []);
+
+  const handleDrop = useCallback((e, columnId, targetTaskId = null) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
     const canonicalStatus = columnIdToCanonicalStatus(columnId);
     moveTask(taskId, canonicalStatus, targetTaskId);
-  };
+  }, [moveTask]);
 
-  const orderedTasks = [...tasks].sort((a, b) => a.order - b.order);
+  const orderedTasks = useMemo(() => {
+    return [...tasks].sort((a, b) => a.order - b.order);
+  }, [tasks]);
 
-  const handleAddTask = (columnId = null) => {
-    const newTask = addTask(columnId, activeView);
+  const handleAddTask = useCallback((columnId = null) => {
+    // Cria um draft com ID temporário
+    const newTask = addTask(columnId);
+
+    // Abre o modal passando o draft
     openModal(CardModal, {
       task: { ...newTask, isNew: true },
       activeView,
       columns: columns[activeView],
       moveTask,
-      updateTask,
-      deleteTask,
     });
-  };
+  }, [addTask, activeView, columns, moveTask, openModal]);
 
-  const handleClearBoard = () => {
+  const handleClearBoard = useCallback(() => {
     if (tasks.length === 0) {
       showWarning("Não há tarefas para remover — o board já está vazio!");
       return;
@@ -85,7 +91,30 @@ function Boards() {
         onCancel={closeToast}
       />
     ));
-  };
+  }, [tasks.length, clearTasks]);
+
+  const handleTaskClick = useCallback((task) => {
+    openModal(CardModal, {
+      task,
+      activeView,
+      columns: columns[activeView],
+      moveTask,
+    });
+  }, [activeView, columns, moveTask, openModal]);
+
+  const handleAddColumn = useCallback((index, column) => {
+    openModal(ColumnModal, {
+      mode: column ? "edit" : "create",
+      columnData: column,
+      onSave: (data) => {
+        if (column) {
+          renameColumn(activeView, column.id, data);
+        } else {
+          addColumn(activeView, index, data);
+        }
+      },
+    });
+  }, [activeView, renameColumn, addColumn, openModal]);
 
   return (
     <div className="content-block">
@@ -126,92 +155,47 @@ function Boards() {
 
               <FloatingMenu
                 onAddTask={handleAddTask}
-                onAddColumn={() =>
-                  openModal(ColumnModal, {
-                    mode: "create",
-                    onSave: (data) =>
-                      addColumn(activeView, columns[activeView].length, data),
-                  })
-                }
+                onAddColumn={() => handleAddColumn(columns[activeView].length)}
               />
             </div>
 
             <SiCcleaner size={30} className="board-cleaner" onClick={handleClearBoard} />
           </div>
 
-          {/* Seções Kanban e Scrum */}
           <div className="tables-block">
-            <BoardSection
-              id="kanban"
-              columns={columns.kanban}
-              tasks={orderedTasks}
-              onDrop={handleDrop}
-              onDragOver={allowDrop}
-              onTaskClick={(task) =>
-                openModal(CardModal, {
-                  task,
-                  activeView,
-                  columns: columns.kanban,
-                  moveTask,
-                  updateTask,
-                  deleteTask,
-                })
-              }
-              onDragStart={handleDragStart}
-              onAddTask={handleAddTask}
-              onAddColumn={(index, column) =>
-                openModal(ColumnModal, {
-                  mode: column ? "edit" : "create",
-                  columnData: column,
-                  onSave: (data) => {
-                    if (column) {
-                      renameColumn("kanban", column.id, data);
-                    } else {
-                      addColumn("kanban", index, data);
-                    }
-                  },
-                })
-              }
-              removeColumn={removeColumn}
-              activeView="kanban"
-              isActive={activeView === "kanban"}
-            />
+            {activeView === "kanban" && (
+              <BoardSection
+                id="kanban"
+                columns={columns.kanban}
+                tasks={orderedTasks}
+                onDrop={handleDrop}
+                onDragOver={allowDrop}
+                onTaskClick={handleTaskClick}
+                onDragStart={handleDragStart}
+                onAddTask={handleAddTask}
+                onAddColumn={handleAddColumn}
+                removeColumn={removeColumn}
+                activeView="kanban"
+                isActive
+              />
+            )}
 
-            <BoardSection
-              id="scrum"
-              columns={columns.scrum}
-              tasks={orderedTasks}
-              onDrop={handleDrop}
-              onDragOver={allowDrop}
-              onTaskClick={(task) =>
-                openModal(CardModal, {
-                  task,
-                  activeView,
-                  columns: columns.scrum,
-                  moveTask,
-                  updateTask,
-                  deleteTask,
-                })
-              }
-              onDragStart={handleDragStart}
-              onAddTask={handleAddTask}
-              onAddColumn={(index, column) =>
-                openModal(ColumnModal, {
-                  mode: column ? "edit" : "create",
-                  columnData: column,
-                  onSave: (data) => {
-                    if (column) {
-                      renameColumn("scrum", column.id, data);
-                    } else {
-                      addColumn("scrum", index, data);
-                    }
-                  },
-                })
-              }
-              removeColumn={removeColumn}
-              activeView="scrum"
-              isActive={activeView === "scrum"}
-            />
+            {activeView === "scrum" && (
+              <BoardSection
+                id="scrum"
+                columns={columns.scrum}
+                tasks={orderedTasks}
+                onDrop={handleDrop}
+                onDragOver={allowDrop}
+                onTaskClick={handleTaskClick}
+                onDragStart={handleDragStart}
+                onAddTask={handleAddTask}
+                onAddColumn={handleAddColumn}
+                removeColumn={removeColumn}
+                activeView="scrum"
+                isActive
+              />
+            )}
           </div>
         </div>
       </div>

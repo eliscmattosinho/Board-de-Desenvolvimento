@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import "./FloatingMenu.css";
 
@@ -7,6 +7,25 @@ function FloatingMenu({ onAddTask, onAddColumn }) {
     const menuRef = useRef(null);
     const closeTimeoutRef = useRef(null);
 
+    const handleMouseLeave = useCallback(() => {
+        closeTimeoutRef.current = setTimeout(() => setOpen(false), 300);
+    }, []);
+
+    const handleMouseEnter = useCallback(() => {
+        clearTimeout(closeTimeoutRef.current);
+        setOpen(true);
+    }, []);
+
+    const handleAddTask = useCallback(() => {
+        onAddTask();
+        setOpen(false);
+    }, [onAddTask]);
+
+    const handleAddColumn = useCallback(() => {
+        onAddColumn();
+        setOpen(false);
+    }, [onAddColumn]);
+
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -14,17 +33,11 @@ function FloatingMenu({ onAddTask, onAddColumn }) {
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            clearTimeout(closeTimeoutRef.current);
+        };
     }, []);
-
-    const handleMouseLeave = () => {
-        closeTimeoutRef.current = setTimeout(() => setOpen(false), 300);
-    };
-
-    const handleMouseEnter = () => {
-        clearTimeout(closeTimeoutRef.current);
-        setOpen(true);
-    };
 
     return (
         <div
@@ -47,10 +60,10 @@ function FloatingMenu({ onAddTask, onAddColumn }) {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    <button className="menu-item" onClick={onAddTask}>
+                    <button className="menu-item" onClick={handleAddTask}>
                         Adicionar tarefa
                     </button>
-                    <button className="menu-item" onClick={onAddColumn}>
+                    <button className="menu-item" onClick={handleAddColumn}>
                         Adicionar coluna
                     </button>
                 </div>

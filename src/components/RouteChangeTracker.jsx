@@ -1,31 +1,42 @@
 import React, { useState, useEffect } from "react";
+
 import { useLocation } from "react-router-dom";
+
 import Spinner from "./Spinner/Spinner";
 
 const RouteChangeTracker = ({ children }) => {
   const location = useLocation();
-  const [loading, setLoading] = useState(true); // show spinner on reload
-  const [currentPath, setCurrentPath] = useState(location.pathname);
+  const [currentLocation, setCurrentLocation] = useState(location);
+  const [loading, setLoading] = useState(true);
 
-  // Spinner on route change
   useEffect(() => {
-    if (location.pathname !== currentPath) {
-      setLoading(true);
-      const timer = setTimeout(() => {
-        setCurrentPath(location.pathname);
+    let spinnerTimer;
+    let routeUpdateTimer;
+
+    if (location.pathname !== currentLocation.pathname) {
+      // Delay curto antes de mostrar o spinner
+      spinnerTimer = setTimeout(() => setLoading(true), 200);
+
+      // Atualiza a rota depois do spinner (imediatamente se load rápido)
+      routeUpdateTimer = setTimeout(() => {
+        setCurrentLocation(location);
         setLoading(false);
       }, 600);
-      return () => clearTimeout(timer);
     }
-  }, [location, currentPath]);
 
-  // Initial mount: hide spinner after a short delay
+    return () => {
+      clearTimeout(spinnerTimer);
+      clearTimeout(routeUpdateTimer);
+    };
+  }, [location, currentLocation]);
+
+  // Spinner no carregamento inicial
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(timer);
+    const initialTimer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(initialTimer);
   }, []);
 
-  return loading ? <Spinner /> : children;
+  return loading ? <Spinner /> : children(currentLocation);
 };
 
 export default RouteChangeTracker;

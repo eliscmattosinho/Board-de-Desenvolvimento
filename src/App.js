@@ -1,5 +1,4 @@
 import React from "react";
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Building from "./pages/Building";
@@ -16,12 +15,12 @@ import { TasksProvider } from "./context/TasksContext";
 
 import useScreenBlocker from "./hooks/useScreenBlocker";
 
-function AppContent() {
+function AppContent({ location }) {
   useScreenBlocker(480);
 
   return (
     <div id="main">
-      <Routes>
+      <Routes location={location}>
         <Route path="/" element={<Building />} />
         <Route path="/boards" element={<Boards />} />
         <Route path="/block" element={<ScreenBlockage />} />
@@ -37,12 +36,14 @@ function App() {
       <TasksProvider>
         <Router basename="/development-board">
           <RouteChangeTracker>
-            <ModalProvider>
-              <div className="App">
-                <AppContent />
-                <ToastProvider />
-              </div>
-            </ModalProvider>
+            {(location) => (
+              <ModalProvider>
+                <div className="App">
+                  <AppContent location={location} />
+                  <ToastProvider />
+                </div>
+              </ModalProvider>
+            )}
           </RouteChangeTracker>
         </Router>
       </TasksProvider>

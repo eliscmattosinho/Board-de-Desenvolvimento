@@ -7,7 +7,7 @@ import { useTasks } from "../../../context/TasksContext";
 
 import Modal from "../../Modal/Modal";
 import ConfirmDeleteModal from "../../Modal/DeleteModal/ConfirmDeleteModal";
-import CardEditView from "./CardEditView";
+import CardEditView from "../CardEditView";
 import CardTransition from "./CardTransition";
 import CardActions from "./CardActions";
 

@@ -2,8 +2,8 @@ import React, { useRef } from "react";
 
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 
-import CardEditView from "./CardEditView";
-import CardView from "./CardView";
+import CardEditView from "../CardEditView";
+import CardView from "../CardView";
 
 export default function CardTransition({
     editMode,

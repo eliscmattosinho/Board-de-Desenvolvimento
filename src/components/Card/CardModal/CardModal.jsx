@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+
 import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../js/boardUtils";
 import useTaskForm from "../../../hooks/useTaskForm";
 import { useModal } from "../../../context/ModalContext";
@@ -8,6 +9,7 @@ import ConfirmDeleteModal from "../../Modal/DeleteModal/ConfirmDeleteModal";
 import CardEditView from "./CardEditView";
 import CardTransition from "./CardTransition";
 import CardActions from "./CardActions";
+
 import "./CardModal.css";
 
 export default function CardModal({
@@ -28,7 +30,6 @@ export default function CardModal({
     const { title, setTitle, description, setDescription, status, setStatus } =
         useTaskForm(task, columns, activeView);
 
-    const currentColumnId = status;
     const { openModal, closeModal } = useModal();
 
     const modalTitle = (
@@ -37,13 +38,20 @@ export default function CardModal({
         </>
     );
 
+    // Função memoizada para pegar a coluna original do card (edição)
+    const getOriginalColumnId = useCallback(() => {
+        return (
+            columns.find(
+                (col) => getDisplayStatus(task.status, activeView) === col.title
+            )?.id || columns[0]?.id || ""
+        );
+    }, [columns, task.status, activeView]);
+
     // Detecta alterações nos campos
     useEffect(() => {
         if (!editMode || !task) return;
 
-        const originalColId = columns.find(
-            (col) => getDisplayStatus(task.status, activeView) === col.title
-        )?.id;
+        const originalColId = getOriginalColumnId();
 
         const hasChanges =
             title.trim() !== (task.title || "").trim() ||
@@ -51,7 +59,7 @@ export default function CardModal({
             status !== originalColId;
 
         setDirty(hasChanges);
-    }, [title, description, status, editMode, task, columns, activeView]);
+    }, [title, description, status, editMode, task, getOriginalColumnId]);
 
     if (!task) return null;
 
@@ -61,10 +69,9 @@ export default function CardModal({
     };
 
     const handleSelect = (colId) => {
-        if (editMode) setStatus(colId);
-        else {
+        setStatus(colId);
+        if (!editMode) {
             moveTask(task.id, columnIdToCanonicalStatus(colId));
-            setStatus(colId);
         }
     };
 
@@ -75,31 +82,29 @@ export default function CardModal({
 
     const handleSave = () => {
         const trimmedTitle = title.trim();
-        if (!trimmedTitle) return alert("O título não pode ficar vazio.");
 
-        const colIdToSave = status || columns[0]?.id;
-        if (!colIdToSave) return;
+        if (!trimmedTitle) return alert("O título não pode ficar vazio.");
+        if (!status) return alert("Escolha uma coluna antes de salvar.");
+
+        const canonicalStatus = columnIdToCanonicalStatus(status);
 
         updateTask(task.id, {
             title: trimmedTitle,
             description: description.trim(),
-            status: columnIdToCanonicalStatus(colIdToSave),
+            status: canonicalStatus,
             isNew: false,
         });
 
-        triggerAnimation();
         setEditMode(false);
         setDirty(false);
+        handleClose();
     };
 
     const handleCancel = () => {
         triggerAnimation();
         setTitle(task.title || "");
         setDescription(task.description || "");
-        const originalColId = columns.find(
-            (col) => getDisplayStatus(task.status, activeView) === col.title
-        )?.id;
-        setStatus(originalColId || columns[0]?.id || "");
+        setStatus(isCreating ? "" : getOriginalColumnId());
         setEditMode(false);
         setDirty(false);
     };
@@ -132,7 +137,10 @@ export default function CardModal({
             showHeader={true}
             closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
-            <div className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""}`}>
+            <div
+                className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""
+                    }`}
+            >
                 {isCreating ? (
                     <CardEditView
                         title={title}
@@ -140,7 +148,7 @@ export default function CardModal({
                         description={description}
                         setDescription={setDescription}
                         columns={columns}
-                        currentColumnId={currentColumnId}
+                        currentColumnId={status}
                         onSelect={handleSelect}
                         isCreating={true}
                     />
@@ -157,7 +165,7 @@ export default function CardModal({
                         description={description}
                         setDescription={setDescription}
                         columns={columns}
-                        currentColumnId={currentColumnId}
+                        currentColumnId={status}
                         onSelect={handleSelect}
                     />
                 )}

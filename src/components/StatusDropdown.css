@@ -18,7 +18,7 @@
 }
 
 .dropdown-selected {
-    padding: 5px;
+    padding: 5px 10px;
     color: var(--global-black);
     border: 1px solid var(--global-gray);
     border-radius: 6px;

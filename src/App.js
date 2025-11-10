@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Building from "./pages/Building";
@@ -31,6 +31,15 @@ function AppContent({ location }) {
 }
 
 function App() {
+  useEffect(() => {
+    const enableActiveOnIOS = () => { };
+    document.addEventListener("touchstart", enableActiveOnIOS, true);
+
+    return () => {
+      document.removeEventListener("touchstart", enableActiveOnIOS, true);
+    };
+  }, []);
+
   return (
     <ThemeProvider>
       <TasksProvider>

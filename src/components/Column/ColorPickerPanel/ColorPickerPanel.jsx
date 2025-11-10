@@ -129,7 +129,7 @@ export default function ColorPickerPanel({
         } else {
             const match = internalColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
             if (match) {
-                const [_, r, g, b] = match;
+                const [, r, g, b] = match;
                 const hex = "#" + [r, g, b].map(x => parseInt(x).toString(16).padStart(2, "0")).join("");
                 setInternalColor(hex.toUpperCase());
             }

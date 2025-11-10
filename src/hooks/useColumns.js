@@ -49,27 +49,27 @@ export default function useColumns(defaultKanban, defaultScrum) {
 
   const renameColumn = (view, id, newData) => {
     setColumns((prev) => {
-      const updatedView = prev[view].map((col) =>
-        col.id === id
-          ? {
-            ...col,
-            title: newData.title ?? col.title,
-            description: newData.description ?? col.description,
-            color: newData.color ?? col.color,
-            applyTo: newData.applyTo ?? col.applyTo,
-            styleVars: {
-              bg:
-                (newData.applyTo ?? col.applyTo) === "fundo"
-                  ? newData.color ?? col.color
-                  : col.styleVars?.bg ?? "transparent",
-              border:
-                (newData.applyTo ?? col.applyTo) === "borda"
-                  ? newData.color ?? col.color
-                  : col.styleVars?.border ?? "transparent",
-            },
-          }
-          : col
-      );
+      const updatedView = prev[view].map((col) => {
+        if (col.id !== id) return col;
+
+        const nextApply = newData.applyTo ?? col.applyTo;
+        const nextColor = newData.color ?? col.color;
+
+        // Define novo styleVars "limpando" o anterior
+        const nextStyleVars =
+          nextApply === "fundo"
+            ? { bg: nextColor, border: "transparent" }
+            : { bg: "transparent", border: nextColor };
+
+        return {
+          ...col,
+          title: newData.title ?? col.title,
+          description: newData.description ?? col.description,
+          color: nextColor,
+          applyTo: nextApply,
+          styleVars: nextStyleVars,
+        };
+      });
       return { ...prev, [view]: updatedView };
     });
   };

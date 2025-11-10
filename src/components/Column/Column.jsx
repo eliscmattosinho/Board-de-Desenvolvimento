@@ -1,3 +1,5 @@
+// @TODO Refactor + colStyles
+
 import React, { useState, useCallback, useMemo } from "react";
 import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
 import TaskItem from "./TaskItem";
@@ -77,13 +79,25 @@ function Column({
   };
 
   const colStyle = {
-    bg: applyTo === "fundo" && color ? color : defaultStyle.bg,
-    border: applyTo === "borda" && color ? color : defaultStyle.border,
+    bg:
+      applyTo === "fundo"
+        ? color || defaultStyle.bg
+        : applyTo === "borda"
+          ? "transparent"
+          : defaultStyle.bg, // fundo padrão ao carregar
+    border:
+      applyTo === "borda"
+        ? color || defaultStyle.border
+        : applyTo === "fundo"
+          ? "transparent"
+          : defaultStyle.border, // borda padrão ao carregar
     color:
       applyTo === "fundo"
-        ? isColorDark(color) ? "#EFEFEF" : "#212121"
-        : applyTo === "borda" && color
-          ? color
+        ? isColorDark(color)
+          ? "#EFEFEF"
+          : "#212121"
+        : applyTo === "borda"
+          ? color || defaultStyle.color
           : defaultStyle.color,
   };
 

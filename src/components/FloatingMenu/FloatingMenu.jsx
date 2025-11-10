@@ -4,17 +4,28 @@ import "./FloatingMenu.css";
 
 function FloatingMenu({ onAddTask, onAddColumn }) {
     const [open, setOpen] = useState(false);
+    const [isTouch, setIsTouch] = useState(false);
     const menuRef = useRef(null);
     const closeTimeoutRef = useRef(null);
 
-    const handleMouseLeave = useCallback(() => {
-        closeTimeoutRef.current = setTimeout(() => setOpen(false), 300);
+    // Detecta se é dispositivo touch
+    useEffect(() => {
+        const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+        setIsTouch(touch);
     }, []);
 
+    const handleMouseLeave = useCallback(() => {
+        if (!isTouch) {
+            closeTimeoutRef.current = setTimeout(() => setOpen(false), 300);
+        }
+    }, [isTouch]);
+
     const handleMouseEnter = useCallback(() => {
-        clearTimeout(closeTimeoutRef.current);
-        setOpen(true);
-    }, []);
+        if (!isTouch) {
+            clearTimeout(closeTimeoutRef.current);
+            setOpen(true);
+        }
+    }, [isTouch]);
 
     const handleAddTask = useCallback(() => {
         onAddTask();

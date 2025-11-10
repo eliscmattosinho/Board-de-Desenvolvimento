@@ -6,7 +6,7 @@ import TaskItem from "./TaskItem";
 import { columnStyles } from "../../constants/columnStyles";
 import "./Column.css";
 
-const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove }) => {
+const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragOver, onDrop }) => {
   const [hovered, setHovered] = React.useState(false);
 
   return (
@@ -14,6 +14,8 @@ const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove }) => {
       className="title-col-board"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
     >
       <div className="col-title-flex">
         {hovered && onRemove && (
@@ -191,6 +193,8 @@ function Column({
         tasksLength={tasks.length}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => handleDropTask(e, null)}
       />
 
       <div className={`col-items ${colKey}-items ${tasks.length === 0 ? "none" : ""}`}>

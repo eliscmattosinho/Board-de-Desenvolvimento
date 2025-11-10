@@ -7,6 +7,7 @@
   width: 100%;
   height: 450px;
   overflow: visible;
+  cursor: pointer;
 }
 
 .board.active {
@@ -45,8 +46,6 @@
 
 .add-col:hover {
   transform: scale(1.1);
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out;
 }
 
 .add-column-zone {

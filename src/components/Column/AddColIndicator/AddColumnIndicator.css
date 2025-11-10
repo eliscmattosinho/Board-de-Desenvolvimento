@@ -52,8 +52,7 @@
 /* ícone */
 .add-col-container>svg {
   position: relative;
-  color: var(--global-green);
-  transition: color 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 @keyframes fadeInZoom {

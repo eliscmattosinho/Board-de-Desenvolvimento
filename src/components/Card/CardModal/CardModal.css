@@ -27,7 +27,7 @@
 .card-content-wrapper {
     position: relative;
     /* @TODO height */
-    transition: height 0.4s ease;
+    transition: height 0.4s ease-in-out;
 }
 
 .card-content-wrapper.is-animating {
@@ -47,7 +47,7 @@
 .slide-enter-active {
     transform: translateX(0);
     opacity: 1;
-    transition: transform 0.4s ease, opacity 0.4s ease;
+    transition: all 0.4s ease-in-out;
 }
 
 .slide-exit {
@@ -58,5 +58,5 @@
 .slide-exit-active {
     transform: translateX(-100%);
     opacity: 0;
-    transition: transform 0.4s ease, opacity 0.4s ease;
+    transition: all 0.4s ease-in-out;
 }

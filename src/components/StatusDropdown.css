@@ -27,7 +27,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: border 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease-in-out;
 }
 
 .dropdown-selected:hover {
@@ -41,7 +41,7 @@
 .dropdown-icon {
     font-size: 18px;
     margin-left: 5px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease-in-out;
 }
 
 .dropdown-icon.open {
@@ -71,7 +71,7 @@
     cursor: pointer;
     font-size: 14px;
 
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .dropdown-option:hover {

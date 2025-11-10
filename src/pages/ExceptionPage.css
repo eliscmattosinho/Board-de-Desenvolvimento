@@ -57,7 +57,11 @@
         0 0 7px #4477cc,
         0 0 10px #3355aa;
     animation: neon-blue-wink 3s infinite backwards;
-    transition: transform .5s ease;
+    transition: transform .5s ease-in-out;
+}
+
+.go-back:hover {
+    transform: scale(1.1);
 }
 
 .dark .go-back {
@@ -82,10 +86,6 @@
         0 0 7px #aaa,
         0 0 10px #999;
     animation: neon-gray-wink 2s infinite alternate-reverse;
-}
-
-.go-back:hover {
-    transform: scale(1.1);
 }
 
 /* Container da imagem */

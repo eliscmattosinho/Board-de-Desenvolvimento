@@ -200,7 +200,7 @@ function Column({
 
       {onAddTask && (
         <div className="add-task" onClick={handleAddTaskClick}>
-          <CiCirclePlus size={30} className="board-icon" />
+          <CiCirclePlus size={30} className="plus-icon" />
         </div>
       )}
 

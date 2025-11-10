@@ -109,7 +109,7 @@ function BoardSection({
 
       {/* Área para adicionar coluna no final */}
       <div className="col-add-last" onClick={() => onAddColumn(columns.length)}>
-        <CiCirclePlus className="add-col" size={30} />
+        <CiCirclePlus className="add-col plus-icon" size={30} />
         <p>Criar nova coluna</p>
       </div>
     </div>

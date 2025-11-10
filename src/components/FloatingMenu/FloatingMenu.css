@@ -8,7 +8,7 @@
     border: none;
     cursor: pointer;
     padding: 4px;
-    transition: transform 0.2s;
+    transition: transform 0.2s ease-in-out;
 }
 
 .menu-trigger:hover {

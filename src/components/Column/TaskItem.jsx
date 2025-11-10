@@ -11,7 +11,22 @@ function TaskItem({ task, onClick, onDragStart, onDrop, onDragOver, onDragLeave,
             : ""
         }`}
       draggable
-      onDragStart={(e) => onDragStart(e, task.id)}
+      onDragStart={(e) => {
+        onDragStart(e, task.id);
+
+        // CriA clone invisível para drag image
+        const dragImage = e.currentTarget.cloneNode(true);
+        dragImage.style.position = "absolute";
+        dragImage.style.top = "-1000px";
+        dragImage.style.left = "-1000px";
+        dragImage.style.width = `${e.currentTarget.offsetWidth}px`;
+        document.body.appendChild(dragImage);
+
+        e.dataTransfer.setDragImage(dragImage, e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+
+        // Remove o clone após o drag começar
+        setTimeout(() => document.body.removeChild(dragImage), 0);
+      }}
       onClick={() => onClick(task)}
       onDrop={onDrop}
       onDragOver={onDragOver}

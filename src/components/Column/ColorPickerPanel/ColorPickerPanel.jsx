@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { HexColorPicker, RgbaStringColorPicker } from "react-colorful";
 import { FiRefreshCcw } from "react-icons/fi";
@@ -81,22 +81,27 @@ export default function ColorPickerPanel({
         });
     };
 
-    const handleMouseMove = (e) => {
-        if (!isDragging || !panelRef.current) return;
-        let newLeft = e.clientX - dragOffset.x;
-        let newTop = e.clientY - dragOffset.y;
+    const handleMouseMove = useCallback(
+        (e) => {
+            if (!isDragging || !panelRef.current) return;
+            let newLeft = e.clientX - dragOffset.x;
+            let newTop = e.clientY - dragOffset.y;
 
-        const maxLeft = window.innerWidth - panelRef.current.offsetWidth;
-        const maxTop =
-            document.documentElement.scrollHeight - panelRef.current.offsetHeight;
+            const maxLeft = window.innerWidth - panelRef.current.offsetWidth;
+            const maxTop =
+                document.documentElement.scrollHeight - panelRef.current.offsetHeight;
 
-        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
-        newTop = Math.max(0, Math.min(newTop, maxTop));
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+            newTop = Math.max(0, Math.min(newTop, maxTop));
 
-        setPosition({ left: newLeft, top: newTop });
-    };
+            setPosition({ left: newLeft, top: newTop });
+        },
+        [isDragging, dragOffset]
+    );
 
-    const handleMouseUp = () => setIsDragging(false);
+    const handleMouseUp = useCallback(() => {
+        setIsDragging(false);
+    }, []);
 
     useEffect(() => {
         if (isDragging) {
@@ -106,11 +111,12 @@ export default function ColorPickerPanel({
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
         }
+
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
         };
-    }, [isDragging, dragOffset]);
+    }, [isDragging, handleMouseMove, handleMouseUp]);
 
     // Alternar modo HEX/RGBA
     const toggleMode = () => {

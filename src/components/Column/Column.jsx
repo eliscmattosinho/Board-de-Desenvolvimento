@@ -48,12 +48,40 @@ function Column({
   const colKey = className.split(" ")[1];
   const defaultStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
 
+  // Calcula se uma cor é clara ou escura
+  const isColorDark = (color) => {
+    if (!color) return false;
+
+    // Converte para RGB
+    let r, g, b;
+    if (color.startsWith("#")) {
+      const hex = color.replace("#", "");
+      if (hex.length === 3) {
+        r = parseInt(hex[0] + hex[0], 16);
+        g = parseInt(hex[1] + hex[1], 16);
+        b = parseInt(hex[2] + hex[2], 16);
+      } else {
+        r = parseInt(hex.slice(0, 2), 16);
+        g = parseInt(hex.slice(2, 4), 16);
+        b = parseInt(hex.slice(4, 6), 16);
+      }
+    } else if (color.startsWith("rgb")) {
+      const match = color.match(/\d+/g);
+      if (!match) return false;
+      [r, g, b] = match.map(Number);
+    }
+
+    // Luminância relativa (W3C)
+    const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    return luminance < 0.5;
+  };
+
   const colStyle = {
     bg: applyTo === "fundo" && color ? color : defaultStyle.bg,
     border: applyTo === "borda" && color ? color : defaultStyle.border,
     color:
       applyTo === "fundo"
-        ? "#efefef"
+        ? isColorDark(color) ? "#EFEFEF" : "#212121"
         : applyTo === "borda" && color
           ? color
           : defaultStyle.color,

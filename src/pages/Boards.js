@@ -132,8 +132,8 @@ function Boards() {
       <div id="general-content" className="content">
         {/* Botão voltar + tema */}
         <div className="btn-container back-button">
-          <button onClick={() => navigate("/")} className="board-icon back-btn">
-            <FaArrowCircleLeft />
+          <button onClick={() => navigate("/")} className="board-icon btn-back">
+            <FaArrowCircleLeft size={30} />
           </button>
           <div className="container-options">
             <ThemeToggle />

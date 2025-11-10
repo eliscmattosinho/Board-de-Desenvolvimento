@@ -201,25 +201,6 @@ h3 .task-counter {
     text-overflow: ellipsis;
 }
 
-button.back-btn {
-    border: none;
-    background: none;
-    transition: all 0.3s ease-in-out;
-}
-
-button.back-btn:hover {
-    transform: scale(1.1);
-}
-
-button.back-btn svg {
-    width: 30px;
-    height: auto;
-}
-
-.dark button.back-btn {
-    color: var(--global-white);
-}
-
 .container-options {
     display: flex;
     gap: 1rem;

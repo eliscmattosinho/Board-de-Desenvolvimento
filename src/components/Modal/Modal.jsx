@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { useState, useEffect } from "react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
 import "./Modal.css";
@@ -24,11 +23,27 @@ export default function Modal({
     width = "600px",
     className = "",
     closeTooltip = "Fechar",
+    isOpen = true,
 }) {
+    const [closing, setClosing] = useState(false);
+
+    const handleClose = () => {
+        setClosing(true);
+    };
+
+    useEffect(() => {
+        if (closing) {
+            const timer = setTimeout(() => {
+                onClose();
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [closing, onClose]);
+
     return (
-        <div className="modal" onClick={onClose}>
+        <div className="modal">
             <div
-                className={`modal-container ${className}`}
+                className={`modal-container ${className} ${closing ? "closing" : ""}`}
                 style={{ maxWidth: width }}
                 onClick={(e) => e.stopPropagation()}
             >
@@ -43,7 +58,7 @@ export default function Modal({
                 <button
                     type="button"
                     className="btn-close"
-                    onClick={onClose}
+                    onClick={handleClose}
                     data-tooltip={closeTooltip}
                 >
                     <IoIosCloseCircleOutline size={25} />

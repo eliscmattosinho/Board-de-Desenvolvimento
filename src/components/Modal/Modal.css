@@ -28,7 +28,9 @@
     min-width: 280px;
     padding: 1.5rem;
 
-    animation: fadeIn 0.2s ease-in-out;
+    animation: scaleIn 0.30s ease-in-out forwards;
+    transform-origin: center;
+    transition: all 0.30s ease-in-out;
 }
 
 .modal-header-row {
@@ -195,14 +197,31 @@ button[data-tooltip]:hover::before {
     opacity: 1;
 }
 
-@keyframes fadeIn {
+/* Entrada (abrindo) */
+@keyframes scaleIn {
     from {
         opacity: 0;
-        transform: scale(0.97);
+        transform: scale(0.8);
     }
-
     to {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* Saída (fechando) */
+@keyframes scaleOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+/* Classe para fechar o modal */
+.modal-container.closing {
+    animation: scaleOut 0.25s ease-in forwards;
 }

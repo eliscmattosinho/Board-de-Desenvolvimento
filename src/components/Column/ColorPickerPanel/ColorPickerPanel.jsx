@@ -165,10 +165,6 @@ export default function ColorPickerPanel({ color, setColor, applyTo, setApplyTo,
                     Borda
                 </label>
             </div>
-
-            {/* <button className="modal-btn picker-save-btn" onClick={onClose}>
-                Salvar
-            </button> */}
         </div>,
         document.body
     );

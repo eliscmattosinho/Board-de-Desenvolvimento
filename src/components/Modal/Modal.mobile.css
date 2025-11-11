@@ -44,7 +44,6 @@
 
 .bottom-sheet-body {
     max-height: 80vh;
-    
     -webkit-overflow-scrolling: touch;
 }
 

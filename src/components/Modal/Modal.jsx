@@ -14,42 +14,62 @@ export default function Modal({
     closeTooltip = "Fechar",
     isOpen = true,
 }) {
-    // @TODO responsive height content with modal content change (switch between cardview and edt) quando aumenta e se volta para um menor, ele não diminui
+    // @TODO mudar comportamento de crud em mobile 
 
-    const [closing, setClosing] = useState(false);
+    // Na próxima, só lib
     const [mobile, setMobile] = useState(window.innerWidth <= 480);
+    const [animating, setAnimating] = useState("opening"); // "opening" | "closing" | null
 
     const sheetRef = useRef(null);
     const startYRef = useRef(0);
     const lastYRef = useRef(0);
     const velocityRef = useRef(0);
+    const isDraggingRef = useRef(false);
+    const currentHeightRef = useRef(0);
+    const dragOffsetRef = useRef(0);
 
     const [sheetHeight, setSheetHeight] = useState(0);
     const [maxSheetHeight, setMaxSheetHeight] = useState(0);
 
     const minHeight = 80;
-    const closeThresholdPercent = 0.5;
 
+    // Detecta se é mobile
     useEffect(() => {
         const handleResize = () => setMobile(window.innerWidth <= 480);
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Inicializa altura do Bottom Sheet
+    // Inicializa altura e observa mudanças no conteúdo
     useEffect(() => {
-        if (mobile && sheetRef.current) {
-            const height = sheetRef.current.scrollHeight;
-            setSheetHeight(height);
-            setMaxSheetHeight(height);
-        }
-    }, [mobile, children]);
+        if (!mobile || !sheetRef.current) return;
+
+        const bodyEl = sheetRef.current.querySelector(".bottom-sheet-body");
+        if (!bodyEl) return;
+
+        const updateHeight = () => {
+            if (isDraggingRef.current) return;
+            const newHeight = bodyEl.scrollHeight + (showHeader ? 60 : 40);
+            setMaxSheetHeight(newHeight);
+            setSheetHeight(newHeight);
+            currentHeightRef.current = newHeight;
+        };
+
+        updateHeight();
+        const resizeObserver = new ResizeObserver(updateHeight);
+        resizeObserver.observe(bodyEl);
+
+        return () => resizeObserver.disconnect();
+    }, [mobile, showHeader]);
 
     // Bloqueia scroll do fundo
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = "hidden";
             document.body.style.touchAction = "none";
+            setAnimating("opening");
+            const timer = setTimeout(() => setAnimating(null), 300);
+            return () => clearTimeout(timer);
         } else {
             document.body.style.overflow = "";
             document.body.style.touchAction = "";
@@ -61,14 +81,16 @@ export default function Modal({
         };
     }, [isOpen]);
 
-    const handleClose = () => setClosing(true);
+    // Fecha com animação
+    const handleClose = () => {
+        setAnimating("closing");
+        setTimeout(() => onClose(), 250);
+    };
 
+    // Mantém altura atual em sync
     useEffect(() => {
-        if (closing) {
-            const timer = setTimeout(() => onClose(), 300);
-            return () => clearTimeout(timer);
-        }
-    }, [closing, onClose]);
+        currentHeightRef.current = sheetHeight;
+    }, [sheetHeight]);
 
     // Drag handlers
     const handleDragStart = (e) => {
@@ -76,51 +98,68 @@ export default function Modal({
         startYRef.current = clientY;
         lastYRef.current = clientY;
         velocityRef.current = 0;
+        isDraggingRef.current = true;
+        dragOffsetRef.current = 0;
+        if (sheetRef.current) sheetRef.current.style.transition = "none";
     };
 
     const handleDragMove = (e) => {
-        if (!sheetRef.current) return;
+        if (!isDraggingRef.current || !sheetRef.current) return;
+
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         const diff = lastYRef.current - clientY;
-        velocityRef.current = diff;
         lastYRef.current = clientY;
+        dragOffsetRef.current += diff;
 
-        let newHeight = sheetHeight + diff;
+        let newHeight = currentHeightRef.current + dragOffsetRef.current;
 
-        // Rebote para altura máxima
+        // Rebote elástico ao puxar pra cima
         if (newHeight > maxSheetHeight) {
             const excess = newHeight - maxSheetHeight;
-            newHeight = maxSheetHeight + excess / 3;
+            newHeight = maxSheetHeight + excess / 6;
         }
 
-        // Fecha se arrastou abaixo da mínima
-        if (newHeight < minHeight) {
-            newHeight = minHeight;
-            handleClose();
-        }
+        // Impede fechamento total
+        if (newHeight < minHeight) newHeight = minHeight;
 
-        setSheetHeight(newHeight);
+        sheetRef.current.style.height = `${newHeight}px`;
     };
 
     const handleDragEnd = () => {
-        const closeThreshold = maxSheetHeight * closeThresholdPercent;
+        if (!sheetRef.current) return;
+        sheetRef.current.style.transition = "height 0.25s ease";
 
-        // Rebote de volta para altura máxima se passou
-        if (sheetHeight > maxSheetHeight) {
-            setSheetHeight(maxSheetHeight);
-        }
-        // Fecha se arrastou abaixo do threshold ou arraste rápido para baixo
-        else if (sheetHeight < closeThreshold || velocityRef.current < -15) {
+        const currentHeight = parseFloat(sheetRef.current.style.height);
+        const viewportHeight = window.innerHeight;
+        const halfScreen = viewportHeight * 0.5;
+
+        // Fecha se o modal for arrastado até a metade da tela
+        if (currentHeight < halfScreen) {
             handleClose();
-        }
-        // Snap para altura máxima
-        else {
-            setSheetHeight(maxSheetHeight);
+            return;
         }
 
-        startYRef.current = 0;
-        lastYRef.current = 0;
-        velocityRef.current = 0;
+        // Rebote suave se puxou demais pra cima
+        if (currentHeight > maxSheetHeight) {
+            setSheetHeight(maxSheetHeight);
+            requestAnimationFrame(() => {
+                if (sheetRef.current)
+                    sheetRef.current.style.height = `${maxSheetHeight}px`;
+            });
+        } else {
+            setSheetHeight(currentHeight);
+        }
+
+        isDraggingRef.current = false;
+        dragOffsetRef.current = 0;
+
+        // Recalcula altura final
+        const bodyEl = sheetRef.current?.querySelector(".bottom-sheet-body");
+        if (bodyEl) {
+            const newHeight = bodyEl.scrollHeight + (showHeader ? 60 : 40);
+            setMaxSheetHeight(newHeight);
+            setSheetHeight(newHeight);
+        }
     };
 
     if (!isOpen) return null;
@@ -128,10 +167,14 @@ export default function Modal({
     return (
         <div className={mobile ? "bottom-sheet" : "modal"}>
             {!mobile ? (
-                <div className={`modal-wrapper ${closing ? "closing" : ""}`}>
+                <div className={`modal-wrapper ${animating === "closing" ? "closing" : ""}`}>
                     <div
                         className="modal-container"
-                        style={{ width, transition: velocityRef.current === 0 ? "height 0.2s ease" : "none" }}
+                        style={{
+                            width,
+                            transition:
+                                velocityRef.current === 0 ? "height 0.2s ease" : "none",
+                        }}
                         ref={sheetRef}
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -140,9 +183,7 @@ export default function Modal({
                                 {title && <h2 className="modal-title">{title}</h2>}
                             </div>
                         )}
-
                         <div className="modal-body">{children}</div>
-
                         <button
                             type="button"
                             className="btn-close"
@@ -155,8 +196,11 @@ export default function Modal({
                 </div>
             ) : (
                 <div
-                    className="bottom-sheet-container"
-                    style={{ height: `${sheetHeight}px`, transition: velocityRef.current === 0 ? "height 0.2s ease" : "none" }}
+                    className={`bottom-sheet-container ${animating || ""}`}
+                    style={{
+                        height: `${sheetHeight}px`,
+                        transition: isDraggingRef.current ? "none" : "height 0.25s ease",
+                    }}
                     ref={sheetRef}
                     onClick={(e) => e.stopPropagation()}
                 >

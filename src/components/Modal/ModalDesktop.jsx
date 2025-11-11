@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { lockBodyScroll, unlockBodyScroll } from "../../utils/modalUtils";
 
 export default function ModalDesktop({
     title,
@@ -17,20 +18,16 @@ export default function ModalDesktop({
 
     useEffect(() => {
         if (isOpen) {
-            document.body.style.overflow = "hidden";
-            document.body.style.touchAction = "none";
+            lockBodyScroll();
             setAnimating("opening");
             const timer = setTimeout(() => setAnimating(null), 300);
-            return () => clearTimeout(timer);
+            return () => {
+                clearTimeout(timer);
+                unlockBodyScroll();
+            };
         } else {
-            document.body.style.overflow = "";
-            document.body.style.touchAction = "";
+            unlockBodyScroll();
         }
-
-        return () => {
-            document.body.style.overflow = "";
-            document.body.style.touchAction = "";
-        };
     }, [isOpen]);
 
     const handleClose = () => {

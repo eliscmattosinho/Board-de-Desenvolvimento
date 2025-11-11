@@ -12,6 +12,7 @@ import ToastProvider from "./components/ToastProvider/ToastProvider";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ModalProvider } from "./context/ModalContext";
 import { TasksProvider } from "./context/TasksContext";
+import { ScreenProvider } from "./context/ScreenContext";
 
 import useScreenBlocker from "./hooks/useScreenBlocker";
 
@@ -43,18 +44,20 @@ function App() {
   return (
     <ThemeProvider>
       <TasksProvider>
-        <Router basename="/development-board">
-          <RouteChangeTracker>
-            {(location) => (
-              <ModalProvider>
-                <div className="App">
-                  <AppContent location={location} />
-                  <ToastProvider />
-                </div>
-              </ModalProvider>
-            )}
-          </RouteChangeTracker>
-        </Router>
+        <ScreenProvider>
+          <Router basename="/development-board">
+            <RouteChangeTracker>
+              {(location) => (
+                <ModalProvider>
+                  <div className="App">
+                    <AppContent location={location} />
+                    <ToastProvider />
+                  </div>
+                </ModalProvider>
+              )}
+            </RouteChangeTracker>
+          </Router>
+        </ScreenProvider>
       </TasksProvider>
     </ThemeProvider>
   );

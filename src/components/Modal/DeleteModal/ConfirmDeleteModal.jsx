@@ -16,7 +16,6 @@ export default function ConfirmDeleteModal({
     return (
         <Modal
             onClose={onCancel}
-            width="360px"
             showHeader={false}
         >
             <div className="modal-content modal-delete">

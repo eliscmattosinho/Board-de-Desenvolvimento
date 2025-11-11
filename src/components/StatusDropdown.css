@@ -9,6 +9,8 @@
     font-size: 14px;
 }
 
+/* @TODO Colocar overflow no container quando bottom sheet */
+
 /* Dropdown customizado */
 .custom-dropdown {
     position: relative;

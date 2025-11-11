@@ -144,7 +144,6 @@ export default function CardModal({
         <Modal
             title={modalTitle}
             onClose={handleClose}
-            width="600px"
             showHeader={true}
             closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >

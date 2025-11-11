@@ -40,7 +40,6 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
         <Modal
             title={mode === "edit" ? "Editar coluna" : "Nova coluna"}
             onClose={closeModal}
-            width="500px"
             closeTooltip={mode === "edit" ? "Fechar" : "Cancelar criação"}
         >
             <div

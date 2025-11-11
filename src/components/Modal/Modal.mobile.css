@@ -1,0 +1,75 @@
+.bottom-sheet {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--modal-overlay);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 999;
+}
+
+.bottom-sheet-container {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    background: var(--bg-color);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: height 0.2s ease;
+}
+
+/* Handle de arraste */
+.bottom-sheet-handle {
+    width: 40px;
+    height: 6px;
+    background: var(--global-gray);
+    border-radius: 3px;
+    margin: 0 auto 8px auto;
+    cursor: grab;
+    touch-action: none;
+    /* importante para touch */
+}
+
+.bottom-sheet-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.bottom-sheet-body {
+    max-height: 80vh;
+}
+
+/* Animação abrir */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Animação fechar */
+.bottom-sheet .modal-wrapper.closing .bottom-sheet-container {
+    animation: slideDown 0.25s ease-in forwards;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}

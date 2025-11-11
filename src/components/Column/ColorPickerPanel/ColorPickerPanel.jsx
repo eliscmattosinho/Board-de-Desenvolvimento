@@ -145,6 +145,8 @@ export default function ColorPickerPanel({
 
     if (!position) return null;
 
+
+    // @TODO Change when bottom sheet
     return createPortal(
         <div
             className="color-picker-panel"

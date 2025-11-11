@@ -12,6 +12,10 @@
     z-index: 9999;
 }
 
+.dark .color-picker-panel {
+    background: var(--hover-gray);
+}
+
 .picker-label {
     font-size: 0.8rem;
     color: var(--global-gray);
@@ -74,6 +78,7 @@
 .input-color {
     max-width: 100%;
     width: min-content;
+    font-weight: 600;
 }
 
 .picker-drag-handle {

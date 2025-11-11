@@ -42,27 +42,27 @@ export default function Modal({
 
     return (
         <div className="modal">
-            <div
-                className={`modal-container ${className} ${closing ? "closing" : ""}`}
-                style={{ maxWidth: width }}
-                onClick={(e) => e.stopPropagation()}
-            >
-                {showHeader && (
-                    <div className="modal-header-row">
-                        {title && <h2 className="modal-title w-600">{title}</h2>}
-                    </div>
-                )}
-
-                <div className="modal-body">{children}</div>
-
-                <button
-                    type="button"
-                    className="btn-close"
-                    onClick={handleClose}
-                    data-tooltip={closeTooltip}
+            <div className={`modal-wrapper ${closing ? "closing" : ""}`}>
+                <div
+                    className="modal-container"
+                    style={{ maxWidth: width }}
+                    onClick={(e) => e.stopPropagation()}
                 >
-                    <IoIosCloseCircleOutline size={25} />
-                </button>
+                    {showHeader && (
+                        <div className="modal-header-row">
+                            {title && <h2 className="modal-title w-600">{title}</h2>}
+                        </div>
+                    )}
+                    <div className="modal-body">{children}</div>
+                    <button
+                        type="button"
+                        className="btn-close"
+                        onClick={handleClose}
+                        data-tooltip={closeTooltip}
+                    >
+                        <IoIosCloseCircleOutline size={25} />
+                    </button>
+                </div>
             </div>
         </div>
     );

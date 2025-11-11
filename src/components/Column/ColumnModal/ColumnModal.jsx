@@ -53,14 +53,14 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     </label>
                     <input
                         id="column-title"
-                        className="input-entry input-title"
+                        className="input-entry"
                         placeholder="Título da coluna"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
                 </div>
 
-                <div className="col-color-block">
+                <div className="modal-field col-color-block">
                     <label className="input-title col-color" htmlFor="column-color">
                         Cor da coluna:
                     </label>

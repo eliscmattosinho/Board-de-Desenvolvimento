@@ -2,14 +2,17 @@ import React, { useState, useRef } from "react";
 
 import useColumnForm from "../../../hooks/useColumnForm.js";
 import { useModal } from "../../../context/ModalContext";
+import { useScreen } from "../../../context/ScreenContext";
 
 import Modal from "../../Modal/Modal";
 import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";
+import ColorPickerPanelMobile from "../ColorPickerPanel/ColorPickerMobile/ColorPickerPanelMobile.jsx";
 
 import "./ColumnModal.css";
 
 export default function ColumnModal({ onSave, columnData, mode = "create" }) {
     const { closeModal } = useModal();
+    const { isMobile } = useScreen();
 
     const {
         title,
@@ -40,13 +43,10 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
         <Modal
             title={mode === "edit" ? "Editar coluna" : "Nova coluna"}
             onClose={closeModal}
-            width="500px"
             closeTooltip={mode === "edit" ? "Fechar" : "Cancelar criação"}
         >
-            <div
-                className="modal-content create-column-modal"
-                onClick={() => showPicker && setShowPicker(false)}
-            >
+            <div className="modal-content create-column-modal">
+                {/* TÍTULO */}
                 <div className="modal-field col-title-block">
                     <label className="input-title" htmlFor="column-title">
                         Título:
@@ -60,6 +60,7 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     />
                 </div>
 
+                {/* COR */}
                 <div className="modal-field col-color-block">
                     <label className="input-title col-color" htmlFor="column-color">
                         Cor da coluna:
@@ -80,18 +81,35 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                         />
                     </div>
 
+                    {/* COLOR PICKER */}
                     {showPicker && (
-                        <ColorPickerPanel
-                            color={color}
-                            setColor={setColor}
-                            applyTo={applyTo}
-                            setApplyTo={setApplyTo}
-                            onClose={() => setShowPicker(false)}
-                            anchorRef={inputRef}
-                        />
+                        <>
+                            {isMobile ? (
+                                // Mobile: bottom sheet, fora do ColumnModal
+                                // @TODO buscar outra forma, sem duplicação de definições com "sobreposição" de modais
+                                <ColorPickerPanelMobile
+                                    color={color}
+                                    setColor={setColor}
+                                    applyTo={applyTo}
+                                    setApplyTo={setApplyTo}
+                                    onClose={() => setShowPicker(false)}
+                                />
+                            ) : (
+                                // Desktop: flutuante, dentro do ColumnModal
+                                <ColorPickerPanel
+                                    color={color}
+                                    setColor={setColor}
+                                    applyTo={applyTo}
+                                    setApplyTo={setApplyTo}
+                                    onClose={() => setShowPicker(false)}
+                                    anchorRef={inputRef}
+                                />
+                            )}
+                        </>
                     )}
                 </div>
 
+                {/* DESCRIÇÃO */}
                 <div className="modal-field col-description-block">
                     <label className="input-title col-description" htmlFor="column-description">
                         Descrição:
@@ -106,6 +124,7 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     />
                 </div>
 
+                {/* BOTÃO SALVAR */}
                 <button
                     type="button"
                     className="modal-btn btn-save"

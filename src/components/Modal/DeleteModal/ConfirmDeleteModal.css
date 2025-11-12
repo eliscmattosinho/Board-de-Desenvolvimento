@@ -6,3 +6,12 @@
 .modal-delete .modal-actions {
   gap: 2rem;
 }
+
+.modal-delete .modal-actions {
+  padding-top: 0px;
+}
+
+/* Mobile modal */
+.bottom-sheet .modal-delete {
+  padding: 20px;
+}

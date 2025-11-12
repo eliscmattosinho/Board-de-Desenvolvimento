@@ -5,10 +5,10 @@ function TaskItem({ task, onClick, onDragStart, onDrop, onDragOver, onDragLeave,
     <div
       id={task.id}
       className={`item task-item ${dragPosition === "above"
-          ? "drag-over-above"
-          : dragPosition === "below"
-            ? "drag-over-below"
-            : ""
+        ? "drag-over-above"
+        : dragPosition === "below"
+          ? "drag-over-below"
+          : ""
         }`}
       draggable
       onDragStart={(e) => {

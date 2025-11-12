@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Building from "./pages/Building";
-import Boards from "./pages/Boards";
-import NotFound from "./pages/NotFound";
-import ScreenBlockage from "./pages/ScreenBlockage";
+import Building from "../pages/Building";
+import Boards from "../pages/Boards";
+import NotFound from "../pages/NotFound";
+import ScreenBlockage from "../pages/ScreenBlockage";
 
-import RouteChangeTracker from "./components/RouteChangeTracker";
-import ToastProvider from "./components/ToastProvider/ToastProvider";
+import RouteChangeTracker from "../components/RouteChangeTracker";
+import ToastProvider from "../components/ToastProvider/ToastProvider";
 
-import { ThemeProvider } from "./context/ThemeContext";
-import { ModalProvider } from "./context/ModalContext";
-import { TasksProvider } from "./context/TasksContext";
-import { ScreenProvider } from "./context/ScreenContext";
+import { ThemeProvider } from "../context/ThemeContext";
+import { ModalProvider } from "../context/ModalContext";
+import { TasksProvider } from "../features/board/context/TasksContext";
+import { ScreenProvider } from "../context/ScreenContext";
 
-import useScreenBlocker from "./hooks/useScreenBlocker";
+import useScreenBlocker from "../hooks/useScreenBlocker";
 
 function AppContent({ location }) {
   useScreenBlocker(480);

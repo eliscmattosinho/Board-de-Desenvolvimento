@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useMemo } from "react";
-import Column from "../Column/Column";
-import AddColumnIndicator from "../Column/AddColIndicator/AddColumnIndicator";
-import ConfirmDeleteModal from "../Modal/DeleteModal/ConfirmDeleteModal";
-import { useModal } from "../../context/ModalContext";
+import Column from "../../../features/column/components/Column";
+import AddColumnIndicator from "../../../features/column/components/AddColIndicator/AddColumnIndicator";
+import ConfirmDeleteModal from "../../../components/Modal/DeleteModal/ConfirmDeleteModal";
+import { useModal } from "../../../context/ModalContext";
 import { CiCirclePlus } from "react-icons/ci";
-import { getDisplayStatus } from "../../utils/boardUtils";
+import { getDisplayStatus } from "../utils/boardUtils";
 import "./BoardSection.css";
 
 function BoardSection({

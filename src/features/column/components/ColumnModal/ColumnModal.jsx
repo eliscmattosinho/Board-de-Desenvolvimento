@@ -1,11 +1,11 @@
 import React, { useState, useRef } from "react";
 
-import useColumnForm from "../../../hooks/useColumnForm.js";
-import { useModal } from "../../../context/ModalContext";
-import { useScreen } from "../../../context/ScreenContext";
-import { showWarning } from "../../../utils/toastUtils";
+import useColumnForm from "../../../../hooks/useColumnForm.js";
+import { useModal } from "../../../../context/ModalContext.jsx";
+import { useScreen } from "../../../../context/ScreenContext.jsx";
+import { showWarning } from "../../../../utils/toastUtils.js";
 
-import Modal from "../../Modal/Modal";
+import Modal from "../../../../components/Modal/Modal.jsx";
 import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";
 import ColorPickerPanelMobile from "../ColorPickerPanel/ColorPickerMobile/ColorPickerPanelMobile.jsx";
 

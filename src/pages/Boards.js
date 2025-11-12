@@ -1,32 +1,21 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { SiCcleaner } from "react-icons/si";
 
 import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
 import BoardSection from "../components/Board/BoardSection";
-import CardModal from "../components/Card/CardModal/CardModal";
 import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
-import ClearBoardToast from "../components/ToastProvider/toasts/ClearBoardToast";
-import ColumnModal from "../components/Column/ColumnModal/ColumnModal";
 
-import { useTasks } from "../context/TasksContext";
-import { useModal } from "../context/ModalContext";
-import useColumns from "../hooks/useColumns";
-import { columnIdToCanonicalStatus } from "../utils/boardUtils";
-import { showWarning, showCustom, showSuccess } from "../utils/toastUtils";
+import useBoard from "../hooks/useBoard";
+import svgBoard from "../assets/images/svg-board.svg";
 
 import "../App.css";
 import "./Boards.css";
-import svgBoard from "../assets/images/svg-board.svg";
 
 function Boards() {
   const navigate = useNavigate();
-  const [activeView, setActiveView] = useState("kanban");
-
-  const { openModal } = useModal();
-  const { tasks, addTask, moveTask, clearTasks } = useTasks();
 
   const defaultKanban = [
     { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
@@ -42,90 +31,20 @@ function Boards() {
     { id: "s-done", title: "Concluído", className: "scrum-column done" },
   ];
 
-  const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
-
-  const allowDrop = useCallback((e) => e.preventDefault(), []);
-  const handleDragStart = useCallback((e, taskId) => e.dataTransfer.setData("text/plain", taskId), []);
-
-  /**
-   * Lógica de movimentação de tarefas entre colunas
-   * Mantém equivalência indireta entre Kanban ↔ Scrum
-   */
-  const handleDrop = useCallback(
-    (e, columnId, targetTaskId = null) => {
-      e.preventDefault();
-      const taskId = e.dataTransfer.getData("text/plain");
-      if (!taskId) return;
-
-      // Identifica o status canônico
-      const canonicalStatus = columnIdToCanonicalStatus(columnId);
-      moveTask(taskId, canonicalStatus, targetTaskId);
-    },
-    [moveTask]
-  );
-
-  // Ordena tarefas por posição
-  const orderedTasks = useMemo(() => [...tasks].sort((a, b) => a.order - b.order), [tasks]);
-
-  const handleAddTask = useCallback(
-    (columnId = null) => {
-      const newTask = addTask(columnId);
-      openModal(CardModal, {
-        task: { ...newTask, isNew: true },
-        activeView,
-        columns: columns[activeView],
-        moveTask,
-      });
-    },
-    [addTask, activeView, columns, moveTask, openModal]
-  );
-
-  const handleClearBoard = useCallback(() => {
-    if (tasks.length === 0) {
-      showWarning("Não há tarefas para remover — o board já está vazio!");
-      return;
-    }
-
-    showCustom(({ closeToast }) => (
-      <ClearBoardToast
-        onConfirm={() => {
-          clearTasks();
-          closeToast();
-          showSuccess("Todas as tarefas foram removidas com sucesso!");
-        }}
-        onCancel={closeToast}
-      />
-    ));
-  }, [tasks.length, clearTasks]);
-
-  const handleTaskClick = useCallback(
-    (task) => {
-      openModal(CardModal, {
-        task,
-        activeView,
-        columns: columns[activeView],
-        moveTask,
-      });
-    },
-    [activeView, columns, moveTask, openModal]
-  );
-
-  const handleAddColumn = useCallback(
-    (index, column) => {
-      openModal(ColumnModal, {
-        mode: column ? "edit" : "create",
-        columnData: column,
-        onSave: (data) => {
-          if (column) {
-            renameColumn(activeView, column.id, data);
-          } else {
-            addColumn(activeView, index, data);
-          }
-        },
-      });
-    },
-    [activeView, renameColumn, addColumn, openModal]
-  );
+  const {
+    activeView,
+    setActiveView,
+    columns,
+    orderedTasks,
+    allowDrop,
+    handleDragStart,
+    handleDrop,
+    handleAddTask,
+    handleClearBoard,
+    handleTaskClick,
+    handleAddColumn,
+    removeColumn,
+  } = useBoard(defaultKanban, defaultScrum);
 
   return (
     <div className="content-block">
@@ -161,7 +80,7 @@ function Boards() {
             <div className="board-title-container">
               <h3 id="h3-title" className="title-thematic">
                 {activeView === "kanban" ? "Kanban" : "Scrum"}
-                <span className="task-counter">({tasks.length})</span>
+                <span className="task-counter">({orderedTasks.length})</span>
               </h3>
 
               <FloatingMenu

@@ -3,6 +3,7 @@ import React, { useState, useRef } from "react";
 import useColumnForm from "../../../hooks/useColumnForm.js";
 import { useModal } from "../../../context/ModalContext";
 import { useScreen } from "../../../context/ScreenContext";
+import { showWarning } from "../../../utils/toastUtils";
 
 import Modal from "../../Modal/Modal";
 import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";
@@ -29,9 +30,13 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
     const inputRef = useRef(null);
 
     const handleSave = () => {
+        if (!title || !title.trim()) {
+            return showWarning("O título não pode ficar vazio.");
+        }
+
         if (!onSave) return;
         onSave({
-            title: title || "Nova coluna",
+            title: title,
             color,
             applyTo,
             description,

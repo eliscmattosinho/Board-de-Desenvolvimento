@@ -79,6 +79,7 @@ function BoardSection({
             id={col.id}
             title={col.title}
             className={col.className}
+            style={col.style}
             tasks={tasksByColumn[col.id]}
             onDrop={onDrop}
             onDragOver={onDragOver}

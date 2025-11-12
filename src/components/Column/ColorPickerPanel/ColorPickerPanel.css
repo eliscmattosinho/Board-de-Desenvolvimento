@@ -1,3 +1,9 @@
+.color-picker-base {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .color-picker-panel {
     position: absolute;
     background: var(--global-black);

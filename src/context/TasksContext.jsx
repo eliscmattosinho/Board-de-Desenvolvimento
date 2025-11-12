@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react";
-import { getCachedTasks, resetTasksCache } from "../js/tasksLoader";
-import { initializeTasks } from "../js/initializeTasks";
+import { initializeTasks } from "../services/initializeTasks";
+import { saveTasks, loadTasksFromStorage, clearTasksStorage } from "../services/taskPersistence";
 import { columnIdToCanonicalStatus } from "../utils/boardUtils";
 
 const TasksContext = createContext();
@@ -22,8 +22,7 @@ function tasksReducer(state, action) {
     case ACTIONS.ADD_TASK: {
       const newTask = action.task;
       const updated = [...state.tasks, newTask];
-      sessionStorage.setItem("tasks", JSON.stringify(updated));
-      sessionStorage.setItem("tasksNextId", String(state.nextId + 1));
+      saveTasks(updated);
       return { tasks: updated, nextId: state.nextId + 1 };
     }
 
@@ -45,14 +44,14 @@ function tasksReducer(state, action) {
       const reordered = [...without.slice(0, insertIndex), updatedTask, ...without.slice(insertIndex)]
         .map((t, i) => ({ ...t, order: i }));
 
-      sessionStorage.setItem("tasks", JSON.stringify(reordered));
+      saveTasks(reordered);
       return { ...state, tasks: reordered };
     }
 
     case ACTIONS.UPDATE_TASK: {
       const { taskId, changes } = action;
       const updated = state.tasks.map(t => String(t.id) === String(taskId) ? { ...t, ...changes } : t);
-      sessionStorage.setItem("tasks", JSON.stringify(updated));
+      saveTasks(updated);
       return { ...state, tasks: updated };
     }
 
@@ -61,14 +60,12 @@ function tasksReducer(state, action) {
       const updated = state.tasks
         .filter(t => String(t.id) !== String(taskId))
         .map((t, i) => ({ ...t, order: i }));
-      sessionStorage.setItem("tasks", JSON.stringify(updated));
+      saveTasks(updated);
       return { ...state, tasks: updated };
     }
 
     case ACTIONS.CLEAR_TASKS:
-      sessionStorage.removeItem("tasks");
-      sessionStorage.removeItem("tasksNextId");
-      resetTasksCache();
+      clearTasksStorage();
       return { tasks: [], nextId: 1 };
 
     default:
@@ -77,8 +74,8 @@ function tasksReducer(state, action) {
 }
 
 export const TasksProvider = ({ children }) => {
-  const saved = sessionStorage.getItem("tasks");
-  const initialTasks = saved ? JSON.parse(saved) : getCachedTasks();
+  const saved = loadTasksFromStorage();
+  const initialTasks = saved || [];
 
   const initialNextId =
     initialTasks.length > 0
@@ -90,7 +87,7 @@ export const TasksProvider = ({ children }) => {
     nextId: initialNextId,
   });
 
-  // Load tasks from fake backend/sessionStorage on mount
+  // Load tasks from backend fake/sessionStorage on mount
   useEffect(() => {
     let mounted = true;
     async function load() {

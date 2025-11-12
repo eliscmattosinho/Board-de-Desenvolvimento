@@ -1,19 +1,20 @@
 import { canonicalStatuses } from "../utils/boardUtils";
 import { loadTasks } from "./tasksLoader";
+import { loadTasksFromStorage, saveTasks } from "./taskPersistence";
 
 /**
  * Inicializa tasks do backend fake ou sessionStorage
- * Garante IDs sequenciais curtos e persistência do próximo ID (testar dupl)
+ * Garante IDs sequenciais curtos e persistência do próximo ID
  */
 export async function initializeTasks() {
   try {
     // Tenta carregar do sessionStorage
-    const saved = sessionStorage.getItem("tasks");
-    if (saved) {
-      return JSON.parse(saved);
+    const saved = loadTasksFromStorage();
+    if (saved && saved.length > 0) {
+      return saved;
     }
 
-    // Carrega do backend fake
+    // Carrega do backend fake (TXT)
     const loaded = await loadTasks();
     if (!loaded || !loaded.length) return [];
 
@@ -27,8 +28,7 @@ export async function initializeTasks() {
     }));
 
     // Persiste tasks e próximo ID no sessionStorage
-    sessionStorage.setItem("tasks", JSON.stringify(normalized));
-    sessionStorage.setItem("tasksNextId", String(normalized.length + 1));
+    saveTasks(normalized);
 
     return normalized;
   } catch (err) {

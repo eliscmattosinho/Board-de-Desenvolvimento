@@ -1,5 +1,5 @@
 let cachedTasks = [];
-let loadedOnce = false; // evita recarregar TXT várias vezes
+let loadedOnce = false;
 
 export async function loadTasks() {
   if (loadedOnce && cachedTasks.length > 0) return cachedTasks;
@@ -25,7 +25,6 @@ export function getCachedTasks() {
   return cachedTasks;
 }
 
-// Função para resetar cache
 export function resetTasksCache() {
   cachedTasks = [];
   loadedOnce = false;

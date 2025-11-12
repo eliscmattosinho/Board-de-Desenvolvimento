@@ -34,7 +34,7 @@ export default function CardModal({
 
     const modalTitle = (
         <>
-            Card <span className="task-id">#{task.id}</span>
+            Card <span className="task-id w-600">#{task.id}</span>
         </>
     );
 

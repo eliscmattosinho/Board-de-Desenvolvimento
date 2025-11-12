@@ -1,33 +1,12 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
-import TaskItem from "./TaskItem";
+import React from "react";
+
+import { CiCirclePlus } from "react-icons/ci";
+
+import ColumnHeader from "./ColumnHeader";
+import ColumnTasks from "./ColumnTasks";
+import useColumn from "./useColumn";
+
 import "./Column.css";
-
-const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragOver, onDrop }) => {
-  const [hovered, setHovered] = React.useState(false);
-
-  return (
-    <div
-      className="title-col-board"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-    >
-      <div className="col-title-flex">
-        {hovered && onRemove && (
-          <CiTrash className="col-icon-left" size={20} onClick={onRemove} />
-        )}
-        <h4 className="col-title-board">
-          {title} <span className="task-counter">({tasksLength})</span>
-        </h4>
-        {hovered && onEdit && (
-          <CiEdit className="col-icon-right" size={20} onClick={onEdit} />
-        )}
-      </div>
-    </div>
-  );
-});
 
 function Column({
   id,
@@ -45,129 +24,19 @@ function Column({
   style,
   styleVars,
 }) {
-  const [dragOverIndex, setDragOverIndex] = useState(null);
-  const [dragPosition, setDragPosition] = useState(null);
-
   const colKey = className?.split(" ").pop() || "default";
 
-  // Determina o estilo com base na prioridade:
-  // 1. style (dos templates)
-  // 2. styleVars (de colunas criadas)
-  // 3. fallback padrão
-  const defaultStyle = style || styleVars || {
-    bg: "transparent",
-    border: "transparent",
-    color: "#212121",
-  };
-
-  // Função auxiliar para verificar se a cor é escura (para contraste de texto)
-  const isColorDark = (hex) => {
-    if (!hex) return false;
-    let r, g, b;
-
-    if (hex.startsWith("#")) {
-      const c = hex.slice(1);
-      r = parseInt(c.substr(0, 2), 16);
-      g = parseInt(c.substr(2, 2), 16);
-      b = parseInt(c.substr(4, 2), 16);
-    } else if (hex.startsWith("rgb")) {
-      const match = hex.match(/\d+/g);
-      if (!match) return false;
-      [r, g, b] = match.map(Number);
-    }
-
-    // Luminância relativa (W3C)
-    const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    return luminance < 0.5;
-  };
-
-  const bgColor = applyTo === "fundo" ? color || defaultStyle.bg : defaultStyle.bg;
-  const borderColor = applyTo === "borda" ? color || defaultStyle.border : defaultStyle.border;
-  const fontColor =
-    applyTo === "fundo"
-      ? isColorDark(color) ? "#EFEFEF" : "#212121"
-      : color || defaultStyle.color;
-
-  const colStyle = {
-    bg: bgColor,
-    border: borderColor,
-    color: fontColor,
-  };
-
-  const handleDropTask = useCallback(
-    (e, targetTaskId = null, position = null) => {
-      e.preventDefault();
-      setDragOverIndex(null);
-      setDragPosition(null);
-      onDrop(e, id, targetTaskId, position);
-    },
-    [id, onDrop]
-  );
-
-  const handleDragOverTask = useCallback((e, taskId) => {
-    e.preventDefault();
-    const bounding = e.currentTarget.getBoundingClientRect();
-    const offset = e.clientY - bounding.top;
-    const position = offset < bounding.height / 2 ? "above" : "below";
-    setDragOverIndex(taskId);
-    setDragPosition(position);
-  }, []);
-
-  const handleDragLeaveTask = useCallback(() => {
-    setDragOverIndex(null);
-    setDragPosition(null);
-  }, []);
-
-  const handleAddTaskClick = useCallback(() => onAddTask(id), [id, onAddTask]);
-  const handleEditClick = useCallback(
-    (e) => {
-      e.stopPropagation();
-      onEdit?.();
-    },
-    [onEdit]
-  );
-  const handleRemoveClick = useCallback(
-    (e) => {
-      e.stopPropagation();
-      onRemove?.();
-    },
-    [onRemove]
-  );
-
-  const renderedTasks = useMemo(() => {
-    if (!tasks || tasks.length === 0) return null;
-
-    return tasks.map((task) => (
-      <React.Fragment key={task.id}>
-        {dragOverIndex === task.id && dragPosition === "above" && (
-          <div className="task-placeholder active"></div>
-        )}
-
-        <TaskItem
-          task={task}
-          onClick={onTaskClick}
-          onDragStart={onDragStart}
-          onDrop={(e) => handleDropTask(e, task.id, dragPosition)}
-          onDragOver={(e) => handleDragOverTask(e, task.id)}
-          onDragLeave={handleDragLeaveTask}
-          dragPosition={dragOverIndex === task.id ? dragPosition : null}
-        />
-
-        {dragOverIndex === task.id && dragPosition === "below" && (
-          <div className="task-placeholder active"></div>
-        )}
-      </React.Fragment>
-    ));
-  }, [
-    tasks,
+  const {
+    colStyle,
     dragOverIndex,
     dragPosition,
-    onTaskClick,
-    onDragStart,
     handleDropTask,
     handleDragOverTask,
     handleDragLeaveTask,
-  ]);
+    handleAddTaskClick,
+    handleEditClick,
+    handleRemoveClick,
+  } = useColumn({ id, onDrop, onAddTask, onEdit, onRemove, style, styleVars, color, applyTo });
 
   return (
     <div
@@ -189,7 +58,16 @@ function Column({
       />
 
       <div className={`col-items ${colKey}-items ${tasks.length === 0 ? "none" : ""}`}>
-        {renderedTasks}
+        <ColumnTasks
+          tasks={tasks}
+          dragOverIndex={dragOverIndex}
+          dragPosition={dragPosition}
+          onTaskClick={onTaskClick}
+          onDragStart={onDragStart}
+          onDropTask={handleDropTask}
+          onDragOverTask={handleDragOverTask}
+          onDragLeaveTask={handleDragLeaveTask}
+        />
         {tasks.length === 0 && <div className="task-placeholder active"></div>}
       </div>
 

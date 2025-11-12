@@ -9,6 +9,9 @@ import BoardControls from "../components/Board/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
 
 import useBoard from "../hooks/useBoard";
+import kanbanTemplate from "../components/Board/templates/kanbanTemplate";
+import scrumTemplate from "../components/Board/templates/scrumTemplate";
+
 import svgBoard from "../assets/images/svg-board.svg";
 
 import "../App.css";
@@ -16,20 +19,6 @@ import "./Boards.css";
 
 function Boards() {
   const navigate = useNavigate();
-
-  const defaultKanban = [
-    { id: "to-do", title: "A Fazer", className: "kanban-column todo" },
-    { id: "k-in-progress", title: "Em Progresso", className: "kanban-column progress" },
-    { id: "k-done", title: "Concluído", className: "kanban-column done" },
-  ];
-
-  const defaultScrum = [
-    { id: "backlog", title: "Backlog", className: "scrum-column backlog" },
-    { id: "sprint-backlog", title: "Sprint Backlog", className: "scrum-column todo" },
-    { id: "s-in-progress", title: "Em Progresso", className: "scrum-column progress" },
-    { id: "review", title: "Revisão", className: "scrum-column review" },
-    { id: "s-done", title: "Concluído", className: "scrum-column done" },
-  ];
 
   const {
     activeView,
@@ -44,7 +33,7 @@ function Boards() {
     handleTaskClick,
     handleAddColumn,
     removeColumn,
-  } = useBoard(defaultKanban, defaultScrum);
+  } = useBoard(kanbanTemplate, scrumTemplate);
 
   return (
     <div className="content-block">
@@ -60,7 +49,7 @@ function Boards() {
           </div>
         </div>
 
-        {/* Seção introdutória */}
+        {/* Introdução */}
         <div className="first-section-board">
           <div className="text-content-intro">
             <div className="titles-content">

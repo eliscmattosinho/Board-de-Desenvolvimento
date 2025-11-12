@@ -16,24 +16,25 @@ export default function useColumns(defaultKanban, defaultScrum) {
     scrum: defaultScrum || [],
   });
 
+  /**
+   * Adiciona uma nova coluna com estilos neutros (limpos)
+   */
   const addColumn = (view, index, columnData) => {
     setColumns((prev) => {
+      // Limpa estilos antigos e define valores padrão neutros
+      const cleanColor = columnData?.color || "#EFEFEF";
+      const cleanApplyTo = columnData?.applyTo || "fundo";
+
       const newColumn = {
         id: `col-${Date.now()}`,
-        title: columnData?.title || "Nova coluna",
-        color: columnData?.color || "#EFEFEF",
-        applyTo: columnData?.applyTo || "fundo",
-        description: columnData?.description || "",
+        title: columnData?.title?.trim() || "Nova coluna",
+        description: columnData?.description?.trim() || "",
+        color: cleanColor,
+        applyTo: cleanApplyTo,
         className: `${view}-column new`,
         styleVars: {
-          bg:
-            columnData?.applyTo === "fundo"
-              ? columnData?.color || "#EFEFEF"
-              : "transparent",
-          border:
-            columnData?.applyTo === "borda"
-              ? columnData?.color || "#CCCCCC"
-              : "transparent",
+          bg: cleanApplyTo === "fundo" ? cleanColor : "transparent",
+          border: cleanApplyTo === "borda" ? cleanColor : "transparent",
         },
       };
 
@@ -47,6 +48,10 @@ export default function useColumns(defaultKanban, defaultScrum) {
     });
   };
 
+  /**
+   * Renomeia ou atualiza uma coluna existente
+   * (também reseta estilos antigos antes de aplicar novos)
+   */
   const renameColumn = (view, id, newData) => {
     setColumns((prev) => {
       const updatedView = prev[view].map((col) => {
@@ -55,14 +60,20 @@ export default function useColumns(defaultKanban, defaultScrum) {
         const nextApply = newData.applyTo ?? col.applyTo;
         const nextColor = newData.color ?? col.color;
 
-        // Define novo styleVars "limpando" o anterior
+        // Sempre limpa estilos antigos de template (se existir `style`)
+        const isTemplateCol = !!col.style;
+        const cleanedCol = isTemplateCol
+          ? { ...col, style: undefined } // remove o estilo herdado
+          : col;
+
+        // Cria novos estilos baseados na escolha do usuário
         const nextStyleVars =
           nextApply === "fundo"
             ? { bg: nextColor, border: "transparent" }
             : { bg: "transparent", border: nextColor };
 
         return {
-          ...col,
+          ...cleanedCol,
           title: newData.title ?? col.title,
           description: newData.description ?? col.description,
           color: nextColor,
@@ -70,10 +81,14 @@ export default function useColumns(defaultKanban, defaultScrum) {
           styleVars: nextStyleVars,
         };
       });
+
       return { ...prev, [view]: updatedView };
     });
   };
 
+  /**
+   * Remove uma coluna de um board
+   */
   const removeColumn = (view, id) => {
     setColumns((prev) => {
       const updatedView = prev[view].filter((col) => col.id !== id);

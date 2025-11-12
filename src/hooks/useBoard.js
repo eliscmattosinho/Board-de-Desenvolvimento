@@ -8,11 +8,13 @@ import CardModal from "../components/Card/CardModal/CardModal";
 import ColumnModal from "../components/Column/ColumnModal/ColumnModal";
 import ClearBoardToast from "../components/ToastProvider/toasts/ClearBoardToast";
 
-export default function useBoard(defaultKanban, defaultScrum) {
+export default function useBoard(kanbanTemplate, scrumTemplate) {
     const [activeView, setActiveView] = useState("kanban");
     const { openModal } = useModal();
     const { tasks, addTask, moveTask, clearTasks } = useTasks();
-    const [columns, addColumn, renameColumn, removeColumn] = useColumns(defaultKanban, defaultScrum);
+
+    // Inicializa colunas com os templates
+    const [columns, addColumn, renameColumn, removeColumn] = useColumns(kanbanTemplate, scrumTemplate);
 
     const allowDrop = useCallback((e) => e.preventDefault(), []);
     const handleDragStart = useCallback((e, taskId) => e.dataTransfer.setData("text/plain", taskId), []);

@@ -1,9 +1,6 @@
-// @TODO Refactor + colStyles
-
 import React, { useState, useCallback, useMemo } from "react";
 import { CiCirclePlus, CiEdit, CiTrash } from "react-icons/ci";
 import TaskItem from "./TaskItem";
-import { columnStyles } from "../../constants/columnStyles";
 import "./Column.css";
 
 const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragOver, onDrop }) => {
@@ -45,32 +42,36 @@ function Column({
   onRemove,
   color,
   applyTo,
+  style,
+  styleVars,
 }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
 
-  const colKey = className.split(" ")[1];
-  const defaultStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent" };
+  const colKey = className?.split(" ").pop() || "default";
 
-  // Calcula se uma cor é clara ou escura
-  const isColorDark = (color) => {
-    if (!color) return false;
+  // Determina o estilo com base na prioridade:
+  // 1. style (dos templates)
+  // 2. styleVars (de colunas criadas)
+  // 3. fallback padrão
+  const defaultStyle = style || styleVars || {
+    bg: "transparent",
+    border: "transparent",
+    color: "#212121",
+  };
 
-    // Converte para RGB
+  // Função auxiliar para verificar se a cor é escura (para contraste de texto)
+  const isColorDark = (hex) => {
+    if (!hex) return false;
     let r, g, b;
-    if (color.startsWith("#")) {
-      const hex = color.replace("#", "");
-      if (hex.length === 3) {
-        r = parseInt(hex[0] + hex[0], 16);
-        g = parseInt(hex[1] + hex[1], 16);
-        b = parseInt(hex[2] + hex[2], 16);
-      } else {
-        r = parseInt(hex.slice(0, 2), 16);
-        g = parseInt(hex.slice(2, 4), 16);
-        b = parseInt(hex.slice(4, 6), 16);
-      }
-    } else if (color.startsWith("rgb")) {
-      const match = color.match(/\d+/g);
+
+    if (hex.startsWith("#")) {
+      const c = hex.slice(1);
+      r = parseInt(c.substr(0, 2), 16);
+      g = parseInt(c.substr(2, 2), 16);
+      b = parseInt(c.substr(4, 2), 16);
+    } else if (hex.startsWith("rgb")) {
+      const match = hex.match(/\d+/g);
       if (!match) return false;
       [r, g, b] = match.map(Number);
     }
@@ -80,27 +81,17 @@ function Column({
     return luminance < 0.5;
   };
 
+  const bgColor = applyTo === "fundo" ? color || defaultStyle.bg : defaultStyle.bg;
+  const borderColor = applyTo === "borda" ? color || defaultStyle.border : defaultStyle.border;
+  const fontColor =
+    applyTo === "fundo"
+      ? isColorDark(color) ? "#EFEFEF" : "#212121"
+      : color || defaultStyle.color;
+
   const colStyle = {
-    bg:
-      applyTo === "fundo"
-        ? color || defaultStyle.bg
-        : applyTo === "borda"
-          ? "transparent"
-          : defaultStyle.bg, // fundo padrão ao carregar
-    border:
-      applyTo === "borda"
-        ? color || defaultStyle.border
-        : applyTo === "fundo"
-          ? "transparent"
-          : defaultStyle.border, // borda padrão ao carregar
-    color:
-      applyTo === "fundo"
-        ? isColorDark(color)
-          ? "#EFEFEF"
-          : "#212121"
-        : applyTo === "borda"
-          ? color || defaultStyle.color
-          : defaultStyle.color,
+    bg: bgColor,
+    border: borderColor,
+    color: fontColor,
   };
 
   const handleDropTask = useCallback(

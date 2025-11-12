@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { IoIosArrowDown } from "react-icons/io";
-import { columnStyles } from "../constants/columnStyles";
-import "./StatusDropdown.css"
+import "./StatusDropdown.css";
 
 export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
-  const [coords, setCoords] = useState(null); // null indica que ainda não calculou
+  const [coords, setCoords] = useState(null);
 
-  // close when clicked outside / press Esc
+  // Fecha ao clicar fora ou pressionar Esc
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (triggerRef.current && triggerRef.current.contains(e.target)) return;
@@ -27,7 +26,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
     };
   }, []);
 
-  // calc position when open
+  // Calcula posição do menu quando aberto
   useEffect(() => {
     if (!open || !triggerRef.current) return;
 
@@ -51,10 +50,9 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
   }, [open]);
 
   const currentCol = columns.find((c) => c.id === currentColumnId);
-  const colKey = currentCol?.className?.split(" ")[1];
-  const colStyle = columnStyles[colKey] || { bg: "transparent", border: "transparent", color: "inherit" };
+  const colStyle = currentCol?.style || { bg: "transparent", border: "transparent", color: "inherit" };
 
-  // Só renderiza o portal quando open e coords calculadas
+  // Renderiza o menu (portal)
   const menu =
     open && coords
       ? createPortal(
@@ -66,16 +64,16 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
             top: `${coords.top}px`,
             left: `${coords.left}px`,
             minWidth: `${coords.width}px`,
-            zIndex: 2000
+            zIndex: 2000,
           }}
           role="menu"
         >
           {columns.map((col) => {
-            const key = col.className.split(" ")[1];
-            const styleVars = col.styleVars || columnStyles[key] || {
+            const styleVars = col.style || col.styleVars || {
               bg: "transparent",
               border: "transparent",
             };
+
             return (
               <div
                 key={col.id}
@@ -119,8 +117,8 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
           <span
             className="col-circle"
             style={{
-              "--col-bg": currentCol?.styleVars?.bg || colStyle.bg,
-              "--col-border": currentCol?.styleVars?.border || colStyle.border,
+              "--col-bg": currentCol?.style?.bg || colStyle.bg,
+              "--col-border": currentCol?.style?.border || colStyle.border,
             }}
           ></span>
 

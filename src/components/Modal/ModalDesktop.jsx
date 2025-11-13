@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { lockBodyScroll, unlockBodyScroll } from "../../utils/modalUtils";
+import { lockBodyScroll, unlockBodyScroll } from "@utils/modalUtils";
 
 export default function ModalDesktop({
     title,

@@ -4,7 +4,7 @@ import { CiCirclePlus } from "react-icons/ci";
 
 import ColumnHeader from "./ColumnHeader";
 import ColumnTasks from "./ColumnTasks";
-import useColumn from "../hooks/useColumn";
+import useColumn from "@column/hooks/useColumn";
 
 import "./Column.css";
 

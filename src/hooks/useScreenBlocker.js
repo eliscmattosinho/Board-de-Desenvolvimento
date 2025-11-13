@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useScreen } from "../context/ScreenContext";
+import { useScreen } from "@context/ScreenContext";
 
 /**
  * Bloqueia o acesso se a tela for menor que minWidth (ex: mobile/tablet).

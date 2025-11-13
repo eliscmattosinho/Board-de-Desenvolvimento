@@ -1,5 +1,5 @@
 import React from "react";
-import { useBottomSheet } from "../../hooks/useBottomSheet";
+import { useBottomSheet } from "@hooks/useBottomSheet";
 
 export default function ModalMobile({
     title,

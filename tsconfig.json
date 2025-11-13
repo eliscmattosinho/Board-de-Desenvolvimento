@@ -1,0 +1,55 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "jsx": "react-jsx",
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "allowJs": true,
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "@components/*": [
+                "src/components/*"
+            ],
+            "@context/*": [
+                "src/context/*"
+            ],
+            "@features/*": [
+                "src/features/*"
+            ],
+            "@hooks/*": [
+                "src/hooks/*"
+            ],
+            "@utils/*": [
+                "src/utils/*"
+            ],
+            "@services/*": [
+                "src/services/*"
+            ],
+            "@assets/*": [
+                "src/assets/*"
+            ],
+            "@card/*": [
+                "src/features/card/*"
+            ],
+            "@board/*": [
+                "src/features/board/*"
+            ],
+            "@column/*": [
+                "src/features/column/*"
+            ],
+            "@pages/*": [
+                "src/pages/*"
+            ]
+        }
+    },
+    "include": [
+        "src"
+    ]
+}

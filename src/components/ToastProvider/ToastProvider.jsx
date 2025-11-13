@@ -2,7 +2,7 @@ import React from "react";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ToastProvider.css";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "@context/ThemeContext";
 
 const ToastProvider = () => {
   const { theme } = useTheme();

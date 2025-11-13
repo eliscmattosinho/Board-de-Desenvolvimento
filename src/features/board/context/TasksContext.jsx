@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react";
-import { initializeTasks } from "../../../services/initializeTasks";
-import { saveTasks, loadTasksFromStorage, clearTasksStorage } from "../../../services/taskPersistence";
-import { columnIdToCanonicalStatus } from "../utils/boardUtils";
+import { initializeTasks } from "@services/initializeTasks";
+import { saveTasks, loadTasksFromStorage, clearTasksStorage } from "@services/taskPersistence";
+import { columnIdToCanonicalStatus } from "@board/utils/boardUtils";
 
 const TasksContext = createContext();
 

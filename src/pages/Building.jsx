@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import builder from "../assets/images/builder.svg";
+import builder from "@assets/images/builder.svg";
 
 import "./Building.css";
 

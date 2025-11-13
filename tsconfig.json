@@ -3,6 +3,7 @@
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "Node",
+        "baseUrl": ".", //@TODO doc moduleResolution
         "jsx": "react-jsx",
         "strict": true,
         "forceConsistentCasingInFileNames": true,

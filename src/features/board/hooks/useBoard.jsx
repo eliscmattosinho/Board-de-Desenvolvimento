@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTasks } from "../context/TasksContext";
-import { useModal } from "../context/ModalContext";
+import { useModal } from "../../../context/ModalContext";
 import useColumns from "./useColumns";
 import { columnIdToCanonicalStatus } from "../utils/boardUtils";
-import { showWarning, showCustom, showSuccess } from "../utils/toastUtils";
-import CardModal from "../components/Card/CardModal/CardModal";
-import ColumnModal from "../components/Column/ColumnModal/ColumnModal";
-import ClearBoardToast from "../components/ToastProvider/toasts/ClearBoardToast";
+import { showWarning, showCustom, showSuccess } from "../../../utils/toastUtils";
+import CardModal from "../../card/components/CardModal/CardModal";
+import ColumnModal from "../../column/components/ColumnModal/ColumnModal";
+import ClearBoardToast from "../../../components/ToastProvider/toasts/ClearBoardToast";
 
 export default function useBoard(kanbanTemplate, scrumTemplate) {
     const [activeView, setActiveView] = useState("kanban");

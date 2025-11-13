@@ -4,17 +4,16 @@ import { FaArrowCircleLeft } from "react-icons/fa";
 import { SiCcleaner } from "react-icons/si";
 
 import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
-import BoardSection from "../components/Board/BoardSection";
-import BoardControls from "../components/Board/BoardControls";
+import BoardSection from "../features/board/components/BoardSection";
+import BoardControls from "../features/board/components/BoardControls";
 import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
 
-import useBoard from "../hooks/useBoard";
-import kanbanTemplate from "../components/Board/templates/kanbanTemplate";
-import scrumTemplate from "../components/Board/templates/scrumTemplate";
+import useBoard from "../features/board/hooks/useBoard";
+import kanbanTemplate from "../features/board/components/templates/kanbanTemplate";
+import scrumTemplate from "../features/board/components/templates/scrumTemplate";
 
 import svgBoard from "../assets/images/svg-board.svg";
 
-import "../App.css";
 import "./Boards.css";
 
 function Boards() {

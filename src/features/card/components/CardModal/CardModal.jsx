@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../utils/boardUtils";
-import { showWarning } from "../../../utils/toastUtils";
-import useTaskForm from "../../../hooks/useTaskForm";
-import { useModal } from "../../../context/ModalContext";
-import { useTasks } from "../../../context/TasksContext";
+import { columnIdToCanonicalStatus, getDisplayStatus } from "../../../board/utils/boardUtils";
+import { showWarning } from "../../../../utils/toastUtils";
+import useTaskForm from "../../../card/hooks/useTaskForm.js";
+import { useModal } from "../../../../context/ModalContext";
+import { useTasks } from "../../../board/context/TasksContext";
 
-import Modal from "../../Modal/Modal";
-import ConfirmDeleteModal from "../../Modal/DeleteModal/ConfirmDeleteModal";
+import Modal from "../../../../components/Modal/Modal";
+import ConfirmDeleteModal from "../../../../components/Modal/DeleteModal/ConfirmDeleteModal";
 import CardEditView from "../CardEditView";
 import CardTransition from "./CardTransition";
 import CardActions from "./CardActions";

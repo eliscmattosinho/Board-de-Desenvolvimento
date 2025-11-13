@@ -3,16 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { SiCcleaner } from "react-icons/si";
 
-import ThemeToggle from "../components/ThemeToggle/ThemeToggle";
-import BoardSection from "../features/board/components/BoardSection";
-import BoardControls from "../features/board/components/BoardControls";
-import FloatingMenu from "../components/FloatingMenu/FloatingMenu";
+import ThemeToggle from "@components/ThemeToggle/ThemeToggle";
+import BoardSection from "@board/components/BoardSection";
+import BoardControls from "@board/components/BoardControls";
+import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
 
-import useBoard from "../features/board/hooks/useBoard";
-import kanbanTemplate from "../features/board/components/templates/kanbanTemplate";
-import scrumTemplate from "../features/board/components/templates/scrumTemplate";
+import useBoard from "@board/hooks/useBoard";
+import kanbanTemplate from "@board/components/templates/kanbanTemplate";
+import scrumTemplate from "@board/components/templates/scrumTemplate";
 
-import svgBoard from "../assets/images/svg-board.svg";
+import svgBoard from "@assets/images/svg-board.svg";
 
 import "./Boards.css";
 

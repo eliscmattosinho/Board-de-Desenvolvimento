@@ -1,4 +1,4 @@
-import { canonicalStatuses } from "../features/board/utils/boardUtils";
+import { canonicalStatuses } from "@board/utils/boardUtils";
 import { loadTasks } from "./tasksLoader";
 import { loadTasksFromStorage, saveTasks } from "./taskPersistence";
 

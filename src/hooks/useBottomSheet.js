@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { lockBodyScroll, unlockBodyScroll } from "../utils/modalUtils";
+import { lockBodyScroll, unlockBodyScroll } from "@utils/modalUtils";
 
 export function useBottomSheet({ isOpen, showHeader = true, onClose }) {
     const sheetRef = useRef(null);

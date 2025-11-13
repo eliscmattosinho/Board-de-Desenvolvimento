@@ -1,6 +1,6 @@
 import React from "react";
 
-import StatusDropdown from "../../../components/StatusDropdown/StatusDropdown";
+import StatusDropdown from "@components/StatusDropdown/StatusDropdown";
 
 export default function CardView({ title, description, columns, currentColumnId, onSelect }) {
     return (

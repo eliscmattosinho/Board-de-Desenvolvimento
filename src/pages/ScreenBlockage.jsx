@@ -1,6 +1,6 @@
 import React from "react";
 import ExceptionPage from "./ExceptionPage";
-import screenBlockage from "../assets/images/screen-blockage.svg";
+import screenBlockage from "@assets/images/screen-blockage.svg";
 
 export default function ScreenBlockage() {
     return (

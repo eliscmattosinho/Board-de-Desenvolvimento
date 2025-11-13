@@ -5,7 +5,9 @@ export async function loadTasks() {
   if (loadedOnce && cachedTasks.length > 0) return cachedTasks;
 
   try {
-    const response = await fetch(`${process.env.PUBLIC_URL || ''}/assets/tarefas.txt`);
+    const base = import.meta.env.BASE_URL || "/";
+    const response = await fetch(`${base}assets/tarefas.txt`);
+
     if (!response.ok) return [];
 
     const text = await response.text();
@@ -32,7 +34,8 @@ export function resetTasksCache() {
 
 function parseTasks(text) {
   const tasks = [];
-  const regex = /Tarefa\s+(\d+):\s*(.*?)\r?\n- Status:\s*(.*?)\r?\nDescrição:\s*([\s\S]*?)(?=\r?\nTarefa\s+\d+:|$)/g;
+  const regex =
+    /Tarefa\s+(\d+):\s*(.*?)\r?\n- Status:\s*(.*?)\r?\nDescrição:\s*([\s\S]*?)(?=\r?\nTarefa\s+\d+:|$)/g;
   let match;
   let counter = 0;
 
@@ -40,7 +43,7 @@ function parseTasks(text) {
     counter++;
     const status = match[3].trim();
     tasks.push({
-      id: `${counter}`, // substituído no hook
+      id: `${counter}`,
       title: match[2].trim(),
       status,
       description: match[4].trim(),

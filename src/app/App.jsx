@@ -35,17 +35,14 @@ function App() {
   useEffect(() => {
     const enableActiveOnIOS = () => { };
     document.addEventListener("touchstart", enableActiveOnIOS, true);
-
-    return () => {
-      document.removeEventListener("touchstart", enableActiveOnIOS, true);
-    };
+    return () => document.removeEventListener("touchstart", enableActiveOnIOS, true);
   }, []);
 
   return (
     <ThemeProvider>
       <TasksProvider>
         <ScreenProvider>
-          <Router basename="/development-board">
+          <Router basename={import.meta.env.DEV ? "/" : "/development-board"}>
             <RouteChangeTracker>
               {(location) => (
                 <ModalProvider>

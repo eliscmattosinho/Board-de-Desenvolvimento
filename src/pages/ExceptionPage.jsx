@@ -14,7 +14,7 @@ export default function ExceptionPage({
 
     return (
         <div className="exception-container" data-theme={theme}>
-            <h2 className="exception-title">{title}</h2>
+            <h2 className="exception-title title-thematic">{title}</h2>
 
             <div className="exception-info">
                 {messages.map((msg, index) => (

@@ -23,15 +23,11 @@
 .exception-title {
     font-size: clamp(1.4rem, 4.5vw, 2rem);
     margin-bottom: 15px;
+    font-weight: 700;
 
-    background: var(--btn-thematic-text);
     background-size: 100% auto;
     background-position: center;
     background-repeat: no-repeat;
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 /* Texto secundário */

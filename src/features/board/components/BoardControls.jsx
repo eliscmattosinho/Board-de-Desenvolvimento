@@ -3,19 +3,27 @@ import "./BoardControls.css"
 
 function BoardControls({ activeView, setActiveView }) {
   return (
-    <div className="btns-block">
+    <div className="hub-boards">
+      {/* Default - Kanban */}
       <button
-        className={`btn btn-project btn-board btn-kanban ${activeView === "kanban" ? "active" : ""}`}
+        id="btn-kanban"
+        className={`btn btn-board ${activeView === "kanban" ? "active" : ""}`}
         onClick={() => setActiveView("kanban")}
       >
         <p className="title-thematic">Kanban</p>
       </button>
+  
+      {/* Default - Scrum */}
       <button
-        className={`btn btn-project btn-board btn-scrum ${activeView === "scrum" ? "active" : ""}`}
+        id="btn-scrum"
+        className={`btn btn-board ${activeView === "scrum" ? "active" : ""}`}
         onClick={() => setActiveView("scrum")}
       >
         <p className="title-thematic">Scrum</p>
       </button>
+
+      {/* Custom - New */}
+
     </div>
   );
 }

@@ -19,6 +19,7 @@ export default defineConfig(({ command }) => ({
             "@board": path.resolve(__dirname, "./src/features/board"),
             "@column": path.resolve(__dirname, "./src/features/column"),
             "@pages": path.resolve(__dirname, "./src/pages"),
+            "@styles": path.resolve(__dirname, "./src/styles"),
         },
     },
     server: {

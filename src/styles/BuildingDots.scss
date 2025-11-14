@@ -1,0 +1,55 @@
+/* 
+  Animation inspired by:
+  https://codepen.io/hylobates-lar/pen/bGEQXgm
+*/
+
+@mixin dots($count) {
+  $text-shadow: ();
+  @for $i from 0 through $count {
+    $text-shadow:
+      $text-shadow,
+      (-0.5 + (random()) * 3) + em (-0.5 + (random()) * 3) + em 7px var(--light-green);
+  }
+  text-shadow: $text-shadow;
+}
+
+#building-container {
+  position: relative;
+  overflow: hidden;
+  background: #123;
+
+  &::before,
+  &::after {
+    position: absolute;
+    content: ".";
+    width: 3em;
+    height: 3em;
+    top: 50%;
+    left: 50%;
+    mix-blend-mode: screen;
+    animation: move 44s linear infinite;
+    pointer-events: none;
+    color: transparent;
+  }
+
+  &::before {
+    @include dots(40);
+    animation-duration: 44s;
+    animation-delay: -27s;
+  }
+
+  &::after {
+    @include dots(40);
+    animation-duration: 41s;
+    animation-delay: -19s;
+  }
+}
+
+@keyframes move {
+  from {
+    transform: rotate(0deg) scale(15);
+  }
+  to {
+    transform: rotate(360deg) scale(15);
+  }
+}

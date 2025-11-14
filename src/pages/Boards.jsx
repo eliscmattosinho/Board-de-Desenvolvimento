@@ -57,7 +57,7 @@ function Boards() {
             </div>
             <BoardControls activeView={activeView} setActiveView={setActiveView} />
           </div>
-          <div className="img-block img-panel">
+          <div className="img-container img-panel">
             <img src={svgBoard} alt="Ilustração de board" />
           </div>
         </div>

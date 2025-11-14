@@ -1,52 +1,16 @@
-.board {
+.board-container {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   gap: 1rem;
   padding-bottom: 10px;
   width: 100%;
-  height: 450px;
-  overflow: visible;
-  cursor: pointer;
+  height: calc(100vh - 120px);
+  overflow: auto;
 }
 
-.board.active {
-  display: flex;
-}
-
-.col-add-last {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-weight: 500;
-  border: 1px solid var(--global-green);
-  color: var(--global-green);
-  border-radius: 6px;
-  padding: 20px 0;
-  min-width: 200px;
-
-  transition: all 0.3s ease-in-out;
-}
-
-#kanban,
-#scrum {
-    overflow-x: auto;
-}
-
-.col-add-last:hover {
-  background: var(--hover-green);
-  color: var(--hover-text-color);
-}
-
-.dark .col-add-last {
-  border: 1px solid var(--global-white);
-  color: var(--global-white);
-}
-
-.dark .col-add-last:hover {
-  background-color: none;
+.add-col {
+  transition: transform 0.3s ease-in-out;
 }
 
 .add-col:hover {
@@ -57,12 +21,42 @@
   position: relative;
   width: 10px;
   min-width: 10px;
+  height: 100%;
+
   display: flex;
   align-items: stretch;
   justify-content: center;
-  height: 100%;
+
   cursor: pointer;
-  z-index: 5;
   background: transparent;
   pointer-events: auto;
+}
+
+.col-add-last {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border: 1px solid var(--global-green);
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--global-green);
+  padding: 0 20px;
+  min-width: 200px;
+  cursor: pointer;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.col-add-last:hover {
+  background: var(--hover-green);
+  color: var(--hover-text-color);
+}
+
+.dark .col-add-last {
+  border: 1px solid var(--global-white);
+  color: var(--global-white);
 }

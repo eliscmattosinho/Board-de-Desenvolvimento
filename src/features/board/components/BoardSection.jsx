@@ -72,7 +72,7 @@ function BoardSection({
   );
 
   return (
-    <div id={id} className={`board ${id}-board ${isActive ? "active" : ""}`}>
+    <div id={id} className={`board-container ${id}-board ${isActive ? "active" : ""}`}>
       {columns.map((col, index) => (
         <React.Fragment key={col.id}>
           <Column
@@ -92,6 +92,7 @@ function BoardSection({
             onRemove={handleRemoveColumn(col)}
           />
 
+          {/* Componente para add colunas entre colunas */}
           {index < columns.length - 1 && (
             <div
               className="add-column-zone"
@@ -108,9 +109,9 @@ function BoardSection({
         </React.Fragment>
       ))}
 
-      {/* Área para adicionar coluna no final */}
+      {/* Elemento para add coluna ao final */}
       <div className="col-add-last" onClick={() => onAddColumn(columns.length)}>
-        <CiCirclePlus className="add-col plus-icon" size={30} />
+        <CiCirclePlus className="add-col" size={30} />
         <p>Criar nova coluna</p>
       </div>
     </div>

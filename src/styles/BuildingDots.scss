@@ -1,3 +1,5 @@
+@use "sass:math";
+
 /* 
   Animation inspired by:
   https://codepen.io/hylobates-lar/pen/bGEQXgm
@@ -8,7 +10,7 @@
   @for $i from 0 through $count {
     $text-shadow:
       $text-shadow,
-      (-0.5 + (random()) * 3) + em (-0.5 + (random()) * 3) + em 7px var(--light-green);
+      (-0.5 + math.random() * 3) + em (-0.5 + math.random() * 3) + em 7px var(--light-green);
   }
   text-shadow: $text-shadow;
 }

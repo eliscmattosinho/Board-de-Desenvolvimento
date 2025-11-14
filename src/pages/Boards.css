@@ -1,10 +1,139 @@
-.h2-board-page {
-    font-size: 30px;
+#hub-container {
+    margin: 20px 0;
+}
+
+.hub-content {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    flex-direction: column;
+    gap: 3rem;
+
+    max-width: 960px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+}
+
+.hub-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hub-sub-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hub-introduction {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.hub-infos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.hub-title {
+    background-size: 100% auto;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hub-img-container {
+    display: none;
+}
+
+.hub-active-board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* BOARD */
+.board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.board-title-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 5px;
+}
+
+#board-title {
+    font-size: 24px;
 }
 
 .task-counter {
     background-color: transparent;
 }
+
+/* Board icons */
+.board-cleaner {
+    cursor: pointer;
+    color: var(--global-green);
+
+    transition: transform 0.3s ease-in-out;
+}
+
+.board-cleaner:hover {
+    transform: scale(1.1);
+}
+
+/* ForBug: Caso mais de um apareça */
+.board-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6rem;
+    width: 100%;
+
+    /* escapando do stacking context + clipping region */
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+/* MEDIA QUERIES */
+@media (min-width: 768px) {
+    .hub-img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 220px;
+    }
+
+    .hub-header {
+        display: grid;
+        grid-template-columns: 4fr 3fr;
+        justify-items: stretch;
+        align-items: start;
+        justify-content: space-between;
+        align-content: center;
+        gap: -3rem;
+    }
+
+    .hub-actions {
+        margin-bottom: 30px;
+    }
+}
+
+
+/* CSS DE OUTRO LUGAR QUE NÃO ERA PARA ESTAR AQUI */
 
 .btn-board {
     position: relative;
@@ -45,19 +174,6 @@
     font-size: 16px;
 }
 
-#general-content {
-    display: flex;
-    justify-content: center;
-    margin: 0 auto;
-    flex-direction: column;
-    gap: 3rem;
-}
-
-.first-section-board {
-    display: grid;
-    grid-template-columns: 3fr 4fr;
-}
-
 .img-panel img {
     width: 70%;
 }
@@ -65,23 +181,6 @@
 .btns-block {
     display: flex;
     gap: 2rem;
-}
-
-#h3-title {
-    font-size: 24px;
-}
-
-.text-content-intro {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    justify-content: start;
-}
-
-.tables-block {
-    display: flex;
-    flex-direction: column;
-    gap: 6rem;
 }
 
 #kanban,
@@ -93,45 +192,6 @@
 .scrum-items {
     overflow-y: auto;
     width: 200px;
-}
-
-.btn-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.board-title-container {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 5px;
-}
-
-.header-board-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 0 10px;
-}
-
-.board-cleaner {
-    cursor: pointer;
-    color: var(--global-green);
-
-    transition: transform 0.3s ease-in-out;
-}
-
-.add-component {
-    cursor: pointer;
-    transition: transform 0.3s ease-in-out;
-}
-
-.add-component:hover,
-.board-cleaner:hover {
-    transform: scale(1.1);
 }
 
 .col-board {
@@ -199,21 +259,4 @@ h3 .task-counter {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.container-options {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
-}
-
-@media (min-width: 320px) and (max-width: 768px) {
-    .first-section-board {
-        display: flex;
-    }
-
-    .img-panel {
-        display: none;
-    }
 }

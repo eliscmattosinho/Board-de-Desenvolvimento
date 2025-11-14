@@ -74,13 +74,13 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   letter-spacing: 0.5px;
-  line-height: 1.6;
+  line-height: 1.5;
   font-size: 16px;
 }
 
 /* Responsive typography */
 h2 {
-  font-size: clamp(2.5rem, calc(2.5rem + 1.5vw), 4rem);
+  font-size: clamp(1.5rem, calc(1.5rem + 1.2vw), 2.5rem);
 }
 
 p {
@@ -100,16 +100,6 @@ a {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-}
-
-.content {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 2%;
-}
-
-.content-block {
-  margin: 40px 0;
 }
 
 img {

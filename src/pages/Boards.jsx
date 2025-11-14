@@ -17,6 +17,8 @@ import svgBoard from "@assets/images/svg-board.svg";
 import "./Boards.css";
 
 function Boards() {
+  // @TODO extrair board -> BoardContext e deixar só a área de hub para data
+
   const navigate = useNavigate();
 
   const {
@@ -35,38 +37,51 @@ function Boards() {
   } = useBoard(kanbanTemplate, scrumTemplate);
 
   return (
-    <div className="content-block">
-      <div id="general-content" className="content">
-        {/* Botão voltar + tema */}
-        <div className="btn-container back-button">
+    <div id="hub-container">
+      <div className="hub-content">
+        {/* Ações no Hub */}
+        <div className="hub-actions">
           <button onClick={() => navigate("/")} className="board-icon btn-back">
             <FaArrowCircleLeft size={30} />
           </button>
-          <div className="container-options">
+
+          <div className="hub-sub-actions">
             <ThemeToggle />
-            <button className="btn btn-thematic new-board">Novo board</button>
+            <button id="new-board" className="btn btn-thematic">
+              Novo board
+            </button>
           </div>
         </div>
 
-        {/* Introdução */}
-        <div className="first-section-board">
-          <div className="text-content-intro">
-            <div className="titles-content">
-              <h2 className="title-thematic h2-board-page">Board de desenvolvimento</h2>
-              <h3 className="h3-board-page">Escolha seu board de visualização.</h3>
+        {/* Hub header */}
+        <div className="hub-header">
+          <div className="hub-introduction">
+            <div className="hub-infos">
+              <h2 className="hub-title title-thematic">
+                Hub de desenvolvimento
+              </h2>
+              <p className="sub-title">Escolha seu board de visualização.</p>
             </div>
-            <BoardControls activeView={activeView} setActiveView={setActiveView} />
+
+            <BoardControls
+              activeView={activeView}
+              setActiveView={setActiveView}
+            />
           </div>
-          <div className="img-container img-panel">
-            <img src={svgBoard} alt="Ilustração de board" />
+
+          <div className="img-container hub-img-container">
+            <img
+              src={svgBoard}
+              alt="Illustration of a dashboard interface with floating UI elements, including charts, checklists, and notification cards in green and blue tones on a dark background"
+            />
           </div>
         </div>
 
-        {/* Seção principal */}
-        <div className="second-section-board">
-          <div className="header-board-section">
+        {/* Hub board */}
+        <div className="hub-active-board">
+          <div className="board-header">
             <div className="board-title-container">
-              <h3 id="h3-title" className="title-thematic">
+              <h3 id="board-title" className="title-thematic">
                 {activeView === "kanban" ? "Kanban" : "Scrum"}
                 <span className="task-counter">({orderedTasks.length})</span>
               </h3>
@@ -77,10 +92,14 @@ function Boards() {
               />
             </div>
 
-            <SiCcleaner size={30} className="board-cleaner" onClick={handleClearBoard} />
+            <SiCcleaner
+              size={30}
+              className="board-cleaner"
+              onClick={handleClearBoard}
+            />
           </div>
 
-          <div className="tables-block">
+          <div className="board-content">
             {activeView === "kanban" && (
               <BoardSection
                 id="kanban"

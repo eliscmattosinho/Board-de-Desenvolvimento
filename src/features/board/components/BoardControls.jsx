@@ -1,4 +1,5 @@
 import React from "react";
+import "./BoardControls.css"
 
 function BoardControls({ activeView, setActiveView }) {
   return (

@@ -30,6 +30,11 @@
   transition: all 0.3s ease-in-out;
 }
 
+#kanban,
+#scrum {
+    overflow-x: auto;
+}
+
 .col-add-last:hover {
   background: var(--hover-green);
   color: var(--hover-text-color);

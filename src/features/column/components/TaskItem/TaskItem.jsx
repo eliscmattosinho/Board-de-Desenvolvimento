@@ -1,4 +1,5 @@
 import React from "react";
+import "./TaskItem.css"
 
 function TaskItem({ task, onClick, onDragStart, onDrop, onDragOver, onDragLeave, dragPosition }) {
   return (

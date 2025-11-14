@@ -1,0 +1,38 @@
+.btns-block {
+    display: flex;
+    gap: 2rem;
+}
+
+.btn-board {
+    position: relative;
+    border: 1px solid var(--global-green);
+    background: transparent;
+    transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.btn-board::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 2px solid var(--btn-active);
+    border-radius: inherit;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+.btn-board.active::after {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.btn-board:hover {
+    box-shadow: var(--item-shadow);
+}
+
+.btn-board.active {
+    background-color: var(--global-white);
+    box-shadow: var(--item-shadow);
+}

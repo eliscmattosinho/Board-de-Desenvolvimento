@@ -205,10 +205,10 @@ button.btn-cancel {
 .board-icon,
 .plus-icon {
   color: var(--icon-color);
+  cursor: pointer;
 }
 
 .board-icon {
-  cursor: pointer;
   transition: all 0.3s ease-in-out;
 }
 

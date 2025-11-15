@@ -3,11 +3,16 @@
     display: inline-block;
 }
 
+/* Add col icon */
 .menu-trigger {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     background: none;
     border: none;
-    cursor: pointer;
-    padding: 4px;
+    padding: 5px;
+
     transition: transform 0.2s ease-in-out;
 }
 
@@ -17,46 +22,49 @@
 
 .floating-menu {
     position: absolute;
-    top: -100%;
-    left: 100%;
-    margin-left: 10px;
+    top: 110%;
+    left: -10%;
+    margin-top: 10px;
+
     display: flex;
     flex-direction: column;
     gap: 6px;
     background-color: var(--bg-component);
-    border-radius: 10px;
+    border-radius: 4px;
     padding: 8px;
     box-shadow: var(--item-shadow);
     z-index: 100;
+
     animation: fadeIn 0.2s ease-in-out;
 }
 
 .floating-menu::before {
     content: "";
     position: absolute;
-    top: 50%;
-    left: -6px;
+    top: -6%;
+    right: 75%;
     width: 12px;
     height: 12px;
     background-color: var(--bg-component);
-    transform: rotate(45deg);
+    transform: translateX(-50%) rotate(45deg);
     z-index: -1;
 }
 
+/* FloatingMenu in light theme */
 .menu-item {
     background-color: var(--bg-component);
-    border: 1px solid var(--global-white);
     color: var(--global-white);
-    font-weight: 500;
+    border: 1px solid var(--global-white);
+    border-radius: 4px;
     padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: left;
-    font-size: 14px;
-    transition: background-color 0.3s ease-in-out;
-    white-space: nowrap;
-    width: max-content;
+    text-align: center;
+    font-weight: 600;
+
+    width: 100%;
     min-width: max-content;
+    white-space: nowrap;
+
+    transition: all 0.3s ease-in-out;
 }
 
 .menu-item:hover {
@@ -64,6 +72,7 @@
     color: var(--global-green);
 }
 
+/* FloatingMenu in dark theme */
 .dark .menu-item {
     border: 1px solid var(--global-black);
     color: var(--global-black);
@@ -83,5 +92,19 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@media (min-width: 768px) {
+    .floating-menu {
+        top: -100%;
+        left: 100%;
+        margin-left: 10px;
+    }
+
+    .floating-menu::before {
+        top: 40%;
+        left: -6px;
+        transform: rotate(45deg);
     }
 }

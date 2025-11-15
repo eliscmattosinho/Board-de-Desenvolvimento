@@ -40,7 +40,7 @@ function Column({
 
   return (
     <div
-      className={`col-board ${className}`}
+      className={`board-col ${className}`}
       id={id}
       style={{
         "--col-bg": colStyle.bg,
@@ -72,9 +72,9 @@ function Column({
       </div>
 
       {onAddTask && (
-        <div className="add-task" onClick={handleAddTaskClick}>
+        <button className="add-task" onClick={handleAddTaskClick}>
           <CiCirclePlus size={30} className="plus-icon" />
-        </div>
+        </button>
       )}
 
       <div

@@ -83,6 +83,10 @@ h2 {
   font-size: clamp(1.5rem, calc(1.5rem + 1.2vw), 2.5rem);
 }
 
+h3 {
+  font-size: clamp(1.1rem, calc(1rem + 0.8vw), 1.8rem);
+}
+
 p {
   font-size: clamp(0.87rem, calc(0.75rem + 1.5vw), 1.1rem);
 }

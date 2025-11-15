@@ -6,21 +6,22 @@ const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragO
 
     return (
         <div
-            className="title-col-board"
+            className="col-title-container"
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             onDragOver={onDragOver}
             onDrop={onDrop}
         >
-            <div className="col-title-flex">
+            <div className="col-title-content">
                 {hovered && onRemove && (
-                    <CiTrash className="col-icon-left" size={20} onClick={onRemove} />
+                    <CiTrash className="col-icon-left trash-icon" size={20} onClick={onRemove} />
                 )}
-                <h4 className="col-title-board">
-                    {title} <span className="task-counter">({tasksLength})</span>
-                </h4>
+                <p className="col-title-board">
+                    {title}
+                    <span className="task-counter">({tasksLength})</span>
+                </p>
                 {hovered && onEdit && (
-                    <CiEdit className="col-icon-right" size={20} onClick={onEdit} />
+                    <CiEdit className="col-icon-right edit-icon" size={20} onClick={onEdit} />
                 )}
             </div>
         </div>

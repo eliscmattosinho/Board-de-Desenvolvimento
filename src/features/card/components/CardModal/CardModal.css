@@ -60,3 +60,10 @@
     opacity: 0;
     transition: all 0.4s ease-in-out;
 }
+
+/* Status label */
+.status-block {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}

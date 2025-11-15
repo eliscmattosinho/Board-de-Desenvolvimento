@@ -35,7 +35,8 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
       setCoords({
         top: rect.bottom + window.scrollY,
         left: rect.left + window.scrollX,
-        width: Math.max(rect.width, 120),
+        width: Math.min(rect.width, 200),
+        height: rect.height,
       });
     };
 
@@ -64,6 +65,8 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
             top: `${coords.top}px`,
             left: `${coords.left}px`,
             minWidth: `${coords.width}px`,
+            maxWidth: `150px`,
+            minHeight: `${coords.height}px`,
             zIndex: 2000,
           }}
           role="menu"
@@ -109,7 +112,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
     <>
       <div className="custom-dropdown w-600" ref={triggerRef}>
         <div
-          className="dropdown-selected"
+          className={`dropdown-selected ${open ? "open" : ""}`}
           onClick={() => setOpen((o) => !o)}
           aria-haspopup="true"
           aria-expanded={open}

@@ -15,7 +15,7 @@ function TaskItem({ task, onClick, onDragStart, onDrop, onDragOver, onDragLeave,
       onDragStart={(e) => {
         onDragStart(e, task.id);
 
-        // CriA clone invisível para drag image
+        // Cria clone invisível para drag image
         const dragImage = e.currentTarget.cloneNode(true);
         dragImage.style.position = "absolute";
         dragImage.style.top = "-1000px";

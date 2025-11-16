@@ -81,10 +81,8 @@
 }
 
 /* Board icons */
-.board-cleaner {
-    cursor: pointer;
-    color: var(--global-green);
-
+#board-cleaner {
+    color: var(--global-green) !important;
     transition: transform 0.3s ease-in-out;
 }
 

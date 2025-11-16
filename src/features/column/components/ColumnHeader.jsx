@@ -1,5 +1,6 @@
 import React from "react";
-import { CiTrash, CiEdit } from "react-icons/ci";
+import { IoTrashOutline } from "react-icons/io5";
+import { AiOutlineEdit } from "react-icons/ai";
 
 const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragOver, onDrop }) => {
     const [hovered, setHovered] = React.useState(false);
@@ -14,14 +15,26 @@ const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragO
         >
             <div className="col-title-content">
                 {hovered && onRemove && (
-                    <CiTrash className="col-icon-left trash-icon" size={20} onClick={onRemove} />
+                    <button
+                        className="board-icon col-icon-left trash-icon"
+                        onClick={onRemove}
+                        data-tooltip="Excluir coluna"
+                    >
+                        <IoTrashOutline size={20} />
+                    </button>
                 )}
                 <p className="col-title-board">
                     {title}
                     <span className="task-counter">({tasksLength})</span>
                 </p>
                 {hovered && onEdit && (
-                    <CiEdit className="col-icon-right edit-icon" size={20} onClick={onEdit} />
+                    <button
+                        className="board-icon col-icon-right edit-icon"
+                        onClick={onEdit}
+                        data-tooltip="Editar coluna"
+                    >
+                        <AiOutlineEdit size={20} />
+                    </button>
                 )}
             </div>
         </div>

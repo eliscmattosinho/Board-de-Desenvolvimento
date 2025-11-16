@@ -2,9 +2,12 @@ import React from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import "./AddColumnIndicator.css";
 
-function AddColumnIndicator({ onClick }) {
+function AddColumnIndicator({ onClick, isBlocked }) {
   return (
-    <div className="add-col-container" onClick={onClick}>
+    <div
+      className={`add-col-container ${isBlocked ? "blocked" : ""}`}
+      onClick={!isBlocked ? onClick : undefined}
+    >
       <span className="col-line"></span>
       <button
         className="plus-icon add-col"

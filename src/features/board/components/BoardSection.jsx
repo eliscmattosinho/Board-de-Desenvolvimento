@@ -22,7 +22,7 @@ function BoardSection({
   isActive,
 }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const { openModal, closeModal } = useModal();
+  const { openModal, closeModal, isModalOpen } = useModal();
 
   const handleColumnHover = useCallback((action, index = null) => {
     if (action === "hoverEnter") setHoveredIndex(index);
@@ -102,6 +102,7 @@ function BoardSection({
               {hoveredIndex === index && (
                 <AddColumnIndicator
                   onClick={(e) => handleAddColumnAt(index + 1, e)}
+                  isBlocked={isModalOpen}
                 />
               )}
             </div>

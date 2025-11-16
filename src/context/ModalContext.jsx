@@ -16,8 +16,11 @@ export function ModalProvider({ children }) {
         setModal(null);
     }, []);
 
+    // Modal aberto
+    const isModalOpen = !!modal;
+
     return (
-        <ModalContext.Provider value={{ openModal, closeModal }}>
+        <ModalContext.Provider value={{ openModal, closeModal, isModalOpen }}>
             {children}
 
             {modal &&

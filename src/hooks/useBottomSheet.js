@@ -85,15 +85,29 @@ export function useBottomSheet({ isOpen, showHeader = true, onClose }) {
 
     const handleDragEnd = () => {
         if (!sheetRef.current) return;
+
+        isDraggingRef.current = false;
         sheetRef.current.style.transition = "height 0.25s ease";
 
         const currentHeight = parseFloat(sheetRef.current.style.height);
         const viewportHeight = window.innerHeight;
         const halfScreen = viewportHeight * 0.5;
 
+        if (dragOffsetRef.current > 0) {
+            // Rebote até o máximo permitido
+            setSheetHeight(maxSheetHeight);
+            requestAnimationFrame(() => {
+                if (sheetRef.current)
+                    sheetRef.current.style.height = `${maxSheetHeight}px`;
+            });
+            dragOffsetRef.current = 0;
+            return;
+        }
+
         if (currentHeight < halfScreen) {
             setAnimating("closing");
             setTimeout(() => onClose(), 250);
+            dragOffsetRef.current = 0;
             return;
         }
 
@@ -107,15 +121,7 @@ export function useBottomSheet({ isOpen, showHeader = true, onClose }) {
             setSheetHeight(currentHeight);
         }
 
-        isDraggingRef.current = false;
         dragOffsetRef.current = 0;
-
-        const bodyEl = sheetRef.current?.querySelector(".bottom-sheet-body");
-        if (bodyEl) {
-            const newHeight = bodyEl.scrollHeight + (showHeader ? 60 : 40);
-            setMaxSheetHeight(newHeight);
-            setSheetHeight(newHeight);
-        }
     };
 
     return {

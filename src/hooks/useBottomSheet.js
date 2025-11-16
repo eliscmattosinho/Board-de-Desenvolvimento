@@ -8,31 +8,43 @@ export function useBottomSheet({ isOpen, showHeader = true, onClose }) {
     const isDraggingRef = useRef(false);
     const dragOffsetRef = useRef(0);
     const currentHeightRef = useRef(0);
-    const velocityRef = useRef(0);
 
     const [sheetHeight, setSheetHeight] = useState(0);
     const [maxSheetHeight, setMaxSheetHeight] = useState(0);
     const [animating, setAnimating] = useState("opening");
     const minHeight = 80;
 
-    // Atualiza altura do modal
+    // Função para calcular altura de forma robusta
+    const calculateHeight = () => {
+        if (!sheetRef.current || isDraggingRef.current) return;
+
+        const container = sheetRef.current;
+        let totalHeight = 0;
+
+        Array.from(container.children).forEach((child) => {
+            const style = window.getComputedStyle(child);
+            const marginTop = parseFloat(style.marginTop) || 0;
+            const marginBottom = parseFloat(style.marginBottom) || 0;
+            totalHeight += child.offsetHeight + marginTop + marginBottom;
+        });
+
+        // Ajuste extra de 20px
+        totalHeight += 40;
+
+        setMaxSheetHeight(totalHeight);
+        setSheetHeight(totalHeight);
+        currentHeightRef.current = totalHeight;
+    };
+
+    // Atualiza altura do modal com ResizeObserver
     useEffect(() => {
         if (!sheetRef.current) return;
 
-        const bodyEl = sheetRef.current.querySelector(".bottom-sheet-body");
-        if (!bodyEl) return;
+        calculateHeight(); // cálculo inicial
 
-        const updateHeight = () => {
-            if (isDraggingRef.current) return;
-            const newHeight = bodyEl.scrollHeight + (showHeader ? 60 : 40);
-            setMaxSheetHeight(newHeight);
-            setSheetHeight(newHeight);
-            currentHeightRef.current = newHeight;
-        };
-
-        updateHeight();
-        const resizeObserver = new ResizeObserver(updateHeight);
-        resizeObserver.observe(bodyEl);
+        const resizeObserver = new ResizeObserver(calculateHeight);
+        resizeObserver.observe(sheetRef.current);
+        Array.from(sheetRef.current.children).forEach((child) => resizeObserver.observe(child));
 
         return () => resizeObserver.disconnect();
     }, [showHeader]);
@@ -57,7 +69,6 @@ export function useBottomSheet({ isOpen, showHeader = true, onClose }) {
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         startYRef.current = clientY;
         lastYRef.current = clientY;
-        velocityRef.current = 0;
         isDraggingRef.current = true;
         dragOffsetRef.current = 0;
         if (sheetRef.current) sheetRef.current.style.transition = "none";
@@ -94,7 +105,7 @@ export function useBottomSheet({ isOpen, showHeader = true, onClose }) {
         const halfScreen = viewportHeight * 0.5;
 
         if (dragOffsetRef.current > 0) {
-            // Rebote até o máximo permitido
+        // Rebote até o máximo permitido
             setSheetHeight(maxSheetHeight);
             requestAnimationFrame(() => {
                 if (sheetRef.current)

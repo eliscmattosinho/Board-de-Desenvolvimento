@@ -82,7 +82,7 @@
 
 /* Board icons */
 #board-cleaner {
-    color: var(--global-green) !important;
+    color: var(--global-green);
     transition: transform 0.3s ease-in-out;
 }
 
@@ -109,17 +109,16 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 220px;
+        width: 270px;
     }
 
     .hub-header {
         display: grid;
-        grid-template-columns: 4fr 3fr;
+        grid-template-columns: 3fr 2fr;
         justify-items: stretch;
-        align-items: start;
+        align-items: center;
         justify-content: space-between;
         align-content: center;
-        gap: -3rem;
     }
 
     .hub-actions {

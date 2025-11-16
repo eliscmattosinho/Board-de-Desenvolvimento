@@ -12,7 +12,9 @@ import useBoard from "@board/hooks/useBoard";
 import kanbanTemplate from "@board/components/templates/kanbanTemplate";
 import scrumTemplate from "@board/components/templates/scrumTemplate";
 
-import svgBoard from "@assets/images/svg-board.svg";
+import { useTheme } from "@context/ThemeContext";
+import svgDarkBoard from "@assets/images/svg-board.svg";
+import svgLightBoard from "@assets/images/svg-light-board.svg";
 
 import "./Boards.css";
 
@@ -20,6 +22,7 @@ function Boards() {
   // @TODO extrair board -> BoardContext e deixar só a área de hub para data
 
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const {
     activeView,
@@ -35,6 +38,8 @@ function Boards() {
     handleAddColumn,
     removeColumn,
   } = useBoard(kanbanTemplate, scrumTemplate);
+
+  const boardImage = theme === "dark" ? svgDarkBoard : svgLightBoard;
 
   return (
     <div id="hub-container">
@@ -71,8 +76,8 @@ function Boards() {
 
           <div className="img-container hub-img-container">
             <img
-              src={svgBoard}
-              alt="Illustration of a dashboard interface with floating UI elements, including charts, checklists, and notification cards in green and blue tones on a dark background"
+              src={boardImage}
+              alt="Illustration of a dashboard interface"
             />
           </div>
         </div>
@@ -92,13 +97,13 @@ function Boards() {
               />
             </div>
 
-            <button id="board-cleaner" className="board-icon clean-icon"
+            <button
+              id="board-cleaner"
+              className="board-icon clean-icon"
               onClick={handleClearBoard}
               data-tooltip="Limpar tarefas"
             >
-              <SiCcleaner
-                size={30}
-              />
+              <SiCcleaner size={30} />
             </button>
           </div>
 

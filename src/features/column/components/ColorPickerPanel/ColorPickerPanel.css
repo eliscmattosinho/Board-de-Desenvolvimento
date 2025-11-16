@@ -132,6 +132,10 @@
     box-shadow: var(--item-shadow);
 }
 
+.color-picker-panel .react-colorful__saturation {
+    border-bottom: 0;
+}
+
 input[type="radio"] {
     accent-color: var(--global-green);
     transition: all 0.2s ease-in-out;

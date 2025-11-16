@@ -5,7 +5,7 @@ import StatusDropdown from "@components/StatusDropdown/StatusDropdown";
 export default function CardView({ title, description, columns, currentColumnId, onSelect }) {
     return (
         <div className="modal-content view-task-modal card-view">
-            <h3 className="task-name">{title}</h3>
+            <h2 className="task-name">{title}</h2>
             <div className="status-block">
                 <label className="input-title">Status:</label>
                 <StatusDropdown columns={columns} currentColumnId={currentColumnId} onSelect={onSelect} />

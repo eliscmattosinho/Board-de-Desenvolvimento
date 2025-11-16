@@ -3,6 +3,11 @@
   text-align: center;
 }
 
+.modal-del-title {
+  font-size: clamp(1.05rem, calc(1rem + 0.6vw), 1.3rem);
+  font-weight: 700;
+}
+
 .modal-delete .modal-actions {
   gap: 2rem;
 }

@@ -1,11 +1,11 @@
 .task-id {
     color: var(--global-gray);
-    font-size: 16px;
+    font-size: clamp(0.85rem, calc(0.8rem + 0.4vw), 1.05rem);
 }
 
 .task-name {
-    font-size: 18px;
-    font-weight: 600;
+  font-size: clamp(1.1rem, calc(1rem + 0.8vw), 1.6rem);
+  font-weight: 600;
 }
 
 .description-text {

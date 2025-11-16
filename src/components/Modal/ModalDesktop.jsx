@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { lockBodyScroll, unlockBodyScroll } from "@utils/modalUtils";
 
@@ -7,31 +7,32 @@ export default function ModalDesktop({
     children,
     onClose,
     showHeader = true,
-    width = "350px",
+    width = "100%",
     className = "",
     closeTooltip = "Fechar",
     isOpen = true,
 }) {
-    const [animating, setAnimating] = useState("opening");
-    const sheetRef = useRef(null);
-    const velocityRef = useRef(0);
+    const [animationState, setAnimationState] = useState("opening");
 
     useEffect(() => {
-        if (isOpen) {
-            lockBodyScroll();
-            setAnimating("opening");
-            const timer = setTimeout(() => setAnimating(null), 300);
-            return () => {
-                clearTimeout(timer);
-                unlockBodyScroll();
-            };
-        } else {
+        if (!isOpen) {
             unlockBodyScroll();
+            return;
         }
+
+        lockBodyScroll();
+        setAnimationState("opening");
+
+        const timer = setTimeout(() => setAnimationState(""), 300);
+
+        return () => {
+            clearTimeout(timer);
+            unlockBodyScroll();
+        };
     }, [isOpen]);
 
     const handleClose = () => {
-        setAnimating("closing");
+        setAnimationState("closing");
         setTimeout(() => onClose(), 250);
     };
 
@@ -39,22 +40,19 @@ export default function ModalDesktop({
 
     return (
         <div className="modal">
-            <div className={`modal-wrapper ${animating === "closing" ? "closing" : ""}`}>
-                <div
-                    className={`modal-container ${className}`}
-                    style={{
-                        width,
-                        transition: velocityRef.current === 0 ? "height 0.2s ease" : "none",
-                    }}
-                    ref={sheetRef}
-                    onClick={(e) => e.stopPropagation()}
-                >
+            <div
+                className={`modal-container ${className} ${animationState}`}
+                style={{ width }}
+            >
+                <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
                     {showHeader && (
-                        <div className="modal-header-row">
+                        <div className="modal-header">
                             {title && <h2 className="modal-title">{title}</h2>}
                         </div>
                     )}
+
                     <div className="modal-body">{children}</div>
+
                     <button
                         type="button"
                         className="btn-close"

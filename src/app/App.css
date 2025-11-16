@@ -1,5 +1,5 @@
 :root {
-  /* Global colors */
+  /* COLORS */
   --global-green: #2DA44A;
   --hover-green: #217b37;
   --light-green: rgba(45, 164, 74, 0.702);
@@ -10,12 +10,15 @@
   --global-black: #212121;
 
   --global-white: #efefef;
+
   --global-gray: #9b9b9b;
   --light-gray: #c4c4c4;
   --hover-gray: #666666;
 
   --global-red: #d73a49;
   --hover-red: #ae2432;
+
+  --btn-thematic-text: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
 
   /* Thematic & general */
   --bg-color: var(--global-white);
@@ -24,23 +27,55 @@
   --bg-component: var(--global-green);
   --hover-component: var(--global-white);
 
+  /* TYPOGRAPHY - DH (DS) */
+
+  /* --fs-title: 1.5rem(min) 1.75rem(max) */
+  --fs-title: clamp(1.5rem, calc(1.5rem + (1.75 - 1.5) * 1vw), 1.75rem);
+
+  /* --fs-subtitle: 1.25rem(min) 1.375rem(max) */
+  --fs-subtitle: clamp(1.25rem, calc(1.25rem + (1.375 - 1.25) * 1vw), 1.375rem);
+
+  /* --fs-modal-title: 1.125rem(min) 1.25rem(max) */
+  --fs-modal-title: clamp(1.125rem, calc(1.125rem + (1.25 - 1.125) * 1vw), 1.25rem);
+
+  /* --fs-label: 0.875rem(min) 0.9375rem(max) */
+  --fs-label: clamp(0.875rem, calc(0.875rem + (0.9375 - 0.875) * 1vw), 0.9375rem);
+
+  /* --fs-text: 1rem */
+  --fs-text: 1rem;
+
+  /* --fs-btn: 0.875rem(min) 1rem(max) */
+  --fs-btn: clamp(0.875rem, calc(0.875rem + (1 - 0.875) * 1vw), 1rem);
+
+  /* --fs-tooltip: 0.75rem(min) 0.875rem(max) */
+  --fs-tooltip: clamp(0.75rem, calc(0.75rem + (0.875 - 0.75) * 1vw), 0.875rem);
+
+  /* --fs-sm: 0.75rem */
+  --fs-sm: 0.75rem;
+
+  /* BUTTONS */
   --btn-bg: transparent;
   --btn-disabled: #c4c4c4;
   --btn-disabled-text: #666;
   --btn-active: var(--global-green);
   --btn-border: var(--global-green);
 
+  /* ICON */
   --icon-color: var(--global-green);
 
+  /* TOOLTIP */
   --tooltip-bg: rgba(33, 33, 33, 0.851);
   --tooltip-text: var(--global-white);
 
+  /* MODALS */
   --modal-shadow: 6px 6px 12px rgb(35, 35, 35);
   --modal-overlay: rgba(33, 33, 33, 0.702);
 
+  /*  */
   --item-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  /* STATES */
   --on-focus: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
-  --btn-thematic-text: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
 }
 
 /* Dark mode vars */
@@ -75,28 +110,35 @@ body {
   color: var(--text-color);
   letter-spacing: 0.5px;
   line-height: 1.5;
-  font-size: 16px;
+  font-size: var(--fs-text);
 }
 
-/* Responsive typography */
 h2 {
-  font-size: clamp(1.5rem, calc(1.5rem + 1.2vw), 2.5rem);
+  font-size: var(--fs-title);
+  font-weight: 700;
 }
 
 h3 {
-  font-size: clamp(1.1rem, calc(1rem + 0.8vw), 1.8rem);
+  font-size: var(--fs-subtitle);
+  font-weight: normal;
 }
 
-p {
-  font-size: clamp(0.87rem, calc(0.75rem + 1.5vw), 1.1rem);
+label {
+  font-size: var(--fs-label);
+  font-weight: 600;
 }
 
 button {
-  font-size: clamp(0.75rem, calc(0.7rem + 0.5vh), 1.1rem);
+  font-size: var(--fs-btn);
+  font-weight: 600;
+  touch-action: manipulation;
+  cursor: pointer;
+
+  transition: all 0.3s ease-in-out;
 }
 
-a {
-  font-size: clamp(0.75rem, calc(0.7rem + 0.5vh), 1.1rem);
+input::placeholder {
+  font-size: var(--font-sm);
 }
 
 .no-select {
@@ -115,10 +157,6 @@ img {
 a {
   text-decoration: none;
   color: var(--text-color);
-  cursor: pointer;
-}
-
-button {
   cursor: pointer;
 }
 
@@ -205,6 +243,7 @@ button.btn-cancel {
 .board-icon,
 .plus-icon {
   color: var(--icon-color);
+  border: none;
   cursor: pointer;
 }
 
@@ -257,30 +296,6 @@ button.btn-cancel {
   background-color: var(--hover-gray);
 }
 
-/* Interações visuais para botões */
-button {
-  touch-action: manipulation;
-  transition: all 0.3s ease-in-out;
-}
-
-/* Desktop: hover só se tiver hover disponível */
-@media (hover: hover) and (pointer: fine) {
-  .btn:hover {
-    transform: scale(1.05);
-    box-shadow: var(--item-shadow);
-  }
-}
-
-/* Mobile touch: pulse apenas para touch */
-@media (hover: none) and (pointer: coarse) {
-  button:active {
-    animation: pulse 0.45s forwards;
-  }
-
-  .dark button:active {
-    animation: darkPulse 0.45s forwards;
-  }
-}
 
 /* Efeito de "pulse" */
 @keyframes pulse {
@@ -314,5 +329,24 @@ button {
   100% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(239, 239, 239, 0);
+  }
+}
+
+/* Desktop: hover só se tiver hover disponível */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--item-shadow);
+  }
+}
+
+/* Mobile touch: pulse apenas para touch */
+@media (hover: none) and (pointer: coarse) {
+  button:active {
+    animation: pulse 0.45s forwards;
+  }
+
+  .dark button:active {
+    animation: darkPulse 0.45s forwards;
   }
 }

@@ -11,7 +11,7 @@ export default function CardView({ title, description, columns, currentColumnId,
                 <StatusDropdown columns={columns} currentColumnId={currentColumnId} onSelect={onSelect} />
             </div>
             <div className="description-section">
-                <h3 className="input-title">Descrição:</h3>
+                <h3 className="input-title w-600">Descrição:</h3>
                 <p className="description-text">{description || "Nenhuma descrição disponível."}</p>
             </div>
         </div>

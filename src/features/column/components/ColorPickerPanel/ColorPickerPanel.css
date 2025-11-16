@@ -23,9 +23,7 @@
 }
 
 .picker-label {
-    font-size: 0.8rem;
     color: var(--global-gray);
-    font-weight: 500;
     pointer-events: none;
 }
 
@@ -65,7 +63,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
-    font-size: 0.85rem;
 }
 
 .picker-checkboxes label {
@@ -92,7 +89,6 @@
     background: var(--global-black);
     border-radius: 6px;
     text-align: center;
-    font-size: 0.75rem;
     color: var(--global-white);
     user-select: none;
 }

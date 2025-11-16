@@ -20,8 +20,8 @@
 }
 
 .item-title {
-  font-size: clamp(14px, 1vw + 0.3rem, 17px);
-  font-weight: 500;
+  font-size: clamp(1rem, calc(1rem + (1.125 - 1) * 1vw), 1.125rem);
+  font-weight: 600;
   white-space: wrap;
 
   display: -webkit-box;
@@ -31,7 +31,6 @@
 }
 
 .item-description {
-    font-size: clamp(0.85rem, 1vw + 0.3rem, 0.95rem);
     color: var(--global-gray);
     margin-top: 5px;
 

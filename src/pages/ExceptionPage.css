@@ -23,7 +23,6 @@
 .exception-title {
     font-size: clamp(1.4rem, 4.5vw, 2rem);
     margin-bottom: 15px;
-    font-weight: 700;
 
     background-size: 100% auto;
     background-position: center;
@@ -37,7 +36,6 @@
 
 .exception-info p {
     margin: 15px 0;
-    font-size: 14px;
 }
 
 /* Link de ação ("Go back home") */

@@ -92,7 +92,7 @@ export default function ColorPickerPanel({ color, setColor, applyTo, setApplyTo,
             >
                 {({ mode, toggleMode }) => (
                     <div className="picker-header">
-                        <label className="picker-label">{mode === "hex" ? "HEX" : "RGBA"}</label>
+                        <label className="picker-label w-600">{mode === "hex" ? "HEX" : "RGBA"}</label>
                         <button className="picker-mode-toggle" onClick={toggleMode} title="Alternar modo">
                             <FiRefreshCcw size={16} />
                         </button>

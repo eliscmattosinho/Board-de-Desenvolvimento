@@ -3,20 +3,15 @@
   text-align: center;
 }
 
-.modal-del-title {
-  font-size: clamp(1.05rem, calc(1rem + 0.6vw), 1.3rem);
-  font-weight: 700;
-}
-
 .modal-delete .modal-actions {
   gap: 2rem;
-}
-
-.modal-delete .modal-actions {
-  padding-top: 0px;
 }
 
 /* Mobile modal */
 .bottom-sheet .modal-delete {
   padding: 20px;
+}
+
+.bottom-sheet .modal-actions {
+  margin-top: 5px;
 }

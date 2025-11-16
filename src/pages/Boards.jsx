@@ -92,11 +92,14 @@ function Boards() {
               />
             </div>
 
-            <SiCcleaner
-              size={30}
-              className="board-cleaner"
+            <button id="board-cleaner" className="board-icon clean-icon"
               onClick={handleClearBoard}
-            />
+              data-tooltip="Limpar tarefas"
+            >
+              <SiCcleaner
+                size={30}
+              />
+            </button>
           </div>
 
           <div className="board-content">

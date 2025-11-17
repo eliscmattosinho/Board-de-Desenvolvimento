@@ -24,14 +24,9 @@
     font-size: clamp(1.4rem, 4.5vw, 2rem);
     margin-bottom: 15px;
 
-    background: var(--btn-thematic-text);
     background-size: 100% auto;
     background-position: center;
     background-repeat: no-repeat;
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 /* Texto secundário */
@@ -41,7 +36,6 @@
 
 .exception-info p {
     margin: 15px 0;
-    font-size: 14px;
 }
 
 /* Link de ação ("Go back home") */

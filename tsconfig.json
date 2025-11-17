@@ -47,8 +47,12 @@
             ],
             "@pages/*": [
                 "src/pages/*"
+            ],
+            "@styles/*": [
+                "src/styles/*"
             ]
-        }
+        },
+        "ignoreDeprecations": "6.0"
     },
     "include": [
         "src"

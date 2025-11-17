@@ -17,9 +17,10 @@ export default function ConfirmDeleteModal({
         <Modal
             onClose={onCancel}
             showHeader={false}
+            width="300px"
         >
             <div className="modal-content modal-delete">
-                <h3 className="modal-title text-alert">Excluir {entityText}</h3>
+                <h2 className="modal-title modal-del-title text-alert">Excluir {entityText}</h2>
                 <p>
                     Deseja mesmo excluir a {entityText}? Esta ação não pode ser desfeita.
                 </p>

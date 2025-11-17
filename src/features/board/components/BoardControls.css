@@ -1,0 +1,45 @@
+.hub-boards {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 5px 0;
+    overflow: hidden; /* adjust when add more views/boards */
+}
+
+.btn-board {
+    position: relative;
+    border: 1px solid var(--global-green);
+    background: transparent;
+    margin: 5px;
+
+    transition: all 0.3s ease-in-out;
+}
+
+/* border gambs btn-board activated */
+.btn-board::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 2px solid var(--btn-active);
+    border-radius: inherit;
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-board.active {
+    background-color: var(--global-white);
+    box-shadow: var(--item-shadow);
+}
+
+.btn-board.active::after {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.btn-board:hover {
+    box-shadow: var(--item-shadow);
+}

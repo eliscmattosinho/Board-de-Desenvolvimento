@@ -1,11 +1,11 @@
 .task-id {
     color: var(--global-gray);
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .task-name {
-    font-size: 18px;
-    font-weight: 600;
+  font-size: var(--fs-modal-title);
+  font-weight: 600;
 }
 
 .description-text {
@@ -59,4 +59,11 @@
     transform: translateX(-100%);
     opacity: 0;
     transition: all 0.4s ease-in-out;
+}
+
+/* Status label */
+.status-block {
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }

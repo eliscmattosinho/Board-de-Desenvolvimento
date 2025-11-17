@@ -74,11 +74,23 @@ export default function ColorPickerBase({ color, setColor, applyTo, setApplyTo, 
             </div>
             <div className="picker-checkboxes">
                 <label className="col-label">
-                    <input type="radio" name="applyTo" checked={applyTo === "fundo"} onChange={() => setApplyTo("fundo")} />
+                    <input
+                        type="radio"
+                        name="applyTo"
+                        checked={applyTo === "fundo"}
+                        onChange={() => setApplyTo("fundo")}
+                    />
+                    <span className="custom-radio"></span>
                     Fundo
                 </label>
                 <label className="col-label">
-                    <input type="radio" name="applyTo" checked={applyTo === "borda"} onChange={() => setApplyTo("borda")} />
+                    <input
+                        type="radio"
+                        name="applyTo"
+                        checked={applyTo === "borda"}
+                        onChange={() => setApplyTo("borda")}
+                    />
+                    <span className="custom-radio"></span>
                     Borda
                 </label>
             </div>

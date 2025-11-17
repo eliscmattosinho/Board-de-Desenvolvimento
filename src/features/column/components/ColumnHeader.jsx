@@ -1,26 +1,61 @@
-import React from "react";
-import { CiTrash, CiEdit } from "react-icons/ci";
+import React, { useEffect, useRef } from "react";
+import { IoTrashOutline } from "react-icons/io5";
+import { AiOutlineEdit } from "react-icons/ai";
+import { useScreen } from "@context/ScreenContext";
 
 const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragOver, onDrop }) => {
     const [hovered, setHovered] = React.useState(false);
+    const { isMobile } = useScreen();
+    const containerRef = useRef(null);
+
+    // Close when out (mobile)
+    useEffect(() => {
+        if (!isMobile || !hovered) return;
+
+        const handleClickOutside = (e) => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setHovered(false);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, [hovered, isMobile]);
 
     return (
         <div
-            className="title-col-board"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
+            ref={containerRef}
+            className="col-title-container"
+            onMouseEnter={() => !isMobile && setHovered(true)}
+            onMouseLeave={() => !isMobile && setHovered(false)}
+            onClick={() => isMobile && setHovered((prev) => !prev)}
             onDragOver={onDragOver}
             onDrop={onDrop}
         >
-            <div className="col-title-flex">
+            <div className="col-title-content">
                 {hovered && onRemove && (
-                    <CiTrash className="col-icon-left" size={20} onClick={onRemove} />
+                    <button
+                        className="board-icon col-icon-left trash-icon"
+                        onClick={onRemove}
+                        data-tooltip="Excluir coluna"
+                    >
+                        <IoTrashOutline size={20} />
+                    </button>
                 )}
-                <h4 className="col-title-board">
-                    {title} <span className="task-counter">({tasksLength})</span>
-                </h4>
+
+                <p className={`col-title-board ${hovered ? "shrink" : ""}`}>
+                    {title}
+                    <span className="task-counter">({tasksLength})</span>
+                </p>
+
                 {hovered && onEdit && (
-                    <CiEdit className="col-icon-right" size={20} onClick={onEdit} />
+                    <button
+                        className="board-icon col-icon-right edit-icon"
+                        onClick={onEdit}
+                        data-tooltip="Editar coluna"
+                    >
+                        <AiOutlineEdit size={20} />
+                    </button>
                 )}
             </div>
         </div>

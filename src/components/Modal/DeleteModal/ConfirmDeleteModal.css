@@ -7,11 +7,11 @@
   gap: 2rem;
 }
 
-.modal-delete .modal-actions {
-  padding-top: 0px;
-}
-
 /* Mobile modal */
 .bottom-sheet .modal-delete {
   padding: 20px;
+}
+
+.bottom-sheet .modal-actions {
+  margin-top: 5px;
 }

@@ -1,3 +1,4 @@
+/* MODAL OVERLAY */
 .modal {
     position: fixed;
     top: 0;
@@ -7,116 +8,71 @@
     inset: 0;
     background: var(--modal-overlay);
     padding: 1rem;
+    backdrop-filter: blur(6px);
 
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 999;
-}
-
-.dark .modal-wrapper {
-    border-radius: 8px;
-    padding: 2px;
-    background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
-    display: inline-block;
-
-    animation: scaleIn 0.30s ease-in-out forwards;
-    transform-origin: center;
-    transition: all 0.30s ease-in-out;
-}
-
-.modal-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background: var(--bg-color);
-    color: var(--text-color);
-    border-radius: 8px;
-    box-shadow: var(--modal-shadow);
-
-    width: 350px;
-    max-width: 600px;
-    min-width: 280px;
-    padding: 1.5rem;
-}
-
-.dark .modal-wrapper .modal-container {
-    border-radius: 8px;
-    background: var(--bg-color);
-}
-
-.modal-header-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.modal-body {
-    margin-top: 8px;
-}
-
-.modal-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    color: var(--text-color);
-}
-
-.modal-title {
-    font-size: 20px;
-    color: var(--text-color);
-}
-
-.modal-content p {
-    font-size: 14px;
 }
 
 .modal svg {
     background: transparent;
 }
 
-.modal-btn {
-    border: none;
+/* MODAL */
+
+/* CONTAINER - COLORED BORDER */
+.modal-container {
+    position: relative;
+    box-shadow: var(--modal-shadow);
+    width: 100%;
+    max-width: 360px;
+
+    animation: scaleIn 0.3s ease-in-out forwards;
+}
+
+/* Aplicação da borda colorida */
+.dark .modal-container {
+    padding: 2px;
     border-radius: 6px;
-    padding: 10px 15px;
-    cursor: pointer;
+    background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
+    transform-origin: center;
 }
 
-.btn-edit {
-    border: 1px solid var(--global-black);
+.modal-container.closing {
+    animation: scaleOut 0.25s ease-in forwards;
 }
 
-.modal-field {
+/* MODAL - FUTURE CONTENT */
+.modal-inner {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-}
+    align-items: flex-start;
+    gap: 1rem;
 
-.input-title {
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.input-entry {
-    max-width: 100%;
-    border: 1px solid var(--global-gray);
-    border-radius: 6px;
-    padding: 8px;
     background: var(--bg-color);
     color: var(--text-color);
-    outline: none;
-    font-size: 14px;
+    border-radius: 4px;
+    padding: 20px;
+
+    transition: all 0.3s ease-in-out;
 }
 
-.input-entry:focus {
-    box-shadow: var(--on-focus);
+/* HEADER */
+.modal-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
 }
 
-input::placeholder,
-.textarea-description::placeholder {
-    font-size: 12px;
-    color: var(--global-gray);
+.modal-title {
+    width: 100%;
+    font-size: var(--fs-modal-title);
+}
+
+.modal-body {
+    width: 100%;
 }
 
 .btn-close {
@@ -134,10 +90,68 @@ input::placeholder,
     transform: scale(1.1);
 }
 
+/* GENERAL CONTENT */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+    color: var(--text-color);
+}
+
+/* FORM ELEMENTS */
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+}
+
+.input-title {
+    font-size: var(--fs-label);
+}
+
+.input-entry {
+    width: 100%;
+    max-width: 100%;
+    border: 1px solid var(--global-gray);
+    border-radius: 6px;
+    padding: 8px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    outline: none;
+}
+
+.input-entry:focus {
+    box-shadow: var(--on-focus);
+}
+
+input::placeholder,
+.textarea-description::placeholder {
+    color: var(--global-gray);
+}
+
+/* BTN GROUP */
 .modal-actions {
     display: flex;
     justify-content: space-between;
+}
+
+.modal-actions:not(.modal-delete .modal-actions) {
     padding-top: 20px;
+}
+
+/* BUTTONS */
+.modal-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.btn-edit {
+    border: 1px solid var(--global-black);
 }
 
 /* Estado desabilitado (sem alterações) */
@@ -157,59 +171,7 @@ input::placeholder,
     background-color: var(--hover-green);
 }
 
-/* Base do botão com tooltip */
-button[data-tooltip]:not(.btn-close) {
-    position: relative;
-}
-
-/* Tooltip principal */
-button[data-tooltip]::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--tooltip-bg);
-    color: var(--tooltip-text);
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: normal;
-
-    white-space: pre;
-    max-width: 200px;
-    overflow-wrap: break-word;
-    word-break: normal;
-
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-    z-index: 10;
-}
-
-/* Rabinho do tooltip */
-button[data-tooltip]::before {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid var(--tooltip-bg);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    z-index: 10;
-}
-
-/* Mostrar tooltip e rabinho no hover */
-button[data-tooltip]:hover::after,
-button[data-tooltip]:hover::before {
-    opacity: 1;
-}
+/* ANIMAÇÕES */
 
 /* Entrada (abrindo) */
 @keyframes scaleIn {
@@ -217,6 +179,7 @@ button[data-tooltip]:hover::before {
         opacity: 0;
         transform: scale(0.8);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -229,13 +192,15 @@ button[data-tooltip]:hover::before {
         opacity: 1;
         transform: scale(1);
     }
+
     to {
         opacity: 0;
         transform: scale(0.8);
     }
 }
 
-/* Classe para fechar o modal */
-.modal-wrapper.closing {
-    animation: scaleOut 0.25s ease-in forwards;
+@media (min-width: 768px) {
+    .modal-container {
+        max-width: 450px;
+    }
 }

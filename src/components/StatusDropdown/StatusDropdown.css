@@ -1,75 +1,28 @@
-/* Status label */
-.status-block {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
-
-.status-value {
-    font-size: 14px;
-}
-
-/* Dropdown customizado */
-.custom-dropdown {
-    position: relative;
-    min-width: fit-content;
-    margin-left: 5px;
-    background: var(--bg-color);
-}
-
-.dropdown-selected {
-    padding: 5px 10px;
-    color: var(--text-color);
+/* portal styling (on body) */
+.dropdown-options-portal {
     border: 1px solid var(--global-gray);
-    border-radius: 6px;
-    background: var(--bg-color);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s ease-in-out;
-}
-
-.dropdown-selected:hover {
-    box-shadow: var(--on-focus);
-}
-
-.dropdown-selected svg path {
-    color: var(--text-color);
-}
-
-.dropdown-icon {
-    font-size: 18px;
-    margin-left: 5px;
-    transition: transform 0.3s ease-in-out;
-}
-
-.dropdown-icon.open {
-    transform: rotate(180deg);
-}
-
-.dropdown-options {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    min-width: max-content;
-    border: 1px solid var(--global-gray);
-    border-radius: 6px;
+    border-radius: 4px;
     background-color: var(--bg-color);
     margin-top: 4px;
     box-shadow: var(--item-shadow);
-    z-index: 10;
-    max-height: 200px;
+    height: 113px;
     overflow-y: auto;
 }
 
 .dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
     background-color: var(--bg-color);
     color: var(--text-color);
     padding: 8px 10px;
+    font-size: 15px;
     cursor: pointer;
-    font-size: 14px;
+
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 
     transition: background-color 0.3s ease-in-out;
 }
@@ -84,14 +37,66 @@
     color: var(--global-black);
 }
 
-/* portal styling (on body) */
-.dropdown-options-portal {
+/* Dropdown customizado */
+.custom-dropdown {
+    position: relative;
+    min-width: fit-content;
+    margin-left: 5px;
+    background: var(--bg-color);
+}
+
+.dropdown-selected {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    max-width: 180px;
+
+    padding: 5px 10px;
+    color: var(--text-color);
     border: 1px solid var(--global-gray);
     border-radius: 6px;
-    background-color: var(--bg-color);
-    margin-top: 4px;
-    box-shadow: var(--item-shadow);
-    max-height: 200px;
-    overflow-y: auto;
-    font-size: 14px;
+    background: var(--bg-color);
+    cursor: pointer;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.dropdown-selected:hover,
+.dropdown-selected.open,
+.custom-dropdown .dropdown-selected:focus {
+    box-shadow: var(--on-focus);
+}
+
+.dropdown-selected svg path {
+    color: var(--text-color);
+}
+
+/* Círculo */
+.col-circle {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    border-radius: 50%;
+
+    background: var(--col-bg, transparent);
+    border: 2px solid var(--col-border, transparent);
+    color: var(--col-font, transparent);
+}
+
+.status-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1 1 auto;
+}
+
+.dropdown-icon {
+    flex-shrink: 0;
+    transition: transform 0.3s ease-in-out;
+}
+
+.dropdown-icon.open {
+    transform: rotate(180deg);
 }

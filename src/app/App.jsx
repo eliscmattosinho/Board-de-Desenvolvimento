@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Building from "@pages/Building";
 import Boards from "@pages/Boards";
 import NotFound from "@pages/NotFound";
-import ScreenBlockage from "@pages/ScreenBlockage";
+// import ScreenBlockage from "@pages/ScreenBlockage";
 
 import RouteChangeTracker from "@components/RouteChangeTracker";
 import ToastProvider from "@components/ToastProvider/ToastProvider";
@@ -17,14 +17,14 @@ import { ScreenProvider } from "@context/ScreenContext";
 import useScreenBlocker from "@hooks/useScreenBlocker";
 
 function AppContent({ location }) {
-  useScreenBlocker(480);
+  // useScreenBlocker(480);
 
   return (
     <div id="main">
       <Routes location={location}>
         <Route path="/" element={<Building />} />
         <Route path="/boards" element={<Boards />} />
-        <Route path="/block" element={<ScreenBlockage />} />
+        {/* <Route path="/block" element={<ScreenBlockage />} /> */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

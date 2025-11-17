@@ -111,18 +111,19 @@ export function useBoardPanning({ containerId, holdDelay = 160 }) {
 
         lastX.current = touch.clientX;
         startX.current = touch.clientX;
-
         velocity.current = 0;
 
-        isPanning.current = true;
-        container.classList.add("panning");
-
-        markClickForCancel();
+        // Não ativar pan imediatamente
+        holdTimer.current = setTimeout(() => {
+            isPanning.current = true;
+            container.classList.add("panning");
+            markClickForCancel(); // só cancela click se realmente panning
+        }, holdDelay);
     };
 
     /** TOUCH MOVE */
     const handleTouchMove = (e) => {
-        if (!isPanning.current || !isTouching.current) return;
+        if (!isTouching.current) return;
 
         const touch = e.touches[0];
         const container = document.getElementById(containerId);
@@ -130,9 +131,18 @@ export function useBoardPanning({ containerId, holdDelay = 160 }) {
 
         const dx = touch.clientX - lastX.current;
         lastX.current = touch.clientX;
-
         velocity.current = dx;
-        container.scrollLeft -= dx;
+
+        // Ativar panning se o movimento for sgnificativo
+        if (!isPanning.current && Math.abs(touch.clientX - startX.current) > 5) {
+            isPanning.current = true;
+            container.classList.add("panning");
+            markClickForCancel();
+        }
+
+        if (isPanning.current) {
+            container.scrollLeft -= dx;
+        }
     };
 
     /** TOUCH END */

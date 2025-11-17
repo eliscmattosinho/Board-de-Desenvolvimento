@@ -5,12 +5,12 @@ import { useScreen } from "@context/ScreenContext";
 
 const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragOver, onDrop }) => {
     const [hovered, setHovered] = React.useState(false);
-    const { isMobile } = useScreen();
+    const { isTouch } = useScreen();
     const containerRef = useRef(null);
 
-    // Close when out (mobile)
+    // Fecha o menu ao clicar fora (mobile)
     useEffect(() => {
-        if (!isMobile || !hovered) return;
+        if (!isTouch || !hovered) return;
 
         const handleClickOutside = (e) => {
             if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -20,22 +20,22 @@ const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragO
 
         document.addEventListener("click", handleClickOutside);
         return () => document.removeEventListener("click", handleClickOutside);
-    }, [hovered, isMobile]);
+    }, [hovered, isTouch]);
 
     return (
         <div
             ref={containerRef}
             className="col-title-container"
-            onMouseEnter={() => !isMobile && setHovered(true)}
-            onMouseLeave={() => !isMobile && setHovered(false)}
-            onClick={() => isMobile && setHovered((prev) => !prev)}
+            onMouseEnter={() => !isTouch && setHovered(true)}
+            onMouseLeave={() => !isTouch && setHovered(false)}
+            onClick={() => isTouch && setHovered((prev) => !prev)}
             onDragOver={onDragOver}
             onDrop={onDrop}
         >
             <div className="col-title-content">
-                {hovered && onRemove && (
+                {onRemove && (
                     <button
-                        className="board-icon col-icon-left trash-icon"
+                        className={`board-icon col-icon-left trash-icon ${hovered ? "visible" : ""}`}
                         onClick={onRemove}
                         data-tooltip="Excluir coluna"
                     >
@@ -48,9 +48,9 @@ const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragO
                     <span className="task-counter">({tasksLength})</span>
                 </p>
 
-                {hovered && onEdit && (
+                {onEdit && (
                     <button
-                        className="board-icon col-icon-right edit-icon"
+                        className={`board-icon col-icon-right edit-icon ${hovered ? "visible" : ""}`}
                         onClick={onEdit}
                         data-tooltip="Editar coluna"
                     >

@@ -47,19 +47,21 @@
 
 .col-icon-left,
 .col-icon-right {
+  display: none;
   cursor: pointer;
   opacity: 0;
-
   transition: opacity 0.2s ease-in-out;
+}
+
+/* agora controlado pelo React */
+.col-icon-left.visible,
+.col-icon-right.visible {
+  display: flex;
+  opacity: 1;
 }
 
 .board-icon.trash-icon {
   color: var(--global-red);
-}
-
-.col-title-container:hover .col-icon-left,
-.col-title-container:hover .col-icon-right {
-  opacity: 1;
 }
 
 /* CARD PREVIEW */
@@ -109,27 +111,8 @@
   transition: all 0.5s ease-in-out;
 }
 
-/* círculo */
-.add-task::before {
-  content: "";
-  position: absolute;
-
-  width: 200%;
-  aspect-ratio: 1 / 1;
-
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-
-  background: var(--hover-green);
-  border-radius: 50%;
-
-  transition: transform 0.9s ease;
-  z-index: -1;
-}
-
-.add-task:hover::before {
-  transform: translate(-50%, -50%) scale(1);
+.add-task:hover {
+  background-color: var(--global-green);
 }
 
 /* Plus icon in light/dark mode on a green bg */

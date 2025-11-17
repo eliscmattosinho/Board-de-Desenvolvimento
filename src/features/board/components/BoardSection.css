@@ -85,3 +85,17 @@
   border: 1px solid var(--global-white);
   color: var(--global-white);
 }
+
+/* Desativa seleção de texto durante o pan */
+.board-container.panning {
+  -webkit-user-drag: none;
+}
+
+.board-container, 
+.board-col, 
+.col-items, 
+.task-item {  
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}

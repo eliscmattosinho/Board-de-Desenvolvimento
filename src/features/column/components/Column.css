@@ -34,6 +34,15 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  transform-origin: center;
+}
+
+/* encolhe pelos cantos */
+.col-title-board.shrink {
+  transform: scale(0.92);
+  padding: 10px 14px;
+  border-radius: 8px;
 }
 
 .col-icon-left,

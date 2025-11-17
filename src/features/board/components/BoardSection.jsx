@@ -1,10 +1,14 @@
 import React, { useState, useCallback, useMemo } from "react";
+import { CiCirclePlus } from "react-icons/ci";
+
+import { getDisplayStatus } from "@board/utils/boardUtils";
+import { useBoardPanning } from "@board/hooks/useBoardPanning";
+import { useModal } from "@context/ModalContext";
+
 import Column from "@column/components/Column";
 import AddColumnIndicator from "@column/components/AddColIndicator/AddColumnIndicator";
 import ConfirmDeleteModal from "@components/Modal/DeleteModal/ConfirmDeleteModal";
-import { useModal } from "@context/ModalContext";
-import { CiCirclePlus } from "react-icons/ci";
-import { getDisplayStatus } from "@board/utils/boardUtils";
+
 import "./BoardSection.css";
 
 function BoardSection({
@@ -24,9 +28,19 @@ function BoardSection({
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const { openModal, closeModal, isModalOpen } = useModal();
 
+  const { bind, setDraggingCard } = useBoardPanning({ containerId: id });
+
+  const handleCardDragStart = (...args) => {
+    setDraggingCard(true);
+    onDragStart && onDragStart(...args);
+  };
+
+  const handleCardDragEnd = () => {
+    setDraggingCard(false);
+  };
+
   const handleColumnHover = useCallback((action, index = null) => {
-    if (action === "hoverEnter") setHoveredIndex(index);
-    else if (action === "hoverLeave") setHoveredIndex(null);
+    setHoveredIndex(action === "hoverEnter" ? index : null);
   }, []);
 
   const handleDeleteColumn = useCallback(
@@ -72,7 +86,11 @@ function BoardSection({
   );
 
   return (
-    <div id={id} className={`board-container ${id}-board ${isActive ? "active" : ""}`}>
+    <div
+      id={id}
+      className={`board-container ${id}-board ${isActive ? "active" : ""}`}
+      {...bind}
+    >
       {columns.map((col, index) => (
         <React.Fragment key={col.id}>
           <Column
@@ -84,7 +102,8 @@ function BoardSection({
             onDrop={onDrop}
             onDragOver={onDragOver}
             onTaskClick={onTaskClick}
-            onDragStart={onDragStart}
+            onDragStart={handleCardDragStart}
+            onDragEnd={handleCardDragEnd}
             onAddTask={onAddTask}
             color={col.color}
             applyTo={col.applyTo}

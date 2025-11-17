@@ -35,7 +35,7 @@ function Building() {
           <div className="actions-block">
             <button
               className="btn btn-building"
-              onClick={() => navigate("/boards")}
+              onClick={() => navigate("/hub")}
             >
               <span>Acessar board</span>
             </button>

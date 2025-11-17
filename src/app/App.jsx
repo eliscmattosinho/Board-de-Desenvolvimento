@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Building from "@pages/Building";
-import Boards from "@pages/Boards";
+import Hub from "@/pages/Hub";
 import NotFound from "@pages/NotFound";
 // import ScreenBlockage from "@pages/ScreenBlockage";
 
@@ -23,7 +23,7 @@ function AppContent({ location }) {
     <div id="main">
       <Routes location={location}>
         <Route path="/" element={<Building />} />
-        <Route path="/boards" element={<Boards />} />
+        <Route path="/hub" element={<Hub />} />
         {/* <Route path="/block" element={<ScreenBlockage />} /> */}
         <Route path="*" element={<NotFound />} />
       </Routes>

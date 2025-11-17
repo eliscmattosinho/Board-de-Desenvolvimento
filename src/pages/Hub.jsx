@@ -16,7 +16,7 @@ import { useTheme } from "@context/ThemeContext";
 import svgDarkBoard from "@assets/images/svg-board.svg";
 import svgLightBoard from "@assets/images/svg-light-board.svg";
 
-import "./Boards.css";
+import "./Hub.css";
 
 function Boards() {
   // @TODO extrair board -> BoardContext e deixar só a área de hub para data
@@ -63,7 +63,7 @@ function Boards() {
           <div className="hub-introduction">
             <div className="hub-infos">
               <h2 className="hub-title title-thematic">
-                Hub de desenvolvimento
+                Development Hub
               </h2>
               <p className="sub-title">Escolha seu board de visualização.</p>
             </div>

@@ -39,9 +39,6 @@
   justify-content: center;
   gap: 10px;
 
-  position: relative;
-  overflow: hidden;
-
   border: 1px solid var(--global-green);
   border-radius: 4px;
   font-weight: 500;
@@ -54,31 +51,9 @@
   transition: all 0.3s ease;
 }
 
-/* círculo gigante */
-.col-add-last::before {
-  content: "";
-  position: absolute;
-
-  width: 300%;
-  aspect-ratio: 1 / 1;
-
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-
-  background: var(--hover-green);
-  border-radius: 50%;
-
-  transition: transform 0.9s ease;
-  z-index: -1;
-}
-
-.col-add-last:hover::before {
-  transform: translate(-50%, -50%) scale(1);
-}
-
 .col-add-last:hover {
   color: var(--hover-text-color);
+  background-color: var(--global-green);
 }
 
 .dark .col-add-last {

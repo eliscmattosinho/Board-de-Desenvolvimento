@@ -1,6 +1,6 @@
 {
   "name": "development-board",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": true,
   "homepage": "https://eliscmattosinho.github.io/development-board/",
   "scripts": {

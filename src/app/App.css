@@ -131,6 +131,8 @@ label {
 button {
   font-size: var(--fs-btn);
   font-weight: 600;
+  border: none;
+  background: transparent;
   touch-action: manipulation;
   cursor: pointer;
 
@@ -211,8 +213,6 @@ button.btn-cancel {
 }
 
 .btn-back {
-  border: none;
-  background: none;
   transition: all 0.3s ease-in-out;
 }
 
@@ -396,8 +396,9 @@ button[data-tooltip]:hover::before {
   }
 }
 
-/* Mobile touch: pulse apenas para touch */
+/* Mobile touch */
 @media (hover: none) and (pointer: coarse) {
+  /* pulse apenas para touch */
   button:active {
     animation: pulse 0.45s forwards;
   }
@@ -405,14 +406,11 @@ button[data-tooltip]:hover::before {
   .dark button:active {
     animation: darkPulse 0.45s forwards;
   }
-}
 
-/* Sem tooltip em telas touch */
-@media (hover: none) and (pointer: coarse) {
+  /* Sem tooltip em telas touch */
   button[data-tooltip]::after,
   button[data-tooltip]::before {
-    opacity: 0; 
+    opacity: 0;
     visibility: hidden;
   }
 }
-

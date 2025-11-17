@@ -154,6 +154,11 @@ input::placeholder,
     border: 1px solid var(--global-black);
 }
 
+.dark .btn-edit {
+    color: var(--text-color);
+    border: 1px solid var(--global-white);
+}
+
 /* Estado desabilitado (sem alterações) */
 .modal-btn.btn-save.disabled {
     background-color: var(--btn-disabled);

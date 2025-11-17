@@ -56,6 +56,10 @@
   background-color: var(--global-green);
 }
 
+.col-add-last:hover.col-add-last * {
+  color: var(--hover-text-color);
+}
+
 .dark .col-add-last {
   border: 1px solid var(--global-white);
   color: var(--global-white);

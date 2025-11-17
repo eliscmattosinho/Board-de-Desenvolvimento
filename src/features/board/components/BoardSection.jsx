@@ -4,6 +4,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { getDisplayStatus } from "@board/utils/boardUtils";
 import { useBoardPanning } from "@board/hooks/useBoardPanning";
 import { useModal } from "@context/ModalContext";
+import { useScreen } from "@context/ScreenContext";
 
 import Column from "@column/components/Column";
 import AddColumnIndicator from "@column/components/AddColIndicator/AddColumnIndicator";
@@ -27,6 +28,7 @@ function BoardSection({
 }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const { openModal, closeModal, isModalOpen } = useModal();
+  const { isTouch } = useScreen();
 
   const { bind, setDraggingCard } = useBoardPanning({ containerId: id });
 
@@ -35,9 +37,7 @@ function BoardSection({
     onDragStart && onDragStart(...args);
   };
 
-  const handleCardDragEnd = () => {
-    setDraggingCard(false);
-  };
+  const handleCardDragEnd = () => setDraggingCard(false);
 
   const handleColumnHover = useCallback((action, index = null) => {
     setHoveredIndex(action === "hoverEnter" ? index : null);
@@ -89,7 +89,7 @@ function BoardSection({
     <div
       id={id}
       className={`board-container ${id}-board ${isActive ? "active" : ""}`}
-      {...bind}
+      {...(!isTouch ? bind : {})} // bind desktop (não-touch) para mouse
     >
       {columns.map((col, index) => (
         <React.Fragment key={col.id}>
@@ -111,8 +111,8 @@ function BoardSection({
             onRemove={handleRemoveColumn(col)}
           />
 
-          {/* Componente para add colunas entre colunas */}
-          {index < columns.length - 1 && (
+          {/* AddColumnIndicator apenas desktop */}
+          {index < columns.length - 1 && !isTouch && (
             <div
               className="add-column-zone"
               onMouseEnter={() => handleColumnHover("hoverEnter", index)}
@@ -129,9 +129,14 @@ function BoardSection({
         </React.Fragment>
       ))}
 
-      {/* Elemento para add coluna ao final */}
-      <div className="col-add-last" onClick={() => onAddColumn(columns.length)}>
-        <CiCirclePlus className="add-col" size={30} />
+      {/* Botão para adicionar coluna ao final */}
+      <div className="col-add-last">
+        <button
+          className="add-col"
+          onClick={() => onAddColumn(columns.length)}
+        >
+          <CiCirclePlus className="plus-icon" size={30} />
+        </button>
         <p>Criar nova coluna</p>
       </div>
     </div>

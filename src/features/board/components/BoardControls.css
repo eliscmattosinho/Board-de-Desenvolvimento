@@ -15,7 +15,6 @@
 
 [class*="btn-view-"] {
     border: 1px solid var(--global-gray);
-    border-radius: 10px;
     color: var(--global-gray);
 }
 

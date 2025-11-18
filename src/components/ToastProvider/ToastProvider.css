@@ -8,10 +8,14 @@
   font-weight: 500;
 }
 
+.Toastify__toast button, .Toastify__toast p {
+  font-size: var(--fs-sm);
+}
+
 /* Light theme */
 html:not(.dark) .Toastify__toast {
-  background: var(--global-green);
-  border-color: var(--global-white);
+  background: var(--global-black);
+  border: none;
   color: var(--global-white);
 }
 
@@ -20,6 +24,11 @@ html.dark .Toastify__toast {
   background: var(--global-white);
   color: var(--global-black);
   border-color: var(--global-black);
+}
+
+._toastConfirmContainer_ysm9v_17 {
+  justify-content: space-between;
+  width: 100%;
 }
 
 /* Progress bar */

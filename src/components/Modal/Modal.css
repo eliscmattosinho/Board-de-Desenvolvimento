@@ -142,6 +142,13 @@ input::placeholder,
     width: 100%;
 }
 
+/* BTN */
+.modal-action {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
 /* BUTTONS */
 .modal-btn {
     border: none;

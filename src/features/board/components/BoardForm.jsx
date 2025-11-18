@@ -33,10 +33,7 @@ export default function BoardForm({ onConfirm }) {
                     className="input-entry"
                     onChange={(e) => setTitle(e.target.value)}
                 />
-                <div className="modal-actions">
-                    <button className="modal-btn btn-cancel" onClick={closeModal}>
-                        Cancelar
-                    </button>
+                <div className="modal-action">
                     <button className="modal-btn btn-thematic" onClick={handleSubmit}>
                         Criar
                     </button>

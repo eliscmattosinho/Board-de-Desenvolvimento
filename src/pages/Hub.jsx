@@ -92,6 +92,7 @@ export default function Hub() {
               </h3>
 
               <FloatingMenu
+                columns={columns[activeView]}
                 onAddTask={handleAddTask}
                 onAddColumn={() => handleAddColumn(columns[activeView]?.length)}
               />

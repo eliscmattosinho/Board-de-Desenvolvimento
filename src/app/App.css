@@ -162,8 +162,10 @@ a {
   cursor: pointer;
 }
 
+/* BUTTONS */
 .btn {
   padding: 10px 20px;
+  border-radius: 40px;
   transition: transform 0.3s ease-in-out;
 }
 
@@ -185,7 +187,7 @@ a {
   color: var(--global-red);
 }
 
-button.btn-delete {
+.btn-delete {
   background: var(--global-red);
   color: var(--global-white);
 }
@@ -194,7 +196,7 @@ button.btn-delete {
   background: var(--hover-red);
 }
 
-button.btn-cancel {
+.btn-cancel {
   background: var(--global-gray);
   color: var(--global-white);
 
@@ -239,8 +241,6 @@ button.btn-cancel {
 
 .board-icon,
 .plus-icon {
-  background: none;
-  border: none;
   color: var(--icon-color);
   cursor: pointer;
 }

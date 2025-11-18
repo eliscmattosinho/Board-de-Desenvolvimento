@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { CiCirclePlus } from "react-icons/ci";
+import { showWarning } from "@utils/toastUtils";
 import "./FloatingMenu.css";
 
-function FloatingMenu({ onAddTask, onAddColumn }) {
+function FloatingMenu({ onAddTask, onAddColumn, columns }) {
     const [open, setOpen] = useState(false);
     const [isTouch, setIsTouch] = useState(false);
     const menuRef = useRef(null);
@@ -27,12 +28,17 @@ function FloatingMenu({ onAddTask, onAddColumn }) {
         }
     }, [isTouch]);
 
-    const handleAddTask = useCallback(() => {
+    const handleAddTaskClick = useCallback(() => {
+        if (!columns || columns.length === 0) {
+            showWarning("Ops! Não tenho para onde ir, crie algumas colunas primeiro.");
+            setOpen(false);
+            return;
+        }
         onAddTask();
         setOpen(false);
-    }, [onAddTask]);
+    }, [onAddTask, columns]);
 
-    const handleAddColumn = useCallback(() => {
+    const handleAddColumnClick = useCallback(() => {
         onAddColumn();
         setOpen(false);
     }, [onAddColumn]);
@@ -71,10 +77,10 @@ function FloatingMenu({ onAddTask, onAddColumn }) {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    <button className="menu-item" onClick={handleAddTask}>
+                    <button className="menu-item" onClick={handleAddTaskClick}>
                         Adicionar tarefa
                     </button>
-                    <button className="menu-item" onClick={handleAddColumn}>
+                    <button className="menu-item" onClick={handleAddColumnClick}>
                         Adicionar coluna
                     </button>
                 </div>

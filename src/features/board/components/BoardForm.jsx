@@ -17,7 +17,6 @@ export default function BoardForm({ onConfirm }) {
 
         onConfirm(trimmedTitle);
         closeModal();
-        showSuccess(`Board "${trimmedTitle}" criado com sucesso!`);
     };
 
     return (

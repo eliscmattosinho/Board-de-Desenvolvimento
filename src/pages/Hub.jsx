@@ -38,11 +38,12 @@ export default function Hub() {
     handleAddColumn,
     removeColumn,
     createBoard,
+    activeBoardTitle,
+    activeBoardTaskCount,
   } = useBoardContext();
 
   const boardImage = theme === "dark" ? svgDarkBoard : svgLightBoard;
 
-  // Função para abrir o BoardForm dentro do modal
   const openNewBoardModal = () => {
     openModal(BoardForm, { onConfirm: createBoard });
   };
@@ -50,7 +51,6 @@ export default function Hub() {
   return (
     <div id="hub-container">
       <div className="hub-content">
-        {/* Ações de página */}
         <div className="hub-actions">
           <button onClick={() => navigate("/")} className="board-icon btn-back">
             <FaArrowCircleLeft size={30} />
@@ -68,7 +68,6 @@ export default function Hub() {
           </div>
         </div>
 
-        {/* Header */}
         <div className="hub-header">
           <div className="hub-introduction">
             <div className="hub-infos">
@@ -84,13 +83,12 @@ export default function Hub() {
           </div>
         </div>
 
-        {/* Board ativo */}
         <div className="hub-active-board">
           <div className="board-header">
             <div className="board-title-container">
               <h3 id="board-title" className="title-thematic">
-                {columns[activeView]?.title ?? activeView}
-                <span className="task-counter">({orderedTasks.length})</span>
+                {activeBoardTitle}
+                <span className="task-counter">({activeBoardTaskCount})</span>
               </h3>
 
               <FloatingMenu

@@ -19,20 +19,23 @@ export function BoardProvider({ children }) {
     const { openModal } = useModal();
     const { tasks, addTask, moveTask, clearTasks } = useTasks();
 
-    // Lista de boards disponíveis
     const [boards, setBoards] = useState([
         { id: "kanban", title: "Kanban" },
         { id: "scrum", title: "Scrum" }
     ]);
 
-    // Board ativo
     const [activeView, setActiveView] = useState("kanban");
 
-    // Armazena colunas
     const [columns, addColumn, renameColumn, removeColumn] =
         useColumns(kanbanTemplate, scrumTemplate);
 
-    // Cria um board novo
+    // Mapeamento para boards sincronizados (contagem de tasks compartilhada)
+    const syncedBoardsMap = {
+        kanban: "shared",
+        scrum: "shared",
+    };
+
+    // Criar novo board
     const createBoard = useCallback((title) => {
         const id = title.toLowerCase().replace(/\s+/g, "-");
         if (boards.find((b) => b.id === id)) return;
@@ -42,12 +45,13 @@ export function BoardProvider({ children }) {
         setActiveView(id);
     }, [boards, columns]);
 
-    // Drag & Drop
     const allowDrop = useCallback((e) => e.preventDefault(), []);
+
     const handleDragStart = useCallback(
         (e, taskId) => e.dataTransfer.setData("text/plain", taskId),
         []
     );
+
     const handleDrop = useCallback(
         (e, columnId, targetTaskId = null) => {
             e.preventDefault();
@@ -60,11 +64,16 @@ export function BoardProvider({ children }) {
         [moveTask]
     );
 
-    const orderedTasks = useMemo(() => [...tasks].sort((a, b) => a.order - b.order), [tasks]);
+    // Ordena tasks
+    const orderedTasks = useMemo(
+        () => [...tasks].sort((a, b) => a.order - b.order),
+        [tasks]
+    );
 
+    // Add task
     const handleAddTask = useCallback(
         (columnId = null) => {
-            const newTask = addTask(columnId);
+            const newTask = addTask(columnId, { boardId: activeView });
 
             openModal(CardModal, {
                 task: { ...newTask, isNew: true },
@@ -76,8 +85,12 @@ export function BoardProvider({ children }) {
         [addTask, activeView, columns, moveTask, openModal]
     );
 
+    // Limpar board
     const handleClearBoard = useCallback(() => {
-        if (tasks.length === 0) {
+        const boardTasks = orderedTasks.filter(t =>
+            (syncedBoardsMap[t.boardId] ?? t.boardId) === (syncedBoardsMap[activeView] ?? activeView)
+        );
+        if (boardTasks.length === 0) {
             showWarning("Não há tarefas para remover — o board já está vazio!");
             return;
         }
@@ -85,14 +98,14 @@ export function BoardProvider({ children }) {
         showCustom(({ closeToast }) => (
             <ClearBoardToast
                 onConfirm={() => {
-                    clearTasks();
+                    clearTasks(activeView); // Limpa só o board ativo
                     closeToast();
                     showSuccess("Todas as tarefas foram removidas com sucesso!");
                 }}
                 onCancel={closeToast}
             />
         ));
-    }, [tasks.length, clearTasks]);
+    }, [orderedTasks, activeView, clearTasks, syncedBoardsMap]);
 
     const handleTaskClick = useCallback(
         (task) => {
@@ -120,6 +133,18 @@ export function BoardProvider({ children }) {
         [activeView, renameColumn, addColumn, openModal]
     );
 
+    // Propriedades derivadas
+    const activeBoardTitle = useMemo(() => {
+        return columns[activeView]?.title
+            ?? boards.find(b => b.id === activeView)?.title
+            ?? activeView;
+    }, [columns, boards, activeView]);
+
+    const activeBoardTaskCount = useMemo(() => {
+        const countBoardId = syncedBoardsMap[activeView] ?? activeView;
+        return orderedTasks.filter(t => (syncedBoardsMap[t.boardId] ?? t.boardId) === countBoardId).length;
+    }, [orderedTasks, activeView, syncedBoardsMap]);
+
     return (
         <BoardContext.Provider
             value={{
@@ -137,6 +162,8 @@ export function BoardProvider({ children }) {
                 removeColumn,
                 boards,
                 createBoard,
+                activeBoardTitle,
+                activeBoardTaskCount,
             }}
         >
             {children}

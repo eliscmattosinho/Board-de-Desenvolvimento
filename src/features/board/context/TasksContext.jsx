@@ -32,7 +32,7 @@ function tasksReducer(state, action) {
       if (!task) return state;
 
       const without = state.tasks.filter(t => String(t.id) !== String(taskId));
-      const destTasks = without.filter(t => t.status === status);
+      const destTasks = without.filter(t => t.status === status && t.boardId === task.boardId);
 
       let insertIndex = destTasks.length;
       if (targetTaskId) {
@@ -64,9 +64,14 @@ function tasksReducer(state, action) {
       return { ...state, tasks: updated };
     }
 
-    case ACTIONS.CLEAR_TASKS:
-      clearTasksStorage();
-      return { tasks: [], nextId: 1 };
+    case ACTIONS.CLEAR_TASKS: {
+      const { boardId } = action;
+      const updated = boardId
+        ? state.tasks.filter(t => t.boardId !== boardId)
+        : [];
+      saveTasks(updated);
+      return { tasks: updated, nextId: state.nextId };
+    }
 
     default:
       return state;
@@ -98,6 +103,7 @@ export const TasksProvider = ({ children }) => {
         ...t,
         id: t.id ?? String(i + 1),
         order: t.order ?? i,
+        boardId: t.boardId ?? "kanban", // default para tasks antigas
       }));
 
       const maxId = normalized.reduce((max, t) => Math.max(max, Number(t.id)), 0);
@@ -110,8 +116,7 @@ export const TasksProvider = ({ children }) => {
     return () => { mounted = false; };
   }, []);
 
-  // Cria um draft de task temporária (sem consumir nextId)
-  const addTask = useCallback((columnId = null) => {
+  const addTask = useCallback((columnId = null, { boardId = "kanban" } = {}) => {
     const canonicalStatus = columnId ? columnIdToCanonicalStatus(columnId) : "Backlog";
     const tempId = `${state.nextId}`;
 
@@ -123,10 +128,10 @@ export const TasksProvider = ({ children }) => {
       order: state.tasks.length,
       isNew: true,
       createdAt: new Date().toISOString(),
+      boardId, // atribui boardId aqui
     };
   }, [state.nextId, state.tasks.length]);
 
-  // Salva task oficial (ID real)
   const saveNewTask = useCallback((task) => {
     const newTask = {
       ...task,
@@ -149,8 +154,8 @@ export const TasksProvider = ({ children }) => {
     dispatch({ type: ACTIONS.DELETE_TASK, taskId });
   }, []);
 
-  const clearTasks = useCallback(() => {
-    dispatch({ type: ACTIONS.CLEAR_TASKS });
+  const clearTasks = useCallback((boardId = null) => {
+    dispatch({ type: ACTIONS.CLEAR_TASKS, boardId });
   }, []);
 
   return (

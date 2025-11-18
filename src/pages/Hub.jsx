@@ -8,21 +8,21 @@ import BoardSection from "@board/components/BoardSection";
 import BoardControls from "@board/components/BoardControls";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
 
-import useBoard from "@board/hooks/useBoard";
-import kanbanTemplate from "@board/components/templates/kanbanTemplate";
-import scrumTemplate from "@board/components/templates/scrumTemplate";
-
+import { useBoardContext } from "@board/context/BoardContext";
 import { useTheme } from "@context/ThemeContext";
+import { useModal } from "@context/ModalContext";
+
+import BoardForm from "@features/board/components/BoardForm";
+
 import svgDarkBoard from "@assets/images/svg-board.svg";
 import svgLightBoard from "@assets/images/svg-light-board.svg";
 
 import "./Hub.css";
 
-function Boards() {
-  // @TODO extrair board -> BoardContext e deixar só a área de hub para data
-
+export default function Hub() {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { openModal } = useModal();
 
   const {
     activeView,
@@ -37,14 +37,20 @@ function Boards() {
     handleTaskClick,
     handleAddColumn,
     removeColumn,
-  } = useBoard(kanbanTemplate, scrumTemplate);
+    createBoard,
+  } = useBoardContext();
 
   const boardImage = theme === "dark" ? svgDarkBoard : svgLightBoard;
+
+  // Função para abrir o BoardForm dentro do modal
+  const openNewBoardModal = () => {
+    openModal(BoardForm, { onConfirm: createBoard });
+  };
 
   return (
     <div id="hub-container">
       <div className="hub-content">
-        {/* Ações no Hub */}
+        {/* Ações de página */}
         <div className="hub-actions">
           <button onClick={() => navigate("/")} className="board-icon btn-back">
             <FaArrowCircleLeft size={30} />
@@ -52,48 +58,44 @@ function Boards() {
 
           <div className="hub-sub-actions">
             <ThemeToggle />
-            <button id="new-board" className="btn btn-thematic">
+            <button
+              id="new-board"
+              className="btn btn-thematic"
+              onClick={openNewBoardModal}
+            >
               Novo board
             </button>
           </div>
         </div>
 
-        {/* Hub header */}
+        {/* Header */}
         <div className="hub-header">
           <div className="hub-introduction">
             <div className="hub-infos">
-              <h2 className="hub-title title-thematic">
-                Development Hub
-              </h2>
+              <h2 className="hub-title title-thematic">Development Hub</h2>
               <p className="sub-title">Escolha seu board de visualização.</p>
             </div>
 
-            <BoardControls
-              activeView={activeView}
-              setActiveView={setActiveView}
-            />
+            <BoardControls activeView={activeView} setActiveView={setActiveView} />
           </div>
 
           <div className="img-container hub-img-container">
-            <img
-              src={boardImage}
-              alt="Illustration of a dashboard interface"
-            />
+            <img src={boardImage} alt="Illustration of a dashboard interface" />
           </div>
         </div>
 
-        {/* Hub board */}
+        {/* Board ativo */}
         <div className="hub-active-board">
           <div className="board-header">
             <div className="board-title-container">
               <h3 id="board-title" className="title-thematic">
-                {activeView === "kanban" ? "Kanban" : "Scrum"}
+                {columns[activeView]?.title ?? activeView}
                 <span className="task-counter">({orderedTasks.length})</span>
               </h3>
 
               <FloatingMenu
                 onAddTask={handleAddTask}
-                onAddColumn={() => handleAddColumn(columns[activeView].length)}
+                onAddColumn={() => handleAddColumn(columns[activeView]?.length)}
               />
             </div>
 
@@ -108,44 +110,23 @@ function Boards() {
           </div>
 
           <div className="board-content">
-            {activeView === "kanban" && (
-              <BoardSection
-                id="kanban"
-                columns={columns.kanban}
-                tasks={orderedTasks}
-                onDrop={handleDrop}
-                onDragOver={allowDrop}
-                onTaskClick={handleTaskClick}
-                onDragStart={handleDragStart}
-                onAddTask={handleAddTask}
-                onAddColumn={handleAddColumn}
-                removeColumn={removeColumn}
-                activeView="kanban"
-                isActive
-              />
-            )}
-
-            {activeView === "scrum" && (
-              <BoardSection
-                id="scrum"
-                columns={columns.scrum}
-                tasks={orderedTasks}
-                onDrop={handleDrop}
-                onDragOver={allowDrop}
-                onTaskClick={handleTaskClick}
-                onDragStart={handleDragStart}
-                onAddTask={handleAddTask}
-                onAddColumn={handleAddColumn}
-                removeColumn={removeColumn}
-                activeView="scrum"
-                isActive
-              />
-            )}
+            <BoardSection
+              id={activeView}
+              columns={columns[activeView] || []}
+              tasks={orderedTasks}
+              onDrop={handleDrop}
+              onDragOver={allowDrop}
+              onTaskClick={handleTaskClick}
+              onDragStart={handleDragStart}
+              onAddTask={handleAddTask}
+              onAddColumn={handleAddColumn}
+              removeColumn={removeColumn}
+              activeView={activeView}
+              isActive
+            />
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-export default Boards;

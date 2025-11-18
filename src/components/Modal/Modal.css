@@ -72,6 +72,9 @@
 }
 
 .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     width: 100%;
 }
 
@@ -136,10 +139,7 @@ input::placeholder,
 .modal-actions {
     display: flex;
     justify-content: space-between;
-}
-
-.modal-actions:not(.modal-delete .modal-actions) {
-    padding-top: 20px;
+    width: 100%;
 }
 
 /* BUTTONS */

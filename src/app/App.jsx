@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Building from "@pages/Building";
-import Hub from "@/pages/Hub";
+import Hub from "@pages/Hub";
 import NotFound from "@pages/NotFound";
-// import ScreenBlockage from "@pages/ScreenBlockage";
 
 import RouteChangeTracker from "@components/RouteChangeTracker";
 import ToastProvider from "@components/ToastProvider/ToastProvider";
@@ -14,17 +13,22 @@ import { ModalProvider } from "@context/ModalContext";
 import { TasksProvider } from "@board/context/TasksContext";
 import { ScreenProvider } from "@context/ScreenContext";
 
-import useScreenBlocker from "@hooks/useScreenBlocker";
+import { BoardProvider } from "@board/context/BoardContext";
 
 function AppContent({ location }) {
-  // useScreenBlocker(480);
-
   return (
     <div id="main">
       <Routes location={location}>
         <Route path="/" element={<Building />} />
-        <Route path="/hub" element={<Hub />} />
-        {/* <Route path="/block" element={<ScreenBlockage />} /> */}
+        {/* Rota do Hub com BoardProvider */}
+        <Route
+          path="/hub"
+          element={
+            <BoardProvider>
+              <Hub />
+            </BoardProvider>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
@@ -32,12 +36,6 @@ function AppContent({ location }) {
 }
 
 function App() {
-  useEffect(() => {
-    const enableActiveOnIOS = () => { };
-    document.addEventListener("touchstart", enableActiveOnIOS, true);
-    return () => document.removeEventListener("touchstart", enableActiveOnIOS, true);
-  }, []);
-
   return (
     <ThemeProvider>
       <TasksProvider>

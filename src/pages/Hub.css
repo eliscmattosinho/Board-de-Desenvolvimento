@@ -75,6 +75,10 @@
     gap: 5px;
 }
 
+#board-title::first-letter {
+    text-transform: uppercase;
+}
+
 .task-counter {
     background-color: transparent;
     margin-left: 5px;

@@ -62,7 +62,6 @@
     align-items: flex-start;
 }
 
-/* @TODO DESKTOP drag to scroll and location view button and search board */
 .hub-boards {
     flex-shrink: 0;
     overflow: auto;

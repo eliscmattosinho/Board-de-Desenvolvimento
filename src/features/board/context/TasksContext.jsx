@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react";
 import { initializeTasks } from "@services/initializeTasks";
-import { saveTasks, loadTasksFromStorage, clearTasksStorage } from "@services/taskPersistence";
+import { saveTasks, loadTasksFromStorage } from "@services/taskPersistence";
 import { columnIdToCanonicalStatus } from "@board/utils/boardUtils";
 
 const TasksContext = createContext();
@@ -12,6 +12,11 @@ const ACTIONS = {
   UPDATE_TASK: "UPDATE_TASK",
   DELETE_TASK: "DELETE_TASK",
   CLEAR_TASKS: "CLEAR_TASKS",
+};
+
+const syncedBoardsMap = {
+  kanban: "shared",
+  scrum: "shared",
 };
 
 function tasksReducer(state, action) {
@@ -64,13 +69,18 @@ function tasksReducer(state, action) {
       return { ...state, tasks: updated };
     }
 
+    // CLEAR_TASKS usando grupo sincronizado (kanban+scrum)
     case ACTIONS.CLEAR_TASKS: {
-      const { boardId } = action;
-      const updated = boardId
-        ? state.tasks.filter(t => t.boardId !== boardId)
-        : [];
+      const { boardId: groupId } = action;
+
+      // Remove tasks cujo groupId bate com o groupId recebido
+      const updated = state.tasks.filter(t => {
+        const taskGroup = syncedBoardsMap[t.boardId] ?? t.boardId;
+        return taskGroup !== groupId;
+      });
+
       saveTasks(updated);
-      return { tasks: updated, nextId: state.nextId };
+      return { ...state, tasks: updated };
     }
 
     default:
@@ -103,7 +113,7 @@ export const TasksProvider = ({ children }) => {
         ...t,
         id: t.id ?? String(i + 1),
         order: t.order ?? i,
-        boardId: t.boardId ?? "kanban", // default para tasks antigas
+        boardId: t.boardId ?? "kanban",
       }));
 
       const maxId = normalized.reduce((max, t) => Math.max(max, Number(t.id)), 0);
@@ -128,7 +138,7 @@ export const TasksProvider = ({ children }) => {
       order: state.tasks.length,
       isNew: true,
       createdAt: new Date().toISOString(),
-      boardId, // atribui boardId aqui
+      boardId,
     };
   }, [state.nextId, state.tasks.length]);
 

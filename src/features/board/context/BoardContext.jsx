@@ -29,7 +29,7 @@ export function BoardProvider({ children }) {
     const [columns, addColumn, renameColumn, removeColumn] =
         useColumns(kanbanTemplate, scrumTemplate);
 
-    // Mapeamento para boards sincronizados (contagem de tasks compartilhada)
+    // Mapeamento para boards sincronizados (contagem e limpeza compartilhada)
     const syncedBoardsMap = {
         kanban: "shared",
         scrum: "shared",
@@ -85,11 +85,14 @@ export function BoardProvider({ children }) {
         [addTask, activeView, columns, moveTask, openModal]
     );
 
-    // Limpar board
+    // Limpar board usando grupo sincronizado
     const handleClearBoard = useCallback(() => {
-        const boardTasks = orderedTasks.filter(t =>
-            (syncedBoardsMap[t.boardId] ?? t.boardId) === (syncedBoardsMap[activeView] ?? activeView)
+        const groupId = syncedBoardsMap[activeView] ?? activeView;
+
+        const boardTasks = orderedTasks.filter(
+            t => (syncedBoardsMap[t.boardId] ?? t.boardId) === groupId
         );
+
         if (boardTasks.length === 0) {
             showWarning("Não há tarefas para remover — o board já está vazio!");
             return;
@@ -98,7 +101,7 @@ export function BoardProvider({ children }) {
         showCustom(({ closeToast }) => (
             <ClearBoardToast
                 onConfirm={() => {
-                    clearTasks(activeView); // Limpa só o board ativo
+                    clearTasks(groupId);
                     closeToast();
                     showSuccess("Todas as tarefas foram removidas com sucesso!");
                 }}
@@ -142,7 +145,10 @@ export function BoardProvider({ children }) {
 
     const activeBoardTaskCount = useMemo(() => {
         const countBoardId = syncedBoardsMap[activeView] ?? activeView;
-        return orderedTasks.filter(t => (syncedBoardsMap[t.boardId] ?? t.boardId) === countBoardId).length;
+
+        return orderedTasks.filter(
+            t => (syncedBoardsMap[t.boardId] ?? t.boardId) === countBoardId
+        ).length;
     }, [orderedTasks, activeView, syncedBoardsMap]);
 
     return (

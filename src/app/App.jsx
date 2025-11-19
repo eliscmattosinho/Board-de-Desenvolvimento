@@ -10,7 +10,7 @@ import ToastProvider from "@components/ToastProvider/ToastProvider";
 
 import { ThemeProvider } from "@context/ThemeContext";
 import { ModalProvider } from "@context/ModalContext";
-import { TasksProvider } from "@board/context/TasksContext";
+import { TaskProvider } from "@task/context/TaskProvider";
 import { ScreenProvider } from "@context/ScreenContext";
 
 import { BoardProvider } from "@board/context/BoardContext";
@@ -38,7 +38,7 @@ function AppContent({ location }) {
 function App() {
   return (
     <ThemeProvider>
-      <TasksProvider>
+      <TaskProvider>
         <ScreenProvider>
           <Router basename={import.meta.env.DEV ? "/" : "/development-board"}>
             <RouteChangeTracker>
@@ -53,7 +53,7 @@ function App() {
             </RouteChangeTracker>
           </Router>
         </ScreenProvider>
-      </TasksProvider>
+      </TaskProvider>
     </ThemeProvider>
   );
 }

@@ -30,8 +30,8 @@
             "@utils/*": [
                 "src/utils/*"
             ],
-            "@services/*": [
-                "src/services/*"
+            "@styles/*": [
+                "src/styles/*"
             ],
             "@assets/*": [
                 "src/assets/*"
@@ -45,11 +45,11 @@
             "@column/*": [
                 "src/features/column/*"
             ],
+            "@task/*": [
+                "src/features/task/*"
+            ],
             "@pages/*": [
                 "src/pages/*"
-            ],
-            "@styles/*": [
-                "src/styles/*"
             ]
         },
         "ignoreDeprecations": "6.0"

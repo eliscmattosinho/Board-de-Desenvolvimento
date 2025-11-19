@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import builder from "@assets/images/builder.svg";
-import TypingText from "@components/TypingText";
+import TypingText from "@/components/TypingText/TypingText";
 
 import "./Building.css";
 import "@styles/BuildingDots.scss";

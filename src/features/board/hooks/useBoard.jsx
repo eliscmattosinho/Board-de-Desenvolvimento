@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { useTasks } from "@board/context/TasksContext";
+import { useTasks } from "@task/context/TaskProvider";
 import { useModal } from "@context/ModalContext";
 import useColumns from "@board/hooks/useColumns";
 import { columnIdToCanonicalStatus } from "@board/utils/boardUtils";

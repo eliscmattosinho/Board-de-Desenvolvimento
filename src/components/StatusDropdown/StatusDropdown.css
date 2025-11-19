@@ -5,7 +5,7 @@
     background-color: var(--bg-color);
     margin-top: 4px;
     box-shadow: var(--item-shadow);
-    height: 113px;
+    max-height: 120px;
     overflow-y: auto;
 }
 

@@ -7,8 +7,3 @@ export function loadTasksFromStorage() {
     const saved = sessionStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : null;
 }
-
-export function clearTasksStorage() {
-    sessionStorage.removeItem("tasks");
-    sessionStorage.removeItem("tasksNextId");
-}

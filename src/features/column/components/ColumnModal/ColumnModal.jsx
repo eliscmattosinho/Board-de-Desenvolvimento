@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 
-import useColumnForm from "@hooks/useColumnForm.js";
+import useColumnForm from "@column/hooks/useColumnForm.js";
 import { useModal } from "@context/ModalContext.jsx";
 import { useScreen } from "@context/ScreenContext.jsx";
 import { showWarning } from "@utils/toastUtils.js";

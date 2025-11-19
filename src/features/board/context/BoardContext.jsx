@@ -1,182 +1,101 @@
-import { createContext, useContext, useMemo, useCallback, useState } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useTasks } from "@task/context/TaskProvider";
 import { useModal } from "@context/ModalContext";
 import useColumns from "@board/hooks/useColumns";
 
-import { columnIdToCanonicalStatus } from "@board/utils/boardUtils";
-import { showWarning, showCustom, showSuccess } from "@utils/toastUtils";
-
-import CardModal from "@card/components/CardModal/CardModal";
-import ColumnModal from "@column/components/ColumnModal/ColumnModal";
-import ClearBoardToast from "@components/ToastProvider/toasts/ClearBoardToast";
+import { useBoardState } from "@board/hooks/useBoardState";
+import { useBoardDrag } from "@board/hooks/useBoardDrag";
+import { useBoardTasks } from "@board/hooks/useBoardTasks";
+import { useColumnModal } from "@column/hooks/useColumnModal";
 
 import kanbanTemplate from "@board/components/templates/kanbanTemplate";
 import scrumTemplate from "@board/components/templates/scrumTemplate";
 
 const BoardContext = createContext(null);
 
+/**
+ * Context provider que centraliza toda a lógica do board:
+ * - Gerenciamento de boards ativos
+ * - Gestão de colunas e tasks
+ * - Drag & drop
+ * - Abertura de modais para tarefas e colunas
+ * - Limpeza de boards sincronizados
+ */
 export function BoardProvider({ children }) {
     const { openModal } = useModal();
     const { tasks, addTask, moveTask, clearTasks } = useTasks();
 
-    const [boards, setBoards] = useState([
-        { id: "kanban", title: "Kanban" },
-        { id: "scrum", title: "Scrum" }
+    // Colunas do board
+    const [columns, addColumn, renameColumn, removeColumn] = useColumns(kanbanTemplate, scrumTemplate);
+
+    // Boards sincronizados
+    const syncedBoardsMap = useMemo(() => ({ kanban: "shared", scrum: "shared" }), []);
+
+    // Boards e view ativa
+    const { boards, activeView, setActiveView, createBoard } = useBoardState(
+        [
+            { id: "kanban", title: "Kanban" },
+            { id: "scrum", title: "Scrum" }
+        ],
+        columns
+    );
+
+    // Drag & Drop de tasks
+    const { allowDrop, handleDragStart, handleDrop } = useBoardDrag(moveTask);
+
+    // Tasks
+    const { orderedTasks, handleAddTask, handleClearBoard, handleTaskClick, activeBoardTaskCount } =
+        useBoardTasks({ tasks, addTask, moveTask, clearTasks, columns, activeView, openModal, syncedBoardsMap });
+
+    // Colunas (hook agora na feature column)
+    const { handleAddColumn, activeBoardTitle } =
+        useColumnModal({ columns, addColumn, renameColumn, openModal, activeView, boards });
+
+    // Memoriza o valor do contexto para evitar re-renderizações desnecessárias
+    const contextValue = useMemo(() => ({
+        activeView,
+        setActiveView,
+        columns,
+        orderedTasks,
+        allowDrop,
+        handleDragStart,
+        handleDrop,
+        handleAddTask,
+        handleClearBoard,
+        handleTaskClick,
+        handleAddColumn,
+        removeColumn,
+        boards,
+        createBoard,
+        activeBoardTitle,
+        activeBoardTaskCount,
+    }), [
+        activeView,
+        columns,
+        orderedTasks,
+        allowDrop,
+        handleDragStart,
+        handleDrop,
+        handleAddTask,
+        handleClearBoard,
+        handleTaskClick,
+        handleAddColumn,
+        removeColumn,
+        boards,
+        createBoard,
+        activeBoardTitle,
+        activeBoardTaskCount
     ]);
 
-    const [activeView, setActiveView] = useState("kanban");
-
-    const [columns, addColumn, renameColumn, removeColumn] =
-        useColumns(kanbanTemplate, scrumTemplate);
-
-    // Mapeamento para boards sincronizados (contagem e limpeza compartilhada)
-    const syncedBoardsMap = {
-        kanban: "shared",
-        scrum: "shared",
-    };
-
-    // Criar novo board
-    const createBoard = useCallback((title) => {
-        const id = title.toLowerCase().replace(/\s+/g, "-");
-        if (boards.find((b) => b.id === id)) return;
-
-        setBoards((prev) => [...prev, { id, title }]);
-        columns[id] = []; // Inicializa colunas vazias
-        setActiveView(id);
-    }, [boards, columns]);
-
-    const allowDrop = useCallback((e) => e.preventDefault(), []);
-
-    const handleDragStart = useCallback(
-        (e, taskId) => e.dataTransfer.setData("text/plain", taskId),
-        []
-    );
-
-    const handleDrop = useCallback(
-        (e, columnId, targetTaskId = null) => {
-            e.preventDefault();
-            const taskId = e.dataTransfer.getData("text/plain");
-            if (!taskId) return;
-
-            const canonicalStatus = columnIdToCanonicalStatus(columnId);
-            moveTask(taskId, canonicalStatus, targetTaskId);
-        },
-        [moveTask]
-    );
-
-    // Ordena tasks
-    const orderedTasks = useMemo(
-        () => [...tasks].sort((a, b) => a.order - b.order),
-        [tasks]
-    );
-
-    // Add task
-    const handleAddTask = useCallback(
-        (columnId = null) => {
-            const newTask = addTask(columnId, { boardId: activeView });
-
-            openModal(CardModal, {
-                task: { ...newTask, isNew: true },
-                activeView,
-                columns: columns[activeView],
-                moveTask,
-            });
-        },
-        [addTask, activeView, columns, moveTask, openModal]
-    );
-
-    // Limpar board usando grupo sincronizado
-    const handleClearBoard = useCallback(() => {
-        const groupId = syncedBoardsMap[activeView] ?? activeView;
-
-        const boardTasks = orderedTasks.filter(
-            t => (syncedBoardsMap[t.boardId] ?? t.boardId) === groupId
-        );
-
-        if (boardTasks.length === 0) {
-            showWarning("Não há tarefas para remover — o board já está vazio!");
-            return;
-        }
-
-        showCustom(({ closeToast }) => (
-            <ClearBoardToast
-                onConfirm={() => {
-                    clearTasks(groupId);
-                    closeToast();
-                    showSuccess("Todas as tarefas foram removidas com sucesso!");
-                }}
-                onCancel={closeToast}
-            />
-        ));
-    }, [orderedTasks, activeView, clearTasks, syncedBoardsMap]);
-
-    const handleTaskClick = useCallback(
-        (task) => {
-            openModal(CardModal, {
-                task,
-                activeView,
-                columns: columns[activeView],
-                moveTask,
-            });
-        },
-        [activeView, columns, moveTask, openModal]
-    );
-
-    const handleAddColumn = useCallback(
-        (index, column) => {
-            openModal(ColumnModal, {
-                mode: column ? "edit" : "create",
-                columnData: column,
-                onSave: (data) => {
-                    if (column) renameColumn(activeView, column.id, data);
-                    else addColumn(activeView, index, data);
-                },
-            });
-        },
-        [activeView, renameColumn, addColumn, openModal]
-    );
-
-    // Propriedades derivadas
-    const activeBoardTitle = useMemo(() => {
-        return columns[activeView]?.title
-            ?? boards.find(b => b.id === activeView)?.title
-            ?? activeView;
-    }, [columns, boards, activeView]);
-
-    const activeBoardTaskCount = useMemo(() => {
-        const countBoardId = syncedBoardsMap[activeView] ?? activeView;
-
-        return orderedTasks.filter(
-            t => (syncedBoardsMap[t.boardId] ?? t.boardId) === countBoardId
-        ).length;
-    }, [orderedTasks, activeView, syncedBoardsMap]);
-
-    return (
-        <BoardContext.Provider
-            value={{
-                activeView,
-                setActiveView,
-                columns,
-                orderedTasks,
-                allowDrop,
-                handleDragStart,
-                handleDrop,
-                handleAddTask,
-                handleClearBoard,
-                handleTaskClick,
-                handleAddColumn,
-                removeColumn,
-                boards,
-                createBoard,
-                activeBoardTitle,
-                activeBoardTaskCount,
-            }}
-        >
-            {children}
-        </BoardContext.Provider>
-    );
+    return <BoardContext.Provider value={contextValue}>{children}</BoardContext.Provider>;
 }
 
+/**
+ * Hook para consumir o BoardContext, fornecendo acesso ao estado e funções do board
+ *
+ * @throws {Error} Se usado fora do BoardProvider
+ * @returns {object} Contexto do BoardProvider com todas as funções e estados do board
+ */
 export function useBoardContext() {
     const ctx = useContext(BoardContext);
     if (!ctx) throw new Error("useBoardContext must be used inside BoardProvider");

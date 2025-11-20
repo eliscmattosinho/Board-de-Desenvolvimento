@@ -1,10 +1,10 @@
-# Development Board
+# Development Hub
 
 ![Banner 1](src/assets/readme/first-banner.png)
 
 ## Project Description
 
-**Development Board** is a flexible, front-end task management tool for organizing project workflows. Users can create custom boards and manage tasks using **Scrum** or **Kanban** methodologies.
+**Development Hub** is a flexible, front-end task management tool for organizing project workflows. Users can create custom boards and manage tasks using **Scrum** or **Kanban** methodologies.
 
 ### Features
 
@@ -18,11 +18,11 @@
 
 ### References
 
-- Notion case (base): [Development Board | Notion](https://eliscmattosinho.notion.site/Ecossistema-de-leitura-digital-15432edc5fc5805a8ecfe3447f2d3d0b)
+- Notion case (base): [Development Hub | Notion](https://eliscmattosinho.notion.site/Ecossistema-de-leitura-digital-15432edc5fc5805a8ecfe3447f2d3d0b)
 
 ## Screenshots & Demos
 
-- Project showcase on Behance: [Development Board | Behance](https://www.behance.net/gallery/231328777/Development-Board)
+- Project showcase on Behance: [Development Hub | Behance](https://www.behance.net/gallery/231328777/Development-Hub)
 - Live demo: [Access Here](https://eliscmattosinho.github.io/development-board/)
 
 <br />

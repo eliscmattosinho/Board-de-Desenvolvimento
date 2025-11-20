@@ -1,12 +1,12 @@
 {
-  "name": "development-board",
+  "name": "development-hub",
   "version": "0.2.0",
   "private": true,
-  "homepage": "https://eliscmattosinho.github.io/development-board/",
+  "homepage": "https://eliscmattosinho.github.io/development-hub/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --base=/development-hub/",
     "predeploy": "npm run build",
     "deploy": "cp dist/index.html dist/404.html && gh-pages -d dist"
   },
@@ -17,8 +17,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.5",
     "react-toastify": "^11.0.5",
-    "react-transition-group": "^4.4.5",
-    "web-vitals": "^5.1.0"
+    "react-transition-group": "^4.4.5"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.1",

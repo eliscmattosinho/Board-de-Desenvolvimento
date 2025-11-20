@@ -1,0 +1,69 @@
+.task-id {
+    color: var(--global-gray);
+    font-size: 14px;
+}
+
+.task-name {
+  font-size: var(--fs-modal-title);
+  font-weight: 600;
+}
+
+.description-text {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Prevent textarea from exceeding parent width */
+.textarea-description {
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 100%;
+    resize: vertical;
+}
+
+/* @TODO: textarea-description slider-thumb */
+
+.card-content-wrapper {
+    position: relative;
+    /* @TODO height */
+    transition: height 0.4s ease-in-out;
+}
+
+.card-content-wrapper.is-animating {
+    overflow: hidden;
+}
+
+.content-inner {
+    width: 100%;
+}
+
+/* Animação de slide para troca de modo */
+.slide-enter {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.slide-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition: all 0.4s ease-in-out;
+}
+
+.slide-exit {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.slide-exit-active {
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: all 0.4s ease-in-out;
+}
+
+/* Status label */
+.status-block {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}

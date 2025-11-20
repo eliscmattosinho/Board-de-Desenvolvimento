@@ -1,0 +1,39 @@
+.theme-toggle-wrapper {
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-track {
+  width: 60px;
+  height: 30px;
+  background-color: var(--global-green);
+  border-radius: 80px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.dark .toggle-track {
+  background-color: var(--hover-gray);
+}
+
+.toggle-thumb {
+  width: 40px;
+  height: 26px;
+  background-color: var(--global-white);
+  border-radius: 40px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+/* TODO: buscar uma forma melhor */
+/* Deslocamento = 60 - 40 - 2*2 = 16px */
+.dark .toggle-thumb {
+  transform: translateX(16px);
+  background-color: var(--global-gray);
+}

@@ -1,0 +1,28 @@
+.bottom-sheet-container .color-picker-base {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    color: var(--text-color);
+}
+
+.bottom-sheet-container .col-label {
+    color: var(--text-color);
+}
+
+.bottom-sheet-container .picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.bottom-sheet-container .picker-mode {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+.bottom-sheet-container .react-colorful {
+    width: 100%;
+}

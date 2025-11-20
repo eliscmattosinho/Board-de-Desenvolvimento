@@ -1,0 +1,80 @@
+.board-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  padding-bottom: 10px;
+  width: 100%;
+  height: calc(100vh - 120px);
+  overflow: auto;
+}
+
+.add-col {
+  transition: transform 0.3s ease-in-out;
+}
+
+.add-col:hover {
+  transform: scale(1.1);
+}
+
+.add-column-zone {
+  position: relative;
+  width: 10px;
+  min-width: 10px;
+  height: 100%;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+
+  cursor: pointer;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.col-add-last {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border: 1px solid var(--global-green);
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--global-green);
+  padding: 0 20px;
+  min-width: 200px;
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+.col-add-last:hover {
+  color: var(--hover-text-color);
+  background-color: var(--global-green);
+}
+
+.col-add-last:hover.col-add-last * {
+  color: var(--hover-text-color);
+}
+
+.dark .col-add-last {
+  border: 1px solid var(--global-white);
+  color: var(--global-white);
+}
+
+/* Desativa seleção de texto durante o pan */
+.board-container.panning {
+  -webkit-user-drag: none;
+}
+
+.board-container, 
+.board-col, 
+.col-items, 
+.task-item {  
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}

@@ -1,0 +1,218 @@
+/* MODAL OVERLAY */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    background: var(--modal-overlay);
+    padding: 1rem;
+    backdrop-filter: blur(6px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal svg {
+    background: transparent;
+}
+
+/* MODAL */
+
+/* CONTAINER - COLORED BORDER */
+.modal-container {
+    position: relative;
+    box-shadow: var(--modal-shadow);
+    width: 100%;
+    max-width: 360px;
+
+    animation: scaleIn 0.3s ease-in-out forwards;
+}
+
+/* Aplicação da borda colorida */
+.dark .modal-container {
+    padding: 2px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
+    transform-origin: center;
+}
+
+.modal-container.closing {
+    animation: scaleOut 0.25s ease-in forwards;
+}
+
+/* MODAL - FUTURE CONTENT */
+.modal-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+
+    background: var(--bg-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    padding: 20px;
+
+    transition: all 0.3s ease-in-out;
+}
+
+/* HEADER */
+.modal-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+
+.modal-title {
+    width: 100%;
+    font-size: var(--fs-modal-title);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.btn-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-close:hover {
+    transform: scale(1.1);
+}
+
+/* GENERAL CONTENT */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+    color: var(--text-color);
+}
+
+/* FORM ELEMENTS */
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+}
+
+.input-title {
+    font-size: var(--fs-label);
+}
+
+.input-entry {
+    width: 100%;
+    max-width: 100%;
+    border: 1px solid var(--global-gray);
+    border-radius: 6px;
+    padding: 8px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    outline: none;
+}
+
+.input-entry:focus {
+    box-shadow: var(--on-focus);
+}
+
+input::placeholder,
+.textarea-description::placeholder {
+    color: var(--global-gray);
+}
+
+/* BTN GROUP */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* BTN */
+.modal-action {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* BUTTONS */
+.modal-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.btn-edit {
+    border: 1px solid var(--global-black);
+}
+
+.dark .btn-edit {
+    color: var(--text-color);
+    border: 1px solid var(--global-white);
+}
+
+/* Estado desabilitado (sem alterações) */
+.modal-btn.btn-save.disabled {
+    background-color: var(--btn-disabled);
+    color: var(--btn-disabled-text);
+    cursor: not-allowed;
+}
+
+/* Estado ativo */
+.modal-btn.btn-save.active {
+    background-color: var(--global-green);
+    color: var(--global-white);
+}
+
+.modal-btn.btn-save.active:hover {
+    background-color: var(--hover-green);
+}
+
+/* ANIMAÇÕES */
+
+/* Entrada (abrindo) */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Saída (fechando) */
+@keyframes scaleOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-container {
+        max-width: 450px;
+    }
+}

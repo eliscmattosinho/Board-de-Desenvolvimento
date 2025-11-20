@@ -1,0 +1,121 @@
+.board-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 200px;
+}
+
+/* HEADER */
+.col-title-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 200px;
+  text-align: center;
+}
+
+.col-title-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.col-title-board {
+  background: var(--col-bg, transparent);
+  border: 1px solid var(--col-border, transparent);
+  color: var(--col-font, transparent);
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 4px;
+  margin: 0 8px;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  transform-origin: center;
+}
+
+/* encolhe pelos cantos */
+.col-title-board.shrink {
+  transform: scale(0.92);
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+.col-icon-left,
+.col-icon-right {
+  display: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* agora controlado pelo React */
+.col-icon-left.visible,
+.col-icon-right.visible {
+  display: flex;
+  opacity: 1;
+}
+
+.board-icon.trash-icon {
+  color: var(--global-red);
+}
+
+/* CARD PREVIEW */
+.col-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 0 5px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* DnD area indicator */
+.task-placeholder {
+  height: 0;
+  width: 100%;
+  margin: 5px;
+  border: 2px dashed var(--global-dark-blue);
+  border-radius: 4px;
+  background-color: rgba(52, 152, 219, 0.1);
+  overflow: hidden;
+}
+
+.task-placeholder.active {
+  height: auto;
+  padding: 5px 0;
+}
+
+/* ADD CARD ELEMENT */
+.add-task {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  width: 100%;
+  background: none;
+  color: var(--global-green);
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+
+  position: relative;
+  overflow: hidden;
+
+  transition: all 0.5s ease-in-out;
+}
+
+.add-task:hover {
+  background-color: var(--global-green);
+}
+
+/* Plus icon in light/dark mode on a green bg */
+.add-task:hover * {
+  color: var(--global-white);
+}

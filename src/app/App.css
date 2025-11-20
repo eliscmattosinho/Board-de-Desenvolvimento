@@ -1,0 +1,413 @@
+:root {
+  /* COLORS */
+  --global-green: #2DA44A;
+  --hover-green: #217b37;
+  --light-green: rgba(45, 164, 74, 0.702);
+
+  --global-blue: #3DD6B3;
+  --global-dark-blue: #2C7FA3;
+
+  --global-black: #212121;
+
+  --global-white: #efefef;
+
+  --global-gray: #9b9b9b;
+  --light-gray: #c4c4c4;
+  --hover-gray: #666666;
+
+  --global-red: #d73a49;
+  --hover-red: #ae2432;
+
+  --btn-thematic-text: linear-gradient(90deg, #2DA44A 0%, #3DD6B3 50%, #2C7FA3 100%);
+
+  /* Thematic & general */
+  --bg-color: var(--global-white);
+  --text-color: var(--global-black);
+  --hover-text-color: var(--global-white);
+  --bg-component: var(--global-green);
+  --hover-component: var(--global-white);
+
+  /* TYPOGRAPHY - DH (DS) */
+
+  /* --fs-title: 1.5rem(min) 1.75rem(max) */
+  --fs-title: clamp(1.5rem, calc(1.5rem + (1.75 - 1.5) * 1vw), 1.75rem);
+
+  /* --fs-subtitle: 1.25rem(min) 1.375rem(max) */
+  --fs-subtitle: clamp(1.25rem, calc(1.25rem + (1.375 - 1.25) * 1vw), 1.375rem);
+
+  /* --fs-modal-title: 1.125rem(min) 1.25rem(max) */
+  --fs-modal-title: clamp(1.125rem, calc(1.125rem + (1.25 - 1.125) * 1vw), 1.25rem);
+
+  /* --fs-label: 0.875rem(min) 0.9375rem(max) */
+  --fs-label: clamp(0.875rem, calc(0.875rem + (0.9375 - 0.875) * 1vw), 0.9375rem);
+
+  /* --fs-text: 1rem */
+  --fs-text: 1rem;
+
+  /* --fs-btn: 0.875rem(min) 1rem(max) */
+  --fs-btn: clamp(0.875rem, calc(0.875rem + (1 - 0.875) * 1vw), 1rem);
+
+  /* --fs-tooltip: 0.75rem(min) 0.875rem(max) */
+  --fs-tooltip: clamp(0.75rem, calc(0.75rem + (0.875 - 0.75) * 1vw), 0.875rem);
+
+  /* --fs-sm: 0.75rem */
+  --fs-sm: 0.75rem;
+
+  /* BUTTONS */
+  --btn-bg: transparent;
+  --btn-disabled: #c4c4c4;
+  --btn-disabled-text: #666;
+  --btn-active: var(--global-green);
+  --btn-border: var(--global-green);
+
+  /* ICON */
+  --icon-color: var(--global-green);
+
+  /* TOOLTIP */
+  --tooltip-bg: rgba(33, 33, 33, 0.851);
+  --tooltip-text: var(--global-white);
+
+  /* MODALS */
+  --modal-shadow: 6px 6px 12px rgb(35, 35, 35);
+  --modal-overlay: rgba(33, 33, 33, 0.702);
+
+  /*  */
+  --item-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  /* STATES */
+  --on-focus: 0 0 2px rgba(45, 164, 74, 0.7), 0 0 6px rgba(45, 164, 74, 0.5);
+}
+
+/* Dark mode vars */
+.dark {
+  --bg-color: #212121;
+  --bg-component: var(--global-white);
+  --text-color: var(--global-white);
+  --btn-bg: var(--global-white);
+
+  --icon-color: var(--global-white);
+
+  --tooltip-bg: var(--global-green);
+  --tooltip-text: var(--global-white);
+
+  --item-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+  --modal-shadow: 0px 8px 16px rgba(0, 0, 0, 0.6);
+}
+
+/* Estilos globais */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+
+  text-decoration: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  font-size: var(--fs-text);
+}
+
+h2 {
+  font-size: var(--fs-title);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: var(--fs-subtitle);
+  font-weight: normal;
+}
+
+label {
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+
+button {
+  font-size: var(--fs-btn);
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+
+  transition: all 0.3s ease-in-out;
+}
+
+input::placeholder {
+  font-size: var(--font-sm);
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* BUTTONS */
+.btn {
+  padding: 10px 20px;
+  border-radius: 40px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+}
+
+.btn-save {
+  width: fit-content;
+  background: var(--global-green);
+  color: var(--global-white);
+}
+
+.btn-save:hover {
+  background: var(--hover-green);
+}
+
+.btn-close svg path {
+  color: var(--global-red);
+}
+
+.btn-delete {
+  background: var(--global-red);
+  color: var(--global-white);
+}
+
+.btn-delete:hover {
+  background: var(--hover-red);
+}
+
+.btn-cancel {
+  background: var(--global-gray);
+  color: var(--global-white);
+
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-cancel:hover {
+  background: var(--hover-gray);
+}
+
+.modal-btn {
+  font-weight: 600;
+}
+
+.btn-back {
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-back:hover {
+  transform: scale(1.1);
+}
+
+/* @TODO TAB NAV OUTLINE */
+
+.title-thematic,
+.btn-thematic {
+  background: var(--btn-thematic-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.btn-thematic {
+  border: 1px solid var(--btn-border);
+  border-radius: 40px;
+}
+
+.btn-thematic:hover {
+  box-shadow: var(--item-shadow);
+}
+
+.board-icon,
+.plus-icon {
+  color: var(--icon-color);
+  cursor: pointer;
+}
+
+.board-icon {
+  transition: all 0.3s ease-in-out;
+}
+
+.board-icon:hover {
+  transform: scale(1.1);
+}
+
+.text-alert {
+  color: var(--global-red);
+}
+
+.w-600 {
+  font-weight: 600;
+}
+
+.none {
+  display: none;
+}
+
+/* Estilização da barra de rolagem */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background-color: var(--light-gray);
+}
+
+.dark *::-webkit-scrollbar-track {
+  background-color: var(--global-gray);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--global-gray);
+  border-radius: 6px;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: var(--global-white);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  background-color: var(--hover-gray);
+}
+
+/* TOOLTIP */
+/* @TODO: renderizar por portal ou lib */
+
+/* Base do botão com tooltip */
+button[data-tooltip]:not(.btn-close) {
+  position: relative;
+}
+
+/* Tooltip principal */
+button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  white-space: nowrap;
+
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  padding: 6px;
+  border-radius: 4px;
+  font-size: var(--fs-tooltip);
+  font-weight: normal;
+
+  opacity: 0;
+  display: none;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* Rabinho do tooltip */
+button[data-tooltip]::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid var(--tooltip-bg);
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+/* Mostrar tooltip e rabinho no hover */
+button[data-tooltip]:hover::after,
+button[data-tooltip]:hover::before {
+  display: inline-block;
+  opacity: 1;
+}
+
+/* Efeito de "pulse" */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--light-green);
+  }
+
+  70% {
+    transform: scale(1.07);
+    box-shadow: 0 0 0 12px rgba(45, 164, 74, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(45, 164, 74, 0);
+  }
+}
+
+@keyframes darkPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 239, 239, 0.5);
+  }
+
+  70% {
+    transform: scale(1.07);
+    box-shadow: 0 0 0 12px rgba(239, 239, 239, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 239, 239, 0);
+  }
+}
+
+/* Desktop: hover só se tiver hover disponível */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--item-shadow);
+  }
+}
+
+/* Mobile touch */
+@media (hover: none) and (pointer: coarse) {
+  /* pulse apenas para touch */
+  button:active {
+    animation: pulse 0.45s forwards;
+  }
+
+  .dark button:active {
+    animation: darkPulse 0.45s forwards;
+  }
+
+  /* Sem tooltip em telas touch */
+  button[data-tooltip]::after,
+  button[data-tooltip]::before {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

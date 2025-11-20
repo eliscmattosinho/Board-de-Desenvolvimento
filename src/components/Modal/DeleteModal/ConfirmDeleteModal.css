@@ -1,0 +1,17 @@
+.modal-delete {
+  align-items: center;
+  text-align: center;
+}
+
+.modal-delete .modal-actions {
+  gap: 2rem;
+}
+
+/* Mobile modal */
+.bottom-sheet .modal-delete {
+  padding: 20px;
+}
+
+.bottom-sheet .modal-actions {
+  margin-top: 5px;
+}

@@ -27,8 +27,6 @@
 
 <br />
 
-![Banner 2](src/assets/readme/second-banner.png)
-
 ## Technologies Used
 
 - **React** 19

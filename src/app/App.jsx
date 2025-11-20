@@ -40,7 +40,7 @@ function App() {
     <ThemeProvider>
       <TaskProvider>
         <ScreenProvider>
-          <Router basename={import.meta.env.DEV ? "/" : "/development-board"}>
+          <Router basename={import.meta.env.DEV ? "/" : "/development-hub"}>
             <RouteChangeTracker>
               {(location) => (
                 <ModalProvider>

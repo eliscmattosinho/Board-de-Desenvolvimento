@@ -23,7 +23,7 @@
 ## Screenshots & Demos
 
 - Project showcase on Behance: [Development Hub | Behance](https://www.behance.net/gallery/231328777/Development-Hub)
-- Live demo: [Access Here](https://eliscmattosinho.github.io/development-board/)
+- Live demo: [Access Here](https://eliscmattosinho.github.io/development-hub/)
 
 <br />
 

@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig(({ command }) => ({
-    base: command === "serve" ? "/" : "/development-board/",
+    base: command === "serve" ? "/" : "/development-hub/",
     plugins: [react()],
     resolve: {
         alias: {

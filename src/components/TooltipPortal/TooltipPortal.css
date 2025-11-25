@@ -1,0 +1,54 @@
+.tooltip-portal {
+  position: fixed;
+  transform: translateX(-50%);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: var(--fs-tooltip);
+  pointer-events: none;
+  z-index: 999999;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  display: none;
+}
+
+.tooltip-portal.visible {
+  opacity: 1;
+  display: block;
+}
+
+.tooltip-portal.bottom.visible {
+  transform: translate(-50%, 2px);
+}
+
+.tooltip-portal.top.visible {
+  transform: translate(-50%, -2px);
+}
+
+/* Rabinho padrão */
+.tooltip-portal .tooltip-arrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: transform 0.12s ease;
+  width: 0;
+  height: 0;
+}
+
+/* Rabinho quando o tooltip está abaixo do elemento */
+.tooltip-portal.bottom .tooltip-arrow {
+  top: -6px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid var(--tooltip-bg);
+}
+
+/* Rabinho quando o tooltip está acima */
+.tooltip-portal.top .tooltip-arrow {
+  bottom: -6px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--tooltip-bg);
+}

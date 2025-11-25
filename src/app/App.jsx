@@ -15,12 +15,14 @@ import { ScreenProvider } from "@context/ScreenContext";
 
 import { BoardProvider } from "@board/context/BoardContext";
 
+import TooltipPortal from "@components/TooltipPortal/TooltipPortal";
+
 function AppContent({ location }) {
   return (
     <div id="main">
       <Routes location={location}>
         <Route path="/" element={<Building />} />
-        {/* Rota do Hub com BoardProvider */}
+
         <Route
           path="/hub"
           element={
@@ -29,6 +31,7 @@ function AppContent({ location }) {
             </BoardProvider>
           }
         />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
@@ -47,6 +50,7 @@ function App() {
                   <div className="App">
                     <AppContent location={location} />
                     <ToastProvider />
+                    <TooltipPortal />
                   </div>
                 </ModalProvider>
               )}

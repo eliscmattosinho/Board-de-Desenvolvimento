@@ -116,12 +116,14 @@ function BoardControls({ activeView, setActiveView }) {
         className={`search-overlay ${searchOpen ? "open" : ""}`}
         ref={searchRef}
       >
-        <FiSearch
+        <button
           ref={iconRef}
           className="board-icon search-icon"
-          size={20}
           onClick={() => setSearchOpen((prev) => !prev)}
-        />
+          data-tooltip="Pesquisar board"
+        >
+          <FiSearch size={20} />
+        </button>
         <input
           ref={inputRef}
           type="text"

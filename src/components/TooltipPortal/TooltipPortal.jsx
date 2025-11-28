@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { useScreen } from "@context/ScreenContext";
 import "./TooltipPortal.css";
 
+
+//  @TODO analisar melhor forma de deixar global, sem um interferir no outro, melhor caso? TooltipContext + Portal?
 export default function TooltipPortal() {
   const { isTouch } = useScreen();
 

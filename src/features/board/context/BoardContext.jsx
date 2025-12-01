@@ -8,8 +8,7 @@ import { useBoardDrag } from "@board/hooks/useBoardDrag";
 import { useBoardTasks } from "@board/hooks/useBoardTasks";
 import { useColumnModal } from "@column/hooks/useColumnModal";
 
-import kanbanTemplate from "@board/components/templates/kanbanTemplate";
-import scrumTemplate from "@board/components/templates/scrumTemplate";
+import boardTemplates from "@board/components/templates/boardTemplate";
 
 const BoardContext = createContext(null);
 
@@ -26,10 +25,14 @@ export function BoardProvider({ children }) {
     const { tasks, addTask, moveTask, clearTasks } = useTasks();
 
     // Colunas do board
-    const [columns, addColumn, renameColumn, removeColumn] = useColumns(kanbanTemplate, scrumTemplate);
+    const [columns, addColumn, renameColumn, removeColumn] =
+        useColumns(boardTemplates.kanban, boardTemplates.scrum);
 
     // Boards sincronizados
-    const syncedBoardsMap = useMemo(() => ({ kanban: "shared", scrum: "shared" }), []);
+    const syncedBoardsMap = useMemo(
+        () => ({ kanban: "shared", scrum: "shared" }),
+        []
+    );
 
     // Boards e view ativa
     const { boards, activeView, setActiveView, createBoard } = useBoardState(
@@ -44,58 +47,79 @@ export function BoardProvider({ children }) {
     const { allowDrop, handleDragStart, handleDrop } = useBoardDrag(moveTask);
 
     // Tasks
-    const { orderedTasks, handleAddTask, handleClearBoard, handleTaskClick, activeBoardTaskCount } =
-        useBoardTasks({ tasks, addTask, moveTask, clearTasks, columns, activeView, openModal, syncedBoardsMap });
+    const {
+        orderedTasks,
+        handleAddTask,
+        handleClearBoard,
+        handleTaskClick,
+        activeBoardTaskCount
+    } = useBoardTasks({
+        tasks,
+        addTask,
+        moveTask,
+        clearTasks,
+        columns,
+        activeView,
+        openModal,
+        syncedBoardsMap
+    });
 
-    // Colunas (hook agora na feature column)
-    const { handleAddColumn, activeBoardTitle } =
-        useColumnModal({ columns, addColumn, renameColumn, openModal, activeView, boards });
+    // Colunas
+    const { handleAddColumn, activeBoardTitle } = useColumnModal({
+        columns,
+        addColumn,
+        renameColumn,
+        openModal,
+        activeView,
+        boards
+    });
 
     // Memoriza o valor do contexto para evitar re-renderizações desnecessárias
-    const contextValue = useMemo(() => ({
-        activeView,
-        setActiveView,
-        columns,
-        orderedTasks,
-        allowDrop,
-        handleDragStart,
-        handleDrop,
-        handleAddTask,
-        handleClearBoard,
-        handleTaskClick,
-        handleAddColumn,
-        removeColumn,
-        boards,
-        createBoard,
-        activeBoardTitle,
-        activeBoardTaskCount,
-    }), [
-        activeView,
-        columns,
-        orderedTasks,
-        allowDrop,
-        handleDragStart,
-        handleDrop,
-        handleAddTask,
-        handleClearBoard,
-        handleTaskClick,
-        handleAddColumn,
-        removeColumn,
-        boards,
-        createBoard,
-        activeBoardTitle,
-        activeBoardTaskCount
-    ]);
+    const contextValue = useMemo(
+        () => ({
+            activeView,
+            setActiveView,
+            columns,
+            orderedTasks,
+            allowDrop,
+            handleDragStart,
+            handleDrop,
+            handleAddTask,
+            handleClearBoard,
+            handleTaskClick,
+            handleAddColumn,
+            removeColumn,
+            boards,
+            createBoard,
+            activeBoardTitle,
+            activeBoardTaskCount
+        }),
+        [
+            activeView,
+            columns,
+            orderedTasks,
+            allowDrop,
+            handleDragStart,
+            handleDrop,
+            handleAddTask,
+            handleClearBoard,
+            handleTaskClick,
+            handleAddColumn,
+            removeColumn,
+            boards,
+            createBoard,
+            activeBoardTitle,
+            activeBoardTaskCount
+        ]
+    );
 
-    return <BoardContext.Provider value={contextValue}>{children}</BoardContext.Provider>;
+    return (
+        <BoardContext.Provider value={contextValue}>
+            {children}
+        </BoardContext.Provider>
+    );
 }
 
-/**
- * Hook para consumir o BoardContext, fornecendo acesso ao estado e funções do board
- *
- * @throws {Error} Se usado fora do BoardProvider
- * @returns {object} Contexto do BoardProvider com todas as funções e estados do board
- */
 export function useBoardContext() {
     const ctx = useContext(BoardContext);
     if (!ctx) throw new Error("useBoardContext must be used inside BoardProvider");

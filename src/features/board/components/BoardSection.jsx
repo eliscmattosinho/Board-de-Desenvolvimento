@@ -89,7 +89,7 @@ function BoardSection({
     <div
       id={id}
       className={`board-container ${id}-board ${isActive ? "active" : ""}`}
-      {...(!isTouch ? bind : {})} // bind desktop (não-touch) para mouse
+      {...(!isTouch ? bind : {})}
     >
       {columns.map((col, index) => (
         <React.Fragment key={col.id}>
@@ -98,21 +98,18 @@ function BoardSection({
             title={col.title}
             className={col.className}
             style={col.style}
-            tasks={tasksByColumn[col.id]}
+            tasks={tasksByColumn[col.id] || []}
             onDrop={onDrop}
             onDragOver={onDragOver}
             onTaskClick={onTaskClick}
             onDragStart={handleCardDragStart}
             onDragEnd={handleCardDragEnd}
             onAddTask={onAddTask}
-            color={col.color}
-            applyTo={col.applyTo}
             onEdit={handleEditColumn(index, col)}
             onRemove={handleRemoveColumn(col)}
           />
 
-          {/* AddColumnIndicator apenas desktop */}
-          {index < columns.length - 1 && !isTouch && (
+          {!isTouch && index < columns.length - 1 && (
             <div
               className="add-column-zone"
               onMouseEnter={() => handleColumnHover("hoverEnter", index)}
@@ -129,12 +126,8 @@ function BoardSection({
         </React.Fragment>
       ))}
 
-      {/* Botão para adicionar coluna ao final */}
       <div className="col-add-last">
-        <button
-          className="add-col"
-          onClick={() => onAddColumn(columns.length)}
-        >
+        <button className="add-col" onClick={() => onAddColumn(columns.length)}>
           <CiCirclePlus className="plus-icon" size={30} />
         </button>
         <p>Criar nova coluna</p>

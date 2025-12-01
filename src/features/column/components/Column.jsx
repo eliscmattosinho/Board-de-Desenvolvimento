@@ -1,5 +1,4 @@
 import React from "react";
-
 import { CiCirclePlus } from "react-icons/ci";
 
 import ColumnHeader from "./ColumnHeader";
@@ -12,20 +11,15 @@ function Column({
   id,
   title,
   className,
-  onDrop,
+  style,
   tasks,
+  onDrop,
   onTaskClick,
   onDragStart,
   onAddTask,
   onEdit,
   onRemove,
-  color,
-  applyTo,
-  style,
-  styleVars,
 }) {
-  const colKey = className?.split(" ").pop() || "default";
-
   const {
     colStyle,
     dragOverIndex,
@@ -36,7 +30,9 @@ function Column({
     handleAddTaskClick,
     handleEditClick,
     handleRemoveClick,
-  } = useColumn({ id, onDrop, onAddTask, onEdit, onRemove, style, styleVars, color, applyTo });
+  } = useColumn({ id, onDrop, onAddTask, onEdit, onRemove, style });
+
+  const colKey = className?.split(" ").pop() || "default";
 
   return (
     <div

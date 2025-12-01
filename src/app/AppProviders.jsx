@@ -5,13 +5,20 @@ import { ModalProvider } from "@context/ModalContext";
 import { TaskProvider } from "@task/context/TaskProvider";
 import { ScreenProvider } from "@context/ScreenContext";
 
+import { ColumnProvider } from "@column/context/ColumnContext";
+import { BoardProvider } from "@board/context/BoardContext";
+
 const AppProviders = ({ children }) => {
   return (
     <ThemeProvider>
       <TaskProvider>
         <ScreenProvider>
           <ModalProvider>
-            {children}
+            <ColumnProvider>
+              <BoardProvider>
+                {children}
+              </BoardProvider>
+            </ColumnProvider>
           </ModalProvider>
         </ScreenProvider>
       </TaskProvider>

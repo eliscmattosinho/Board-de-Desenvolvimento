@@ -51,6 +51,7 @@ export default function Hub() {
   return (
     <div id="hub-container">
       <div className="hub-content">
+        {/* Actions */}
         <div className="hub-actions">
           <button onClick={() => navigate("/")} className="board-icon btn-back">
             <FaArrowCircleLeft size={30} />
@@ -68,6 +69,7 @@ export default function Hub() {
           </div>
         </div>
 
+        {/* Header */}
         <div className="hub-header">
           <div className="hub-introduction">
             <div className="hub-infos">
@@ -83,6 +85,7 @@ export default function Hub() {
           </div>
         </div>
 
+        {/* Active Board */}
         <div className="hub-active-board">
           <div className="board-header">
             <div className="board-title-container">
@@ -94,7 +97,7 @@ export default function Hub() {
               <FloatingMenu
                 columns={columns[activeView]}
                 onAddTask={handleAddTask}
-                onAddColumn={() => handleAddColumn(columns[activeView]?.length)}
+                onAddColumn={handleAddColumn}
               />
             </div>
 

@@ -2,9 +2,9 @@ import React from "react";
 
 import { ThemeProvider } from "@context/ThemeContext";
 import { ModalProvider } from "@context/ModalContext";
-import { TaskProvider } from "@task/context/TaskProvider";
 import { ScreenProvider } from "@context/ScreenContext";
 
+import { TaskProvider } from "@task/context/TaskContext";
 import { ColumnProvider } from "@column/context/ColumnContext";
 import { BoardProvider } from "@board/context/BoardContext";
 

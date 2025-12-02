@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo } from "react";
-import { useTasks } from "@task/context/TaskProvider";
+import { useTasks } from "@task/context/TaskContext";
 import { useModal } from "@context/ModalContext";
 import { useBoardState } from "@board/hooks/useBoardState";
 import { useBoardDrag } from "@board/hooks/useBoardDrag";

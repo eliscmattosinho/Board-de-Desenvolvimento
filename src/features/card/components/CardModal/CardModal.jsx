@@ -3,7 +3,7 @@ import { columnIdToCanonicalStatus, getDisplayStatus } from "@board/utils/boardU
 import { showWarning } from "@utils/toastUtils";
 import useTaskForm from "@card/hooks/useTaskForm.js";
 import { useModal } from "@context/ModalContext";
-import { useTasks } from "@task/context/TaskProvider";
+import { useTasks } from "@task/context/TaskContext";
 
 import Modal from "@components/Modal/Modal";
 import ConfirmDeleteModal from "@components/Modal/DeleteModal/ConfirmDeleteModal";

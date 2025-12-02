@@ -1,28 +1,28 @@
 import { createContext, useContext, useMemo } from "react";
 import { useTasks } from "@task/context/TaskContext";
+import { useColumnsContext } from "@column/context/ColumnContext";
 import { useModal } from "@context/ModalContext";
 import { useBoardState } from "@board/hooks/useBoardState";
 import { useBoardDrag } from "@board/hooks/useBoardDrag";
 import { useBoardTasks } from "@board/hooks/useBoardTasks";
 import { useColumnModal } from "@column/hooks/useColumnModal";
-import { useColumnsContext } from "@column/context/ColumnContext";
 
 const BoardContext = createContext(null);
 
 export function BoardProvider({ children }) {
-    const { openModal } = useModal();
     const { tasks, addTask, moveTask, clearTasks } = useTasks();
     const { columns, addColumn, renameColumn, removeColumn } = useColumnsContext();
+    const { openModal } = useModal();
 
     const { boards, activeView, setActiveView, createBoard } = useBoardState(
         [
             { id: "kanban", title: "Kanban" },
-            { id: "scrum", title: "Scrum" }
+            { id: "scrum", title: "Scrum" },
         ],
         columns
     );
 
-    // Drag & Drop de tasks
+    // Drag & Drop
     const { allowDrop, handleDragStart, handleDrop } = useBoardDrag(moveTask);
 
     // Tasks
@@ -31,7 +31,7 @@ export function BoardProvider({ children }) {
         handleAddTask,
         handleClearBoard,
         handleTaskClick,
-        activeBoardTaskCount
+        activeBoardTaskCount,
     } = useBoardTasks({
         tasks,
         addTask,
@@ -40,63 +40,64 @@ export function BoardProvider({ children }) {
         columns,
         activeView,
         openModal,
-        syncedBoardsMap: { kanban: "shared", scrum: "shared" }
+        syncedBoardsMap: { kanban: "shared", scrum: "shared" },
     });
 
-    // Colunas
+    // Colunas e modal
     const { handleAddColumn, activeBoardTitle } = useColumnModal({
         columns,
         addColumn,
         renameColumn,
         openModal,
         activeView,
-        boards
+        boards,
     });
 
-    const contextValue = useMemo(() => ({
-        activeView,
-        setActiveView,
-        columns,
-        orderedTasks,
-        allowDrop,
-        handleDragStart,
-        handleDrop,
-        handleAddTask,
-        handleClearBoard,
-        handleTaskClick,
-        handleAddColumn,
-        removeColumn,
-        boards,
-        createBoard,
-        activeBoardTitle,
-        activeBoardTaskCount
-    }), [
-        activeView,
-        columns,
-        orderedTasks,
-        allowDrop,
-        handleDragStart,
-        handleDrop,
-        handleAddTask,
-        handleClearBoard,
-        handleTaskClick,
-        handleAddColumn,
-        removeColumn,
-        boards,
-        createBoard,
-        activeBoardTitle,
-        activeBoardTaskCount
-    ]);
-
-    return (
-        <BoardContext.Provider value={contextValue}>
-            {children}
-        </BoardContext.Provider>
+    const contextValue = useMemo(
+        () => ({
+            activeView,
+            setActiveView,
+            columns,
+            orderedTasks,
+            allowDrop,
+            handleDragStart,
+            handleDrop,
+            handleAddTask,
+            handleClearBoard,
+            handleTaskClick,
+            handleAddColumn,
+            removeColumn,
+            boards,
+            createBoard,
+            activeBoardTitle,
+            activeBoardTaskCount,
+            openModal,
+        }),
+        [
+            activeView,
+            columns,
+            orderedTasks,
+            allowDrop,
+            handleDragStart,
+            handleDrop,
+            handleAddTask,
+            handleClearBoard,
+            handleTaskClick,
+            handleAddColumn,
+            removeColumn,
+            boards,
+            createBoard,
+            activeBoardTitle,
+            activeBoardTaskCount,
+            openModal,
+        ]
     );
+
+    return <BoardContext.Provider value={contextValue}>{children}</BoardContext.Provider>;
 }
 
-export function useBoardContext() {
+export const useBoardContext = () => {
     const ctx = useContext(BoardContext);
     if (!ctx) throw new Error("useBoardContext must be used inside BoardProvider");
     return ctx;
-}
+};

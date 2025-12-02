@@ -9,9 +9,6 @@ import BoardControls from "@board/components/BoardControls";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
 
 import { useBoardContext } from "@board/context/BoardContext";
-import { useTheme } from "@context/ThemeContext";
-import { useModal } from "@context/ModalContext";
-
 import BoardForm from "@features/board/components/BoardForm";
 
 import svgDarkBoard from "@assets/images/svg-board.svg";
@@ -21,10 +18,8 @@ import "./Hub.css";
 
 export default function Hub() {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const { openModal } = useModal();
-
   const {
+    theme,
     activeView,
     setActiveView,
     columns,
@@ -37,16 +32,15 @@ export default function Hub() {
     handleTaskClick,
     handleAddColumn,
     removeColumn,
-    createBoard,
     activeBoardTitle,
     activeBoardTaskCount,
+    openModal,
+    createBoard,
   } = useBoardContext();
 
   const boardImage = theme === "dark" ? svgDarkBoard : svgLightBoard;
 
-  const openNewBoardModal = () => {
-    openModal(BoardForm, { onConfirm: createBoard });
-  };
+  const openNewBoardModal = () => openModal(BoardForm, { onConfirm: createBoard });
 
   return (
     <div id="hub-container">
@@ -56,7 +50,6 @@ export default function Hub() {
           <button onClick={() => navigate("/")} className="board-icon btn-back">
             <FaArrowCircleLeft size={30} />
           </button>
-
           <div className="hub-sub-actions">
             <ThemeToggle />
             <button
@@ -76,10 +69,8 @@ export default function Hub() {
               <h2 className="hub-title title-thematic">Development Hub</h2>
               <p className="sub-title">Escolha seu board de visualização.</p>
             </div>
-
             <BoardControls activeView={activeView} setActiveView={setActiveView} />
           </div>
-
           <div className="img-container hub-img-container">
             <img src={boardImage} alt="Illustration of a dashboard interface" />
           </div>

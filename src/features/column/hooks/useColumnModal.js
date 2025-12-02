@@ -2,31 +2,30 @@ import { useCallback, useMemo } from "react";
 import ColumnModal from "@column/components/ColumnModal/ColumnModal";
 
 /**
- * Hook responsável por gerenciar a abertura de modais de coluna
- * e derivar informações da coluna ativa.
- *
- * @returns {Object} handleAddColumn, activeBoardTitle
+ * Hook para abrir modal de coluna e retornar título do board ativo
  */
 export function useColumnModal({ columns, addColumn, renameColumn, openModal, activeView, boards }) {
     const handleAddColumn = useCallback(
         (index, column) => {
             openModal(ColumnModal, {
                 mode: column ? "edit" : "create",
-                columnData: column,
+                columnData: column || {},
                 onSave: (data) => {
-                    if (column) renameColumn(activeView, column.id, data);
-                    else addColumn(activeView, index, data);
+                    if (column) {
+                        renameColumn(activeView, column.id, data);
+                    } else {
+                        addColumn(activeView, index, data);
+                    }
                 },
             });
         },
-        [activeView, renameColumn, addColumn, openModal]
+        [activeView, addColumn, renameColumn, openModal]
     );
 
     const activeBoardTitle = useMemo(() => {
-        return columns[activeView]?.title
-            ?? boards.find(b => b.id === activeView)?.title
-            ?? activeView;
-    }, [columns, boards, activeView]);
+        const board = boards.find((b) => b.id === activeView);
+        return board?.title || activeView;
+    }, [boards, activeView]);
 
     return { handleAddColumn, activeBoardTitle };
 }

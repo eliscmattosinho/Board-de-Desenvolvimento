@@ -9,7 +9,6 @@ function FloatingMenu({ onAddTask, onAddColumn, columns }) {
     const menuRef = useRef(null);
     const closeTimeoutRef = useRef(null);
 
-    // Detecta se é dispositivo touch
     useEffect(() => {
         const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
         setIsTouch(touch);
@@ -39,9 +38,9 @@ function FloatingMenu({ onAddTask, onAddColumn, columns }) {
     }, [onAddTask, columns]);
 
     const handleAddColumnClick = useCallback(() => {
-        onAddColumn();
+        onAddColumn(columns.length);
         setOpen(false);
-    }, [onAddColumn]);
+    }, [onAddColumn, columns]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {

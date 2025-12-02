@@ -10,13 +10,13 @@ export function useBoardDrag(moveTask) {
     );
 
     const handleDrop = useCallback(
-        (e, columnId, targetTaskId = null) => {
+        (e, columnId, targetTaskId = null, position = null) => {
             e.preventDefault();
             const taskId = e.dataTransfer.getData("text/plain");
             if (!taskId) return;
 
             const canonicalStatus = columnIdToCanonicalStatus(columnId);
-            moveTask(taskId, canonicalStatus, targetTaskId);
+            moveTask(taskId, canonicalStatus, targetTaskId, position);
         },
         [moveTask]
     );

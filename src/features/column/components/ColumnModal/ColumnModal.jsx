@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-
-import useColumnForm from "@column/hooks/useColumnForm.js";
-import { useModal } from "@context/ModalContext.jsx";
-import { useScreen } from "@context/ScreenContext.jsx";
-import { showWarning } from "@utils/toastUtils.js";
+import useColumnForm from "@column/hooks/useColumnForm";
+import { useModal } from "@context/ModalContext";
+import { useScreen } from "@context/ScreenContext";
+import { showWarning } from "@utils/toastUtils";
 import { getContrastColor } from "@column/utils/colorUtils";
 
-import Modal from "@components/Modal/Modal.jsx";
+import Modal from "@components/Modal/Modal";
 import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";
-import ColorPickerPanelMobile from "../ColorPickerPanel/ColorPickerMobile/ColorPickerPanelMobile.jsx";
+import ColorPickerPanelMobile from "../ColorPickerPanel/ColorPickerMobile/ColorPickerPanelMobile";
 
 import "./ColumnModal.css";
 
@@ -16,51 +15,15 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
     const { closeModal } = useModal();
     const { isMobile } = useScreen();
 
-    const {
-        title,
-        setTitle,
-        color,
-        setColor,
-        description,
-        setDescription,
-        applyTo,
-        setApplyTo,
-    } = useColumnForm(columnData);
+    const { title, setTitle, color, setColor, description, setDescription, applyTo, setApplyTo } =
+        useColumnForm(columnData);
 
     const [showPicker, setShowPicker] = useState(false);
-    const [textColor, setTextColor] = useState(columnData?.style?.color || "#212121");
-    const firstRender = useRef(true);
     const inputRef = useRef(null);
 
-    // Atualiza a cor de contraste apenas quando a cor ou applyTo muda, ignorando a primeira renderização
-    useEffect(() => {
-        if (firstRender.current) {
-            firstRender.current = false;
-            return;
-        }
-
-        let targetColor = color;
-        if (!targetColor) {
-            targetColor = applyTo === "fundo" ? columnData?.color || "#EFEFEF" : columnData?.color || "#EFEFEF";
-        }
-
-        setTextColor(getContrastColor(targetColor));
-    }, [color, applyTo, columnData?.color]);
-
     const handleSave = () => {
-        if (!title || !title.trim()) {
-            return showWarning("O título não pode ficar vazio.");
-        }
-
-        if (!onSave) return;
-
-        onSave({
-            title,
-            color,
-            applyTo,
-            description,
-        });
-
+        if (!title || !title.trim()) return showWarning("O título não pode ficar vazio.");
+        if (onSave) onSave({ title, color, applyTo, description });
         closeModal();
     };
 
@@ -71,11 +34,8 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
             closeTooltip={mode === "edit" ? "Fechar" : "Cancelar criação"}
         >
             <div className="modal-content create-column-modal">
-                {/* TÍTULO */}
                 <div className="modal-field col-title-block">
-                    <label className="input-title" htmlFor="column-title">
-                        Título:
-                    </label>
+                    <label htmlFor="column-title" className="input-title">Título:</label>
                     <input
                         id="column-title"
                         className="input-entry"
@@ -85,11 +45,8 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     />
                 </div>
 
-                {/* COR */}
                 <div className="modal-field col-color-block">
-                    <label className="input-title col-color" htmlFor="column-color">
-                        Cor da coluna:
-                    </label>
+                    <label htmlFor="column-color" className="input-title col-color">Cor da coluna:</label>
                     <div className="color-input-wrapper">
                         <span
                             className="color-preview"
@@ -106,38 +63,30 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                         />
                     </div>
 
-                    {/* COLOR PICKER */}
                     {showPicker && (
-                        <>
-                            {isMobile ? (
-                                // Mobile: bottom sheet, fora do ColumnModal
-                                // @TODO buscar outra forma, sem duplicação de definições com "sobreposição" de modais
-                                <ColorPickerPanelMobile
-                                    color={color}
-                                    setColor={setColor}
-                                    applyTo={applyTo}
-                                    setApplyTo={setApplyTo}
-                                    onClose={() => setShowPicker(false)}
-                                />
-                            ) : (
-                                <ColorPickerPanel
-                                    color={color}
-                                    setColor={setColor}
-                                    applyTo={applyTo}
-                                    setApplyTo={setApplyTo}
-                                    onClose={() => setShowPicker(false)}
-                                    anchorRef={inputRef}
-                                />
-                            )}
-                        </>
+                        isMobile ? (
+                            <ColorPickerPanelMobile
+                                color={color}
+                                setColor={setColor}
+                                applyTo={applyTo}
+                                setApplyTo={setApplyTo}
+                                onClose={() => setShowPicker(false)}
+                            />
+                        ) : (
+                            <ColorPickerPanel
+                                color={color}
+                                setColor={setColor}
+                                applyTo={applyTo}
+                                setApplyTo={setApplyTo}
+                                onClose={() => setShowPicker(false)}
+                                anchorRef={inputRef}
+                            />
+                        )
                     )}
                 </div>
 
-                {/* DESCRIÇÃO */}
                 <div className="modal-field col-description-block">
-                    <label className="input-title col-description" htmlFor="column-description">
-                        Descrição:
-                    </label>
+                    <label htmlFor="column-description" className="input-title col-description">Descrição:</label>
                     <textarea
                         id="column-description"
                         className="input-entry textarea-description"
@@ -148,7 +97,6 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     />
                 </div>
 
-                {/* BOTÃO SALVAR */}
                 <button
                     type="button"
                     className="modal-btn btn-save"

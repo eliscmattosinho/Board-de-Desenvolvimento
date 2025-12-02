@@ -1,5 +1,5 @@
 import { ACTIONS } from "./taskReducer";
-import { columnIdToCanonicalStatus } from "@board/utils/boardUtils";
+import { columnIdToCanonicalStatus } from "@board/components/templates/templateMirror";
 
 export function useTaskActions(state, dispatch) {
     const addTask = (columnId = null, { boardId = "kanban" } = {}) => {

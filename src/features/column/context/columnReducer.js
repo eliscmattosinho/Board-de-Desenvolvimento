@@ -1,3 +1,5 @@
+import { getMirrorColumnId } from "@board/components/templates/templateMirror";
+
 export const ACTIONS = {
     ADD_COLUMN: "ADD_COLUMN",
     RENAME_COLUMN: "RENAME_COLUMN",
@@ -8,54 +10,63 @@ export function columnReducer(state, action) {
     switch (action.type) {
         case ACTIONS.ADD_COLUMN: {
             const { view, index, columnData } = action;
-            const cleanColor = columnData?.color || "#EFEFEF";
-            const cleanApplyTo = columnData?.applyTo || "fundo";
+
+            const isTemplate = columnData?.isTemplate || false;
+            const newColumnId = isTemplate
+                ? columnData.id
+                : `custom-${Date.now()}`;
 
             const newColumn = {
-                id: `col-${Date.now()}`,
+                id: newColumnId,
                 title: columnData?.title?.trim() || "Nova coluna",
                 description: columnData?.description?.trim() || "",
-                style: {
-                    bg: cleanApplyTo === "fundo" ? cleanColor : "transparent",
-                    border: cleanApplyTo === "borda" ? cleanColor : "transparent",
-                    color: cleanColor,
-                },
-                applyTo: cleanApplyTo,
-                color: cleanColor,
-                className: `${view}-column new`,
+                style: { ...columnData?.style } || { bg: "#EFEFEF", border: "transparent", color: "#EFEFEF" },
+                color: columnData?.color || "#EFEFEF",
+                applyTo: columnData?.applyTo || "fundo",
+                className: `${view}-column ${isTemplate ? "template" : "new"}`,
+                isTemplate,
             };
 
+            // Adiciona coluna no board atual
             const updated = [
                 ...(state.columns[view] || []).slice(0, index),
                 newColumn,
                 ...(state.columns[view] || []).slice(index),
             ];
 
-            return { ...state, columns: { ...state.columns, [view]: updated } };
+            const newColumns = { ...state.columns, [view]: updated };
+
+            // Espelhar somente se for template
+            if (isTemplate) {
+                const mirrorView = view === "kanban" ? "scrum" : "kanban";
+                const mirrorId = getMirrorColumnId(view, newColumn.id);
+
+                if (mirrorId) {
+                    const mirroredColumn = {
+                        ...newColumn,
+                        id: mirrorId,
+                        className: `${mirrorView}-column template`,
+                    };
+                    newColumns[mirrorView] = [...(newColumns[mirrorView] || []), mirroredColumn];
+                }
+            }
+
+            return { ...state, columns: newColumns };
         }
 
         case ACTIONS.RENAME_COLUMN: {
             const { view, id, newData } = action;
-            const updated = (state.columns[view] || []).map((col) => {
+
+            const updated = (state.columns[view] || []).map(col => {
                 if (col.id !== id) return col;
 
                 const nextApply = newData.applyTo ?? col.applyTo;
                 const nextColor = newData.color ?? col.color;
 
-                let style = {};
-                if (nextApply === "fundo") {
-                    style = {
-                        bg: nextColor,
-                        border: "transparent",
-                        color: nextColor,
-                    };
-                } else if (nextApply === "borda") {
-                    style = {
-                        bg: "transparent",
-                        border: nextColor,
-                        color: nextColor,
-                    };
-                }
+                const style =
+                    nextApply === "fundo"
+                        ? { bg: nextColor, border: "transparent", color: nextColor }
+                        : { bg: "transparent", border: nextColor, color: nextColor };
 
                 return {
                     ...col,
@@ -72,7 +83,8 @@ export function columnReducer(state, action) {
 
         case ACTIONS.REMOVE_COLUMN: {
             const { view, id } = action;
-            const updated = (state.columns[view] || []).filter((col) => col.id !== id);
+            const updated = (state.columns[view] || []).filter(col => col.id !== id);
+
             return { ...state, columns: { ...state.columns, [view]: updated } };
         }
 

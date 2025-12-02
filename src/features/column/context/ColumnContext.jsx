@@ -1,20 +1,14 @@
 import React, { createContext, useContext, useReducer } from "react";
 import { columnReducer, ACTIONS } from "./columnReducer";
 import { columnActions } from "./columnActions";
-import boardTemplates from "@board/components/templates/boardTemplate";
+import { boardTemplates, getMirrorColumnId } from "@board/components/templates/templateMirror";
 
 const ColumnContext = createContext(null);
 
 export const ColumnProvider = ({ children }) => {
     const initialColumns = {
-        kanban: boardTemplates.kanban.map((col) => ({
-            ...col,
-            style: { ...col.style },
-        })),
-        scrum: boardTemplates.scrum.map((col) => ({
-            ...col,
-            style: { ...col.style },
-        })),
+        kanban: boardTemplates.kanban.map(col => ({ ...col, style: { ...col.style }, isTemplate: true })),
+        scrum: boardTemplates.scrum.map(col => ({ ...col, style: { ...col.style }, isTemplate: true })),
     };
 
     const [state, dispatch] = useReducer(columnReducer, { columns: initialColumns });

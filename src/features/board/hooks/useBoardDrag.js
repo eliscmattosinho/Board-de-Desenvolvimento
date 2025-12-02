@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { columnIdToCanonicalStatus } from "@board/utils/boardUtils";
+import { columnIdToCanonicalStatus } from "@board/components/templates/templateMirror";
 
 export function useBoardDrag(moveTask) {
     const allowDrop = useCallback((e) => e.preventDefault(), []);

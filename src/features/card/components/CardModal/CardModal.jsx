@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { columnIdToCanonicalStatus, getDisplayStatus } from "@board/utils/boardUtils";
+import { columnIdToCanonicalStatus, getDisplayStatus } from "@board/components/templates/templateMirror";
 import { showWarning } from "@utils/toastUtils";
 import useTaskForm from "@card/hooks/useTaskForm.js";
 import { useModal } from "@context/ModalContext";

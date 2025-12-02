@@ -1,41 +1,46 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
+import { getContrastColor } from "@column/utils/colorUtils";
 
 /**
- * Hook privado: lógica de estilo
+ * Hook privado: calcula estilo (fundo, borda e cor do texto) com contraste correto
  */
-function useStyleLogic({ style, styleVars, color, applyTo }) {
-  const isColorDark = useCallback((hex) => {
-    if (!hex) return false;
-    let r, g, b;
-    if (hex.startsWith("#")) {
-      const c = hex.slice(1);
-      r = parseInt(c.substr(0, 2), 16);
-      g = parseInt(c.substr(2, 2), 16);
-      b = parseInt(c.substr(4, 2), 16);
-    } else if (hex.startsWith("rgb")) {
-      const match = hex.match(/\d+/g);
-      if (!match) return false;
-      [r, g, b] = match.map(Number);
-    }
-    const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    return luminance < 0.5;
-  }, []);
+function useStyleLogic({ style, color, applyTo }) {
+  const firstRender = useRef(true);
 
   return useMemo(() => {
-    const defaultStyle = style || styleVars || {
-      bg: "transparent",
-      border: "transparent",
-      color: "#212121",
+    const targetColor = color || style?.bg || "#EFEFEF";
+    let textColor;
+
+    if (firstRender.current) {
+      // mantém cor do template na primeira renderização
+      textColor = style?.color || "#212121";
+      firstRender.current = false;
+    } else {
+      textColor = getContrastColor(targetColor);
+    }
+
+    if (applyTo === "fundo") {
+      return {
+        bg: targetColor,
+        border: "transparent",
+        color: textColor,
+      };
+    }
+
+    if (applyTo === "borda") {
+      return {
+        bg: "transparent",
+        border: targetColor,
+        color: textColor,
+      };
+    }
+
+    return {
+      bg: style?.bg || "transparent",
+      border: style?.border || "transparent",
+      color: textColor,
     };
-
-    const bg = applyTo === "fundo" ? color || defaultStyle.bg : defaultStyle.bg;
-    const border = applyTo === "borda" ? color || defaultStyle.border : defaultStyle.border;
-    const font = applyTo === "fundo"
-      ? isColorDark(color) ? "#EFEFEF" : "#212121"
-      : color || defaultStyle.color;
-
-    return { bg, border, color: font };
-  }, [style, styleVars, color, applyTo, isColorDark]);
+  }, [style, color, applyTo]);
 }
 
 /**
@@ -70,22 +75,8 @@ function useDnDLogic({ id, onDrop, onAddTask, onEdit, onRemove }) {
   }, []);
 
   const handleAddTaskClick = useCallback(() => onAddTask?.(id), [id, onAddTask]);
-
-  const handleEditClick = useCallback(
-    (e) => {
-      e.stopPropagation();
-      onEdit?.();
-    },
-    [onEdit]
-  );
-
-  const handleRemoveClick = useCallback(
-    (e) => {
-      e.stopPropagation();
-      onRemove?.();
-    },
-    [onRemove]
-  );
+  const handleEditClick = useCallback((e) => { e.stopPropagation(); onEdit?.(); }, [onEdit]);
+  const handleRemoveClick = useCallback((e) => { e.stopPropagation(); onRemove?.(); }, [onRemove]);
 
   return {
     dragOverIndex,

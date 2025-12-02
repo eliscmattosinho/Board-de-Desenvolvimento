@@ -12,6 +12,8 @@ function Column({
   title,
   className,
   style,
+  color,
+  applyTo,
   tasks,
   onDrop,
   onTaskClick,
@@ -30,7 +32,16 @@ function Column({
     handleAddTaskClick,
     handleEditClick,
     handleRemoveClick,
-  } = useColumn({ id, onDrop, onAddTask, onEdit, onRemove, style });
+  } = useColumn({
+    id,
+    onDrop,
+    onAddTask,
+    onEdit,
+    onRemove,
+    style,
+    color: color || style?.bg,
+    applyTo,
+  });
 
   const colKey = className?.split(" ").pop() || "default";
 
@@ -47,6 +58,7 @@ function Column({
       <ColumnHeader
         title={title}
         tasksLength={tasks.length}
+        textColor={colStyle.color}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
         onDragOver={(e) => e.preventDefault()}

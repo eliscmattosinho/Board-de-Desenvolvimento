@@ -18,7 +18,7 @@ export function columnReducer(state, action) {
                 style: {
                     bg: cleanApplyTo === "fundo" ? cleanColor : "transparent",
                     border: cleanApplyTo === "borda" ? cleanColor : "transparent",
-                    color: "#000",
+                    color: cleanColor,
                 },
                 applyTo: cleanApplyTo,
                 color: cleanColor,
@@ -39,7 +39,7 @@ export function columnReducer(state, action) {
             const updated = (state.columns[view] || []).map((col) => {
                 if (col.id !== id) return col;
 
-                const nextApply = newData.applyTo ?? col.applyTo; // "fundo" ou "borda"
+                const nextApply = newData.applyTo ?? col.applyTo;
                 const nextColor = newData.color ?? col.color;
 
                 let style = {};
@@ -47,7 +47,7 @@ export function columnReducer(state, action) {
                     style = {
                         bg: nextColor,
                         border: "transparent",
-                        color: col.style.color,
+                        color: nextColor,
                     };
                 } else if (nextApply === "borda") {
                     style = {

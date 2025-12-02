@@ -1,9 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import useColumnForm from "@column/hooks/useColumnForm.js";
 import { useModal } from "@context/ModalContext.jsx";
 import { useScreen } from "@context/ScreenContext.jsx";
 import { showWarning } from "@utils/toastUtils.js";
+import { getContrastColor } from "@column/utils/colorUtils";
 
 import Modal from "@components/Modal/Modal.jsx";
 import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";
@@ -27,7 +28,24 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
     } = useColumnForm(columnData);
 
     const [showPicker, setShowPicker] = useState(false);
+    const [textColor, setTextColor] = useState(columnData?.style?.color || "#212121");
+    const firstRender = useRef(true);
     const inputRef = useRef(null);
+
+    // Atualiza a cor de contraste apenas quando a cor ou applyTo muda, ignorando a primeira renderização
+    useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+
+        let targetColor = color;
+        if (!targetColor) {
+            targetColor = applyTo === "fundo" ? columnData?.color || "#EFEFEF" : columnData?.color || "#EFEFEF";
+        }
+
+        setTextColor(getContrastColor(targetColor));
+    }, [color, applyTo, columnData?.color]);
 
     const handleSave = () => {
         if (!title || !title.trim()) {
@@ -35,12 +53,14 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
         }
 
         if (!onSave) return;
+
         onSave({
-            title: title,
+            title,
             color,
             applyTo,
             description,
         });
+
         closeModal();
     };
 
@@ -100,7 +120,6 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                                     onClose={() => setShowPicker(false)}
                                 />
                             ) : (
-                                // Desktop: flutuante, dentro do ColumnModal
                                 <ColorPickerPanel
                                     color={color}
                                     setColor={setColor}

@@ -1,35 +1,31 @@
 import { canonicalStatuses } from "@board/components/templates/templateMirror";
-import { loadTasks } from "./tasksLoader";
+import { loadTasks } from "./loadTemplateTasks";
 import { loadTasksFromStorage, saveTasks } from "./taskPersistence";
 
 /**
- * Inicializa tasks do backend fake ou sessionStorage
- * Garante IDs sequenciais curtos e persistência do próximo ID
+ * Inicializa tasks do backend fake (templates Kanban)
+ * Garante IDs sequenciais e boardId definido
  */
 export async function initializeTasks() {
-  try {
-    // Tenta carregar do sessionStorage
-    const saved = loadTasksFromStorage();
-    if (saved && saved.length > 0) {
-      return saved;
-    }
+  const BOARD_ID = "kanban";
 
-    // Carrega do backend fake (TXT)
+  try {
+    const saved = loadTasksFromStorage(BOARD_ID);
+    if (saved && saved.length > 0) return saved;
+
     const loaded = await loadTasks();
     if (!loaded || !loaded.length) return [];
 
-    // Normaliza e cria IDs sequenciais curtos
     const normalized = loaded.map((t, i) => ({
       id: String(i + 1),
       title: t.title || "Sem título",
       description: t.description || "Sem descrição",
       status: canonicalStatuses.includes(t.status?.trim()) ? t.status.trim() : "Backlog",
       order: i,
+      boardId: BOARD_ID,
     }));
 
-    // Persiste tasks e próximo ID no sessionStorage
     saveTasks(normalized);
-
     return normalized;
   } catch (err) {
     console.error("Erro ao inicializar tasks:", err);

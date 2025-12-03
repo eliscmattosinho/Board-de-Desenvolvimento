@@ -2,7 +2,7 @@ import { ACTIONS } from "./taskReducer";
 import { columnIdToCanonicalStatus } from "@board/components/templates/templateMirror";
 
 export function useTaskActions(state, dispatch) {
-    const addTask = (columnId = null, { boardId = "kanban" } = {}) => {
+    const addTask = (columnId = null, { boardId = "user" } = {}) => {
         const canonicalStatus = columnId ? columnIdToCanonicalStatus(columnId) : "Backlog";
         const tempId = `${state.nextId}`;
         return {
@@ -27,7 +27,9 @@ export function useTaskActions(state, dispatch) {
         dispatch({ type: ACTIONS.MOVE_TASK, taskId, status, targetTaskId, position });
     };
 
-    const updateTask = (taskId, changes) => dispatch({ type: ACTIONS.UPDATE_TASK, taskId, changes });
+    const updateTask = (taskId, changes) =>
+        dispatch({ type: ACTIONS.UPDATE_TASK, taskId, changes });
+
     const deleteTask = (taskId) => dispatch({ type: ACTIONS.DELETE_TASK, taskId });
     const clearTasks = (boardId = null) => dispatch({ type: ACTIONS.CLEAR_TASKS, boardId });
 

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { loadTasksFromStorage } from "@task/services/taskPersistence";
-import { initializeTasks } from "@task/services/initializeTasks";
+import { initializeTasks } from "@task/services/initializeTaskTemplates";
 import { taskReducer } from "./taskReducer";
 import { useTaskActions } from "./taskActions";
 

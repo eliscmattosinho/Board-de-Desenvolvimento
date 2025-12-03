@@ -1,6 +1,9 @@
 let cachedTasks = [];
 let loadedOnce = false;
 
+/**
+ * Carrega tasks do template TXT
+ */
 export async function loadTasks() {
   if (loadedOnce && cachedTasks.length > 0) return cachedTasks;
 

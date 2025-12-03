@@ -53,7 +53,9 @@ export function taskReducer(state, action) {
 
         case ACTIONS.UPDATE_TASK: {
             const { taskId, changes } = action;
-            const updated = state.tasks.map(t => String(t.id) === String(taskId) ? { ...t, ...changes } : t);
+            const updated = state.tasks.map(t =>
+                String(t.id) === String(taskId) ? { ...t, ...changes } : t
+            );
             saveTasks(updated);
             return { ...state, tasks: updated };
         }

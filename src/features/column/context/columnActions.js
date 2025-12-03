@@ -6,32 +6,29 @@ export function columnActions(dispatch) {
         dispatch({ type: ACTIONS.ADD_COLUMN, view, index, columnData });
     };
 
-    const renameColumn = (view, id, newData) => {
-        dispatch({ type: ACTIONS.RENAME_COLUMN, view, id, newData });
-    };
-
     const removeColumn = (view, id) => {
         dispatch({ type: ACTIONS.REMOVE_COLUMN, view, id });
     };
 
+    const updateColumnInfo = (view, id, newData) => {
+        dispatch({ type: ACTIONS.UPDATE_COLUMN_INFO, view, id, newData });
+    };
+
+    const updateColumnStyle = (view, id, newData) => {
+        dispatch({ type: ACTIONS.UPDATE_COLUMN_STYLE, view, id, newData });
+    };
+
     const addTemplateColumn = (view, index, templateColumn) => {
-        // Adiciona coluna original
         addColumn(view, index, { ...templateColumn, isTemplate: true });
 
-        // Adiciona coluna espelhada no outro board
         const mirrorView = view === "kanban" ? "scrum" : "kanban";
         const mirrorId = getMirrorColumnId(view, templateColumn.id);
 
         if (mirrorId) {
-            const mirroredColumn = {
-                ...templateColumn,
-                id: mirrorId,
-                isTemplate: true,
-            };
-
-            addColumn(mirrorView, (index || 0), mirroredColumn);
+            const mirroredColumn = { ...templateColumn, id: mirrorId, isTemplate: true };
+            addColumn(mirrorView, index || 0, mirroredColumn);
         }
     };
 
-    return { addColumn, renameColumn, removeColumn, addTemplateColumn };
+    return { addColumn, removeColumn, updateColumnInfo, updateColumnStyle, addTemplateColumn };
 }

@@ -10,10 +10,11 @@ import ColorPickerPanelMobile from "../ColorPickerPanel/ColorPickerMobile/ColorP
 
 import "./ColumnModal.css";
 
-export default function ColumnModal({ onSave, columnData, mode = "create" }) {
+export default function ColumnModal({ columnData, mode = "create", onSave }) {
     const { closeModal } = useModal();
     const { isMobile } = useScreen();
 
+    // Form state
     const { title, setTitle, color, setColor, description, setDescription, applyTo, setApplyTo } =
         useColumnForm(columnData);
 
@@ -33,6 +34,7 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
             closeTooltip={mode === "edit" ? "Fechar" : "Cancelar criação"}
         >
             <div className="modal-content create-column-modal">
+                {/* Título */}
                 <div className="modal-field col-title-block">
                     <label htmlFor="column-title" className="input-title">Título:</label>
                     <input
@@ -44,6 +46,7 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     />
                 </div>
 
+                {/* Cor */}
                 <div className="modal-field col-color-block">
                     <label htmlFor="column-color" className="input-title col-color">Cor da coluna:</label>
                     <div className="color-input-wrapper">
@@ -84,6 +87,7 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     )}
                 </div>
 
+                {/* Descrição */}
                 <div className="modal-field col-description-block">
                     <label htmlFor="column-description" className="input-title col-description">Descrição:</label>
                     <textarea
@@ -96,6 +100,7 @@ export default function ColumnModal({ onSave, columnData, mode = "create" }) {
                     />
                 </div>
 
+                {/* Botão salvar */}
                 <button
                     type="button"
                     className="modal-btn btn-save"

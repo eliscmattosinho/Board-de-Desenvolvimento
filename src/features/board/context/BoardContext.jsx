@@ -11,7 +11,7 @@ const BoardContext = createContext(null);
 
 export function BoardProvider({ children }) {
     const { tasks, addTask, moveTask, clearTasks } = useTasks();
-    const { columns, addColumn, renameColumn, removeColumn } = useColumnsContext();
+    const { columns, addColumn, removeColumn, updateColumnInfo, updateColumnStyle } = useColumnsContext();
     const { openModal } = useModal();
 
     const { boards, activeView, setActiveView, createBoard } = useBoardState(
@@ -47,7 +47,8 @@ export function BoardProvider({ children }) {
     const { handleAddColumn, activeBoardTitle } = useColumnModal({
         columns,
         addColumn,
-        renameColumn,
+        updateColumnInfo,
+        updateColumnStyle,
         openModal,
         activeView,
         boards,

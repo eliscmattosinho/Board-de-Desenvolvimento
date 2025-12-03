@@ -44,13 +44,5 @@ export function useColumnModal({
         [activeView, addColumn, updateColumnInfo, updateColumnStyle, openModal]
     );
 
-    /**
-     * Retorna o título do board ativo
-     */
-    const activeBoardTitle = useMemo(() => {
-        const board = boards.find((b) => b.id === activeView);
-        return board?.title || activeView;
-    }, [boards, activeView]);
-
-    return { handleAddColumn, activeBoardTitle };
+    return { handleAddColumn };
 }

@@ -6,6 +6,7 @@ import { useBoardState } from "@board/hooks/useBoardState";
 import { useBoardDrag } from "@board/hooks/useBoardDrag";
 import { useBoardTasks } from "@board/hooks/useBoardTasks";
 import { useColumnModal } from "@column/hooks/useColumnModal";
+import { getActiveBoardTitle } from "@board/utils/boardUtils";
 
 const BoardContext = createContext(null);
 
@@ -44,7 +45,7 @@ export function BoardProvider({ children }) {
     });
 
     // Colunas e modal
-    const { handleAddColumn, activeBoardTitle } = useColumnModal({
+    const { handleAddColumn } = useColumnModal({
         columns,
         addColumn,
         updateColumnInfo,
@@ -53,6 +54,9 @@ export function BoardProvider({ children }) {
         activeView,
         boards,
     });
+
+    // Título do board ativo
+    const activeBoardTitle = getActiveBoardTitle(boards, activeView);
 
     const contextValue = useMemo(
         () => ({

@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import useColumnForm from "@column/hooks/useColumnForm";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
 import { showWarning } from "@utils/toastUtils";
-import { getContrastColor } from "@column/utils/colorUtils";
 
 import Modal from "@components/Modal/Modal";
 import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";

@@ -1,66 +1,51 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getContrastColor } from "@column/utils/colorUtils";
 
-/**
- * Hook para gerenciar o formulário de criação/edição de colunas
- */
 export default function useColumnForm(columnData) {
     const [title, setTitle] = useState("");
     const [color, setColor] = useState("#EFEFEF");
     const [description, setDescription] = useState("");
     const [applyTo, setApplyTo] = useState("fundo");
-    const [textColor, setTextColor] = useState("#212121");
-
-    const firstRender = useRef(true);
-
-    const determineColor = (colData) => {
-        if (!colData) return { color: "#EFEFEF", applyTo: "fundo" };
-        if (colData.color) return { color: colData.color, applyTo: colData.applyTo || "fundo" };
-        if (colData.style) {
-            const { bg, border } = colData.style;
-            if (bg && bg !== "transparent") return { color: bg, applyTo: "fundo" };
-            if (border && border !== "transparent") return { color: border, applyTo: "borda" };
-        }
-        return { color: "#EFEFEF", applyTo: "fundo" };
-    };
 
     useEffect(() => {
-        if (columnData) {
-            setTitle(columnData.title || "");
-            setDescription(columnData.description || "");
-            const { color: c, applyTo: a } = determineColor(columnData);
-            setColor(c);
-            setApplyTo(a);
-            setTextColor(c);
-            firstRender.current = true;
-        } else {
+        if (!columnData) {
             setTitle("");
             setDescription("");
             setColor("#EFEFEF");
             setApplyTo("fundo");
-            setTextColor("#212121");
-            firstRender.current = true;
+            return;
+        }
+
+        setTitle(columnData.title || "");
+        setDescription(columnData.description || "");
+
+        if (columnData.color) {
+            setColor(columnData.color);
+            setApplyTo(columnData.applyTo || "fundo");
+        } else if (columnData.style) {
+            const { bg, border } = columnData.style;
+            if (bg && bg !== "transparent") {
+                setColor(bg);
+                setApplyTo("fundo");
+            } else if (border && border !== "transparent") {
+                setColor(border);
+                setApplyTo("borda");
+            } else {
+                setColor("#EFEFEF");
+                setApplyTo("fundo");
+            }
+        } else {
+            setColor("#EFEFEF");
+            setApplyTo("fundo");
         }
     }, [columnData]);
 
-    useEffect(() => {
-        if (firstRender.current) {
-            firstRender.current = false;
-            return;
-        }
-        if (!color) return;
-        setTextColor(getContrastColor(color));
+    const style = useMemo(() => {
+        const textColor = applyTo === "borda" ? color : getContrastColor(color);
+        return applyTo === "borda"
+            ? { bg: "transparent", border: color, color: textColor }
+            : { bg: color, border: "transparent", color: textColor };
     }, [color, applyTo]);
 
-    return {
-        title,
-        setTitle,
-        color,
-        setColor,
-        description,
-        setDescription,
-        applyTo,
-        setApplyTo,
-        textColor,
-    };
+    return { title, setTitle, color, setColor, description, setDescription, applyTo, setApplyTo, style };
 }

@@ -39,11 +39,14 @@ function Column({
     onEdit,
     onRemove,
     style,
-    color: color || style?.bg,
+    color: color || style?.bg || "#EFEFEF",
     applyTo,
   });
 
   const colKey = className?.split(" ").pop() || "default";
+
+  // Decide a cor do título: se a borda estiver aplicada, usa a cor da borda
+  const headerTextColor = colStyle.border !== "transparent" ? colStyle.border : colStyle.color;
 
   return (
     <div
@@ -58,7 +61,7 @@ function Column({
       <ColumnHeader
         title={title}
         tasksLength={tasks.length}
-        textColor={colStyle.color}
+        textColor={headerTextColor}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
         onDragOver={(e) => e.preventDefault()}

@@ -29,15 +29,14 @@ function BoardSection({
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const { openModal, closeModal, isModalOpen } = useModal();
   const { isTouch } = useScreen();
-
   const { bind, setDraggingCard } = useBoardPanning({ containerId: id });
 
-  const handleCardDragStart = (...args) => {
+  const handleCardDragStart = useCallback((...args) => {
     setDraggingCard(true);
-    onDragStart && onDragStart(...args);
-  };
+    onDragStart?.(...args);
+  }, [onDragStart, setDraggingCard]);
 
-  const handleCardDragEnd = () => setDraggingCard(false);
+  const handleCardDragEnd = useCallback(() => setDraggingCard(false), [setDraggingCard]);
 
   const handleColumnHover = useCallback((action, index = null) => {
     setHoveredIndex(action === "hoverEnter" ? index : null);
@@ -57,16 +56,6 @@ function BoardSection({
     [removeColumn, activeView, openModal, closeModal]
   );
 
-  const tasksByColumn = useMemo(() => {
-    const map = {};
-    columns.forEach((col) => {
-      map[col.id] = tasks.filter(
-        (t) => getDisplayStatus(t.status, activeView) === col.title
-      );
-    });
-    return map;
-  }, [tasks, columns, activeView]);
-
   const handleEditColumn = useCallback(
     (index, col) => () => onAddColumn(index, col),
     [onAddColumn]
@@ -79,11 +68,21 @@ function BoardSection({
 
   const handleAddColumnAt = useCallback(
     (index, e) => {
-      if (e) e.stopPropagation();
+      e?.stopPropagation();
       onAddColumn(index);
     },
     [onAddColumn]
   );
+
+  // Agrupamento de tasks por coluna
+  const tasksByColumn = useMemo(() => {
+    return columns.reduce((acc, col) => {
+      acc[col.id] = tasks.filter(
+        (t) => getDisplayStatus(t.status, activeView) === col.title
+      );
+      return acc;
+    }, {});
+  }, [tasks, columns, activeView]);
 
   return (
     <div
@@ -98,6 +97,8 @@ function BoardSection({
             title={col.title}
             className={col.className}
             style={col.style}
+            color={col.color}
+            applyTo={col.applyTo}
             tasks={tasksByColumn[col.id] || []}
             onDrop={onDrop}
             onDragOver={onDragOver}
@@ -136,4 +137,4 @@ function BoardSection({
   );
 }
 
-export default BoardSection;
+export default React.memo(BoardSection);

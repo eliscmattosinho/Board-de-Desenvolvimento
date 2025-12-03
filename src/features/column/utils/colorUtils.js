@@ -1,8 +1,3 @@
-/**
- * Retorna a cor de contraste para uma cor de fundo ou borda
- * Se a cor for clara, retorna #212121 (escuro)
- * Se a cor for escura, retorna #EFEFEF (claro)
- */
 export const getContrastColor = (hex) => {
     if (!hex) return "#212121";
 

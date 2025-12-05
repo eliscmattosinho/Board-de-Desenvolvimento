@@ -16,10 +16,9 @@ export function useBoardDrag(moveTask) {
             if (!taskId) return;
 
             const canonicalStatus = columnIdToCanonicalStatus(columnId);
-            moveTask(taskId, canonicalStatus, targetTaskId, position);
+            moveTask(taskId, { columnId, status: canonicalStatus, targetTaskId, position });
         },
         [moveTask]
     );
-
     return { allowDrop, handleDragStart, handleDrop };
 }

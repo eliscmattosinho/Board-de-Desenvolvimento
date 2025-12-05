@@ -17,7 +17,10 @@ export function useBoardTasks({
 
     const handleAddTask = useCallback(
         (columnId = null) => {
-            const newTask = addTask(columnId, { boardId: activeView });
+            const viewColumns = columns?.[activeView] ?? [];
+            const fallbackColumnId = viewColumns[0]?.id ?? null;
+            const chosenColumnId = columnId ?? fallbackColumnId;
+            const newTask = addTask(chosenColumnId, { boardId: activeView });
             openModal(CardModal, {
                 task: { ...newTask, isNew: true },
                 activeView,

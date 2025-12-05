@@ -10,6 +10,7 @@ export function useTaskActions(state, dispatch) {
             title: "",
             description: "",
             status: canonicalStatus,
+            columnId,
             order: state.tasks.length,
             isNew: true,
             createdAt: new Date().toISOString(),
@@ -23,8 +24,22 @@ export function useTaskActions(state, dispatch) {
         return newTask;
     };
 
-    const moveTask = (taskId, status, targetTaskId = null, position = null) => {
-        dispatch({ type: ACTIONS.MOVE_TASK, taskId, status, targetTaskId, position });
+    const moveTask = (taskId, statusOrPayload, targetTaskId = null, position = null) => {
+        if (typeof statusOrPayload === "object" && statusOrPayload !== null) {
+            dispatch({
+                type: ACTIONS.MOVE_TASK,
+                taskId,
+                payload: statusOrPayload,
+            });
+        } else {
+            dispatch({
+                type: ACTIONS.MOVE_TASK,
+                taskId,
+                status: statusOrPayload,
+                targetTaskId,
+                position,
+            });
+        }
     };
 
     const updateTask = (taskId, changes) =>

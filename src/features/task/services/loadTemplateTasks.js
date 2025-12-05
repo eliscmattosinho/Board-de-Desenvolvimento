@@ -1,16 +1,13 @@
 let cachedTasks = [];
 let loadedOnce = false;
 
-/**
- * Carrega tasks do template TXT
- */
 export async function loadTasks() {
   if (loadedOnce && cachedTasks.length > 0) return cachedTasks;
 
   try {
     const base = import.meta.env.BASE_URL || "/";
     const response = await fetch(`${base}assets/tarefas.txt`);
-
+  
     if (!response.ok) return [];
 
     const text = await response.text();

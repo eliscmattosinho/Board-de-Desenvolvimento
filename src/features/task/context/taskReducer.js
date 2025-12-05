@@ -27,12 +27,25 @@ export function taskReducer(state, action) {
         }
 
         case ACTIONS.MOVE_TASK: {
-            const { taskId, status, targetTaskId, position } = action;
+            const taskId = action.taskId ?? action.id;
+            const payload = action.payload ?? {};
+            const columnId = action.columnId ?? payload.columnId ?? null;
+            const status = action.status ?? payload.status ?? null;
+            const targetTaskId = action.targetTaskId ?? payload.targetTaskId ?? null;
+            const position = action.position ?? payload.position ?? null;
+
             const task = state.tasks.find(t => String(t.id) === String(taskId));
             if (!task) return state;
 
             const without = state.tasks.filter(t => String(t.id) !== String(taskId));
-            const destTasks = without.filter(t => t.status === status && t.boardId === task.boardId);
+
+            const destTasks = without.filter(t => {
+                const sameBoard = t.boardId === task.boardId;
+                if (!sameBoard) return false;
+                if (columnId) return String(t.columnId) === String(columnId);
+                if (status) return String(t.status) === String(status);
+                return false;
+            });
 
             let insertIndex = destTasks.length;
             if (targetTaskId) {
@@ -40,11 +53,35 @@ export function taskReducer(state, action) {
                 if (idx !== -1) insertIndex = position === "below" ? idx + 1 : idx;
             }
 
-            const updatedTask = { ...task, status };
+            const updatedTask = {
+                ...task,
+                ...(status ? { status } : {}),
+                ...(columnId ? { columnId } : {}),
+            };
+
+            let globalInsertPos = without.length;
+            if (destTasks.length === 0) {
+                const lastSameBoardIdx = without.map((t, i) => ({ t, i }))
+                    .filter(x => x.t.boardId === task.boardId)
+                    .map(x => x.i)
+                    .pop();
+                globalInsertPos = (lastSameBoardIdx !== undefined) ? lastSameBoardIdx + 1 : without.length;
+            } else {
+                if (insertIndex < destTasks.length) {
+                    const destTaskAtIndex = destTasks[insertIndex];
+                    const globalIdx = without.findIndex(t => String(t.id) === String(destTaskAtIndex.id));
+                    globalInsertPos = globalIdx !== -1 ? globalIdx : without.length;
+                } else {
+                    const lastDest = destTasks[destTasks.length - 1];
+                    const globalIdx = without.findIndex(t => String(t.id) === String(lastDest.id));
+                    globalInsertPos = globalIdx !== -1 ? globalIdx + 1 : without.length;
+                }
+            }
+
             const reordered = [
-                ...without.slice(0, insertIndex),
+                ...without.slice(0, globalInsertPos),
                 updatedTask,
-                ...without.slice(insertIndex)
+                ...without.slice(globalInsertPos)
             ].map((t, i) => ({ ...t, order: i }));
 
             saveTasks(reordered);

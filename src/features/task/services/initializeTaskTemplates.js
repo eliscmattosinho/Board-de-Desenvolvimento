@@ -1,32 +1,58 @@
-import { canonicalStatuses } from "@board/components/templates/templateMirror";
 import { loadTasks } from "./loadTemplateTasks";
 import { loadTasksFromStorage, saveTasks } from "./taskPersistence";
+import {
+  boardTemplates,
+  getDisplayStatus,
+  columnIdToCanonicalStatus,
+  resolveBoardColumnsForTask,
+} from "@board/components/templates/templateMirror";
 
-/**
- * Inicializa tasks do backend fake (templates Kanban)
- * Garante IDs sequenciais e boardId definido
- */
 export async function initializeTasks() {
-  const BOARD_ID = "kanban";
-
   try {
-    const saved = loadTasksFromStorage(BOARD_ID);
-    if (saved && saved.length > 0) return saved;
-
     const loaded = await loadTasks();
     if (!loaded || !loaded.length) return [];
 
-    const normalized = loaded.map((t, i) => ({
-      id: String(i + 1),
-      title: t.title || "Sem título",
-      description: t.description || "Sem descrição",
-      status: canonicalStatuses.includes(t.status?.trim()) ? t.status.trim() : "Backlog",
-      order: i,
-      boardId: BOARD_ID,
-    }));
+    const normalized = loaded.map((t, i) => {
+      const statusText = t.status?.trim() ?? "";
+      const resolved = resolveBoardColumnsForTask(statusText);
+      let boardId = "kanban";
+      let columnId = null;
 
-    saveTasks(normalized);
-    return normalized;
+      if (resolved.scrum) {
+        boardId = "scrum";
+        columnId = resolved.scrum;
+      } else if (resolved.kanban) {
+        boardId = "kanban";
+        columnId = resolved.kanban;
+      } else {
+        boardId = "kanban";
+        columnId = boardTemplates["kanban"]?.[0]?.id ?? null;
+      }
+
+      const canonical = columnId ? columnIdToCanonicalStatus(columnId) : (statusText || "Backlog");
+
+      return {
+        id: String(i + 1),
+        title: t.title || "Sem título",
+        description: t.description || "Sem descrição",
+        status: canonical,
+        columnId,
+        order: i,
+        boardId,
+      };
+    });
+
+    const existing = loadTasksFromStorage();
+    let merged;
+    if (existing && existing.length > 0) {
+      const hasAnyTemplateBoard = existing.some(x => x.boardId === "kanban" || x.boardId === "scrum");
+      merged = hasAnyTemplateBoard ? existing : [...existing, ...normalized];
+    } else {
+      merged = normalized;
+    }
+
+    saveTasks(merged);
+    return merged.filter(t => t.boardId === "kanban" || t.boardId === "scrum");
   } catch (err) {
     console.error("Erro ao inicializar tasks:", err);
     return [];

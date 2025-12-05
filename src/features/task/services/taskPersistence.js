@@ -6,11 +6,11 @@ const STORAGE_KEY = "tasks";
 
 /**
  * Salva todas as tasks no storage
- * @param {Array} tasks - lista completa de tasks
+ * @param {Array} tasks - lista completa de tasks, colocar por customBoard? excluindo espelho e fake backend?
  */
 export function saveTasks(tasks) {
-    if (!Array.isArray(tasks)) throw new Error("tasks precisa ser um array");
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  if (!Array.isArray(tasks)) throw new Error("tasks precisa ser um array");
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
 /**
@@ -19,14 +19,14 @@ export function saveTasks(tasks) {
  * @returns {Array}
  */
 export function loadTasksFromStorage(boardId = null) {
-    const saved = sessionStorage.getItem(STORAGE_KEY);
-    if (!saved) return [];
+  const saved = sessionStorage.getItem(STORAGE_KEY);
+  if (!saved) return [];
 
-    const tasks = JSON.parse(saved);
-    if (boardId) {
-        return tasks.filter(t => t.boardId === boardId);
-    }
-    return tasks;
+  const tasks = JSON.parse(saved);
+  if (boardId) {
+    return tasks.filter(t => t.boardId === boardId);
+  }
+  return tasks;
 }
 
 /**
@@ -35,10 +35,10 @@ export function loadTasksFromStorage(boardId = null) {
  * @returns {number}
  */
 export function getNextId(boardId = null) {
-    const tasks = loadTasksFromStorage(boardId);
-    if (tasks.length === 0) return 1;
+  const tasks = loadTasksFromStorage(boardId);
+  if (tasks.length === 0) return 1;
 
-    return Math.max(...tasks.map(t => Number(t.id))) + 1;
+  return Math.max(...tasks.map(t => Number(t.id))) + 1;
 }
 
 /**
@@ -46,15 +46,15 @@ export function getNextId(boardId = null) {
  * @param {object} task - task com boardId definido
  */
 export function addTask(task) {
-    if (!task.boardId) task.boardId = "user";
-    const tasks = loadTasksFromStorage();
-    const nextId = getNextId(task.boardId);
+  if (!task.boardId) task.boardId = "user";
+  const tasks = loadTasksFromStorage();
+  const nextId = getNextId(task.boardId);
 
-    const newTask = { ...task, id: String(nextId) };
-    tasks.push(newTask);
+  const newTask = { ...task, id: String(nextId) };
+  tasks.push(newTask);
 
-    saveTasks(tasks);
-    return newTask;
+  saveTasks(tasks);
+  return newTask;
 }
 
 /**
@@ -62,15 +62,15 @@ export function addTask(task) {
  * @param {object} updatedTask
  */
 export function updateTask(updatedTask) {
-    if (!updatedTask.id) throw new Error("Task precisa ter id");
-    const tasks = loadTasksFromStorage();
-    const index = tasks.findIndex(t => String(t.id) === String(updatedTask.id));
+  if (!updatedTask.id) throw new Error("Task precisa ter id");
+  const tasks = loadTasksFromStorage();
+  const index = tasks.findIndex(t => String(t.id) === String(updatedTask.id));
 
-    if (index === -1) throw new Error("Task não encontrada");
-    tasks[index] = { ...tasks[index], ...updatedTask };
+  if (index === -1) throw new Error("Task não encontrada");
+  tasks[index] = { ...tasks[index], ...updatedTask };
 
-    saveTasks(tasks);
-    return tasks[index];
+  saveTasks(tasks);
+  return tasks[index];
 }
 
 /**
@@ -78,10 +78,10 @@ export function updateTask(updatedTask) {
  * @param {string|number} taskId
  */
 export function deleteTask(taskId) {
-    const tasks = loadTasksFromStorage();
-    const filtered = tasks.filter(t => String(t.id) !== String(taskId));
-    saveTasks(filtered);
-    return filtered;
+  const tasks = loadTasksFromStorage();
+  const filtered = tasks.filter(t => String(t.id) !== String(taskId));
+  saveTasks(filtered);
+  return filtered;
 }
 
 /**
@@ -89,13 +89,13 @@ export function deleteTask(taskId) {
  * @param {string|null} boardId
  */
 export function clearTasks(boardId = null) {
-    if (!boardId) {
-        sessionStorage.removeItem(STORAGE_KEY);
-        return [];
-    }
+  if (!boardId) {
+    sessionStorage.removeItem(STORAGE_KEY);
+    return [];
+  }
 
-    const tasks = loadTasksFromStorage();
-    const filtered = tasks.filter(t => t.boardId !== boardId);
-    saveTasks(filtered);
-    return filtered;
+  const tasks = loadTasksFromStorage();
+  const filtered = tasks.filter(t => t.boardId !== boardId);
+  saveTasks(filtered);
+  return filtered;
 }

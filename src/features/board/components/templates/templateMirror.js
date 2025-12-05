@@ -1,8 +1,6 @@
-/**
- * Templates e mapeamentos de colunas para Kanban e Scrum
- */
-
-const boardDefinitions = {
+const mirrorDefinitions = {
+  // fazer espelhamento do zero para comportar/distingir feature de novos boards e colunas?
+  
   kanban: {
     columns: [
       { id: "to-do", title: "A Fazer", style: { bg: "#3DD6B3", color: "#EFEFEF" } },
@@ -17,7 +15,6 @@ const boardDefinitions = {
       Concluído: "Concluído",
     },
   },
-
   scrum: {
     columns: [
       { id: "backlog", title: "Backlog", style: { border: "#2C7FA3", color: "#2C7FA3" } },
@@ -33,12 +30,12 @@ const boardDefinitions = {
 export const canonicalStatuses = ["Backlog", "Sprint Backlog", "Em Progresso", "Revisão", "Concluído"];
 
 export const boardTemplates = Object.fromEntries(
-  Object.entries(boardDefinitions).map(([key, val]) => [key, val.columns])
+  Object.entries(mirrorDefinitions).map(([key, val]) => [key, val.columns])
 );
 
 // Função para retornar o status exibido conforme board
 export const getDisplayStatus = (taskStatus, view) => {
-  const map = boardDefinitions[view]?.displayStatusMap;
+  const map = mirrorDefinitions[view]?.displayStatusMap;
   return map?.[taskStatus] || taskStatus;
 };
 
@@ -58,7 +55,21 @@ export const columnMirrorMap = {
   },
 };
 
+const statusToColumn = {
+  Backlog: { scrum: "backlog", kanban: "to-do" },
+  "Sprint Backlog": { scrum: "sprint-backlog", kanban: "to-do" },
+  "Em Progresso": { scrum: "s-in-progress", kanban: "k-in-progress" },
+  Revisão: { scrum: "review", kanban: "k-in-progress" },
+  Concluído: { scrum: "s-done", kanban: "k-done" },
+};
+
 // Funções utilitárias
+export const resolveBoardColumnsForTask = (taskStatus) => {
+  const map = statusToColumn[taskStatus];
+  if (!map) return { scrum: null, kanban: null };
+  return { scrum: map.scrum, kanban: map.kanban };
+};
+
 export const columnIdToCanonicalStatus = (id) => {
   const map = {
     "to-do": "Backlog",
@@ -74,3 +85,7 @@ export const columnIdToCanonicalStatus = (id) => {
 };
 
 export const getMirrorColumnId = (view, columnId) => columnMirrorMap[view]?.[columnId] || null;
+
+export const isMirrorBoard = (boardId) => {
+  return mirrorDefinitions.hasOwnProperty(boardId);
+};

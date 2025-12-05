@@ -40,14 +40,14 @@ export default function CardModal({
 
     // Função memoizada para pegar a coluna original do card (edição)
     const getOriginalColumnId = useCallback(() => {
+        if (task?.columnId) return task.columnId;
         return (
             columns.find(
                 (col) => getDisplayStatus(task.status, activeView) === col.title
             )?.id || columns[0]?.id || ""
         );
-    }, [columns, task.status, activeView]);
+    }, [columns, task, activeView]);
 
-    // Detecta alterações nos campos
     useEffect(() => {
         if (!editMode || !task) return;
 
@@ -69,9 +69,10 @@ export default function CardModal({
     };
 
     const handleSelect = (colId) => {
+        const canonical = columnIdToCanonicalStatus(colId);
         setStatus(colId);
         if (!editMode) {
-            moveTask(task.id, columnIdToCanonicalStatus(colId));
+            moveTask(task.id, { columnId: colId, status: canonical });
         }
     };
 
@@ -89,18 +90,20 @@ export default function CardModal({
         const canonicalStatus = columnIdToCanonicalStatus(status);
 
         if (task.isNew) {
-            // Salva a task usando o contexto
             saveNewTask({
                 ...task,
                 title: trimmedTitle,
                 description: description.trim(),
                 status: canonicalStatus,
+                columnId: status,
+                boardId: task.boardId || "user",
             });
         } else {
             updateTask(task.id, {
                 title: trimmedTitle,
                 description: description.trim(),
                 status: canonicalStatus,
+                columnId: status,
             });
         }
 

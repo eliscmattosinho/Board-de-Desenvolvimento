@@ -1,23 +1,25 @@
 import { useState, useEffect } from "react";
-import { getDisplayStatus } from "@board/components/templates/templateMirror";
+import { getTaskColumns } from "@board/components/templates/templateMirror";
 
 export default function useTaskForm(task, columns, activeView) {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [status, setStatus] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("");
 
-    useEffect(() => {
-        if (!task || !columns?.length) return;
+  useEffect(() => {
+    if (!task || !columns?.length) return;
 
-        setTitle(task.title || "");
-        setDescription(task.description || "");
+    setTitle(task.title || "");
+    setDescription(task.description || "");
 
-        const currentCol = columns.find(
-            (col) => getDisplayStatus(task.status, activeView) === col.title
-        );
+    let { columnId, mirroredColumnId } = getTaskColumns(task);
 
-        setStatus(currentCol?.id || columns[0]?.id || "");
-    }, [task, columns, activeView]);
+    if (activeView !== task.boardId) {
+      columnId = mirroredColumnId;
+    }
 
-    return { title, setTitle, description, setDescription, status, setStatus };
+    setStatus(columnId || columns[0]?.id || "");
+  }, [task, columns, activeView]);
+
+  return { title, setTitle, description, setDescription, status, setStatus };
 }

@@ -7,6 +7,7 @@ import { useBoardDrag } from "@board/hooks/useBoardDrag";
 import { useBoardTasks } from "@board/hooks/useBoardTasks";
 import { useColumnModal } from "@column/hooks/useColumnModal";
 import { getActiveBoardTitle } from "@board/utils/boardUtils";
+import { syncedBoardsMap } from "@board/utils/boardSyncUtils"
 
 const BoardContext = createContext(null);
 
@@ -41,7 +42,7 @@ export function BoardProvider({ children }) {
         columns,
         activeView,
         openModal,
-        syncedBoardsMap: { kanban: "shared", scrum: "shared" },
+        syncedBoardsMap,
     });
 
     // Colunas e modal

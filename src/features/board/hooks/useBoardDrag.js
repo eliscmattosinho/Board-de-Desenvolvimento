@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { columnIdToCanonicalStatus } from "@board/components/templates/templateMirror";
+import { getTaskColumns } from "@board/components/templates/templateMirror";
 
 export function useBoardDrag(moveTask) {
     const allowDrop = useCallback((e) => e.preventDefault(), []);
@@ -15,10 +15,15 @@ export function useBoardDrag(moveTask) {
             const taskId = e.dataTransfer.getData("text/plain");
             if (!taskId) return;
 
-            const canonicalStatus = columnIdToCanonicalStatus(columnId);
-            moveTask(taskId, { columnId, status: canonicalStatus, targetTaskId, position });
+            const title = e?.target?.dataset?.status;
+            const { columnId: canonicalColumnId } = title
+                ? getTaskColumns({ status: title })
+                : { columnId: columnId };
+
+            moveTask(taskId, { columnId: canonicalColumnId, targetTaskId, position });
         },
         [moveTask]
     );
+
     return { allowDrop, handleDragStart, handleDrop };
 }

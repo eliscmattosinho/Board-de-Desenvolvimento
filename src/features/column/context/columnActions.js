@@ -1,5 +1,5 @@
 import { ACTIONS } from "./columnReducer";
-import { getMirrorColumnId } from "@board/components/templates/templateMirror";
+import { getMirrorColumnId } from "@board/utils/boardSyncUtils";
 
 export function columnActions(dispatch) {
     const addColumn = (view, index, columnData) => {

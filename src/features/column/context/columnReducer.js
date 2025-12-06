@@ -1,4 +1,4 @@
-import { getMirrorColumnId } from "@board/components/templates/templateMirror";
+import { getMirrorColumnId } from "@board/utils/boardSyncUtils";
 import { getContrastColor } from "@column/utils/colorUtils";
 
 export const ACTIONS = {

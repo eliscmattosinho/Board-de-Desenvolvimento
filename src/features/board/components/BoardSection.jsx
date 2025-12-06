@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 
-import { getDisplayStatus } from "@board/components/templates/templateMirror";
 import { useBoardPanning } from "@board/hooks/useBoardPanning";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
@@ -74,12 +73,13 @@ function BoardSection({
     [onAddColumn]
   );
 
-  // Agrupamento de tasks por coluna
+  // Agrupamento de tasks por coluna com espelhamento
   const tasksByColumn = useMemo(() => {
     return columns.reduce((acc, col) => {
-      acc[col.id] = tasks.filter(
-        (t) => getDisplayStatus(t.status, activeView) === col.title
-      );
+      acc[col.id] = tasks.filter(t => {
+        if (t.boardId === activeView) return t.columnId === col.id;
+        return t.mirroredColumnId === col.id;
+      });
       return acc;
     }, {});
   }, [tasks, columns, activeView]);

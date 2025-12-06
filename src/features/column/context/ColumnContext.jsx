@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer } from "react";
 import { columnReducer, ACTIONS } from "./columnReducer";
 import { columnActions } from "./columnActions";
-import { boardTemplates, getMirrorColumnId } from "@board/components/templates/templateMirror";
+import { boardTemplates } from "@board/components/templates/boardTemplates";
 
 const ColumnContext = createContext(null);
 

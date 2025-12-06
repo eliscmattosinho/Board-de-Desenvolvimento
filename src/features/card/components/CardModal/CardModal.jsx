@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { columnIdToCanonicalStatus, getDisplayStatus } from "@board/components/templates/templateMirror";
+import { getTaskColumns } from "@board/components/templates/templateMirror";
+import { getMirrorColumnId } from "@board/utils/boardSyncUtils";
 import { showWarning } from "@utils/toastUtils";
 import useTaskForm from "@card/hooks/useTaskForm.js";
 import { useModal } from "@context/ModalContext";
@@ -13,12 +14,7 @@ import CardActions from "./CardActions";
 
 import "./CardModal.css";
 
-export default function CardModal({
-    task,
-    activeView,
-    columns,
-    moveTask,
-}) {
+export default function CardModal({ task, activeView, columns, moveTask }) {
     const isCreating = !!task?.isNew;
 
     const [editMode, setEditMode] = useState(isCreating);
@@ -38,21 +34,12 @@ export default function CardModal({
         </>
     );
 
-    // Função memoizada para pegar a coluna original do card (edição)
-    const getOriginalColumnId = useCallback(() => {
-        if (task?.columnId) return task.columnId;
-        return (
-            columns.find(
-                (col) => getDisplayStatus(task.status, activeView) === col.title
-            )?.id || columns[0]?.id || ""
-        );
-    }, [columns, task, activeView]);
+    const getOriginalColumnId = useCallback(() => task?.columnId || columns[0]?.id || "", [task, columns]);
 
     useEffect(() => {
         if (!editMode || !task) return;
 
         const originalColId = getOriginalColumnId();
-
         const hasChanges =
             title.trim() !== (task.title || "").trim() ||
             description.trim() !== (task.description || "").trim() ||
@@ -69,10 +56,15 @@ export default function CardModal({
     };
 
     const handleSelect = (colId) => {
-        const canonical = columnIdToCanonicalStatus(colId);
+        const { columnId: canonical } = getTaskColumns({ status: columns.find(c => c.id === colId)?.title, boardId: activeView });
         setStatus(colId);
+
         if (!editMode) {
-            moveTask(task.id, { columnId: colId, status: canonical });
+            moveTask(task.id, {
+                columnId: colId,
+                mirroredColumnId: getMirrorColumnId(activeView, colId),
+                status: canonical,
+            });
         }
     };
 
@@ -83,11 +75,10 @@ export default function CardModal({
 
     const handleSave = () => {
         const trimmedTitle = title.trim();
-
         if (!trimmedTitle) return showWarning("O título não pode ficar vazio.");
         if (!status) return showWarning("Escolha uma coluna antes de salvar.");
 
-        const canonicalStatus = columnIdToCanonicalStatus(status);
+        const { columnId: canonicalStatus } = getTaskColumns({ status: columns.find(c => c.id === status)?.title, boardId: activeView });
 
         if (task.isNew) {
             saveNewTask({
@@ -96,7 +87,8 @@ export default function CardModal({
                 description: description.trim(),
                 status: canonicalStatus,
                 columnId: status,
-                boardId: task.boardId || "user",
+                mirroredColumnId: getMirrorColumnId(activeView, status),
+                boardId: activeView,
             });
         } else {
             updateTask(task.id, {
@@ -104,6 +96,7 @@ export default function CardModal({
                 description: description.trim(),
                 status: canonicalStatus,
                 columnId: status,
+                mirroredColumnId: getMirrorColumnId(activeView, status),
             });
         }
 
@@ -150,9 +143,7 @@ export default function CardModal({
             showHeader={true}
             closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
-            <div
-                className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""}`}
-            >
+            <div className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""}`}>
                 {isCreating ? (
                     <CardEditView
                         title={title}

@@ -1,122 +1,119 @@
 import { saveTasks } from "@task/services/taskPersistence";
+import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
 
 export const ACTIONS = {
-    SET_TASKS: "SET_TASKS",
-    ADD_TASK: "ADD_TASK",
-    MOVE_TASK: "MOVE_TASK",
-    UPDATE_TASK: "UPDATE_TASK",
-    DELETE_TASK: "DELETE_TASK",
-    CLEAR_TASKS: "CLEAR_TASKS",
-};
-
-const syncedBoardsMap = {
-    kanban: "shared",
-    scrum: "shared",
+  SET_TASKS: "SET_TASKS",
+  ADD_TASK: "ADD_TASK",
+  MOVE_TASK: "MOVE_TASK",
+  UPDATE_TASK: "UPDATE_TASK",
+  DELETE_TASK: "DELETE_TASK",
+  CLEAR_TASKS: "CLEAR_TASKS",
 };
 
 export function taskReducer(state, action) {
-    switch (action.type) {
-        case ACTIONS.SET_TASKS:
-            return { ...state, tasks: action.tasks, nextId: action.nextId };
+  switch (action.type) {
+    case ACTIONS.SET_TASKS:
+      return { ...state, tasks: action.tasks, nextId: action.nextId };
 
-        case ACTIONS.ADD_TASK: {
-            const newTask = action.task;
-            const updated = [...state.tasks, newTask];
-            saveTasks(updated);
-            return { tasks: updated, nextId: state.nextId + 1 };
-        }
-
-        case ACTIONS.MOVE_TASK: {
-            const taskId = action.taskId ?? action.id;
-            const payload = action.payload ?? {};
-            const columnId = action.columnId ?? payload.columnId ?? null;
-            const status = action.status ?? payload.status ?? null;
-            const targetTaskId = action.targetTaskId ?? payload.targetTaskId ?? null;
-            const position = action.position ?? payload.position ?? null;
-
-            const task = state.tasks.find(t => String(t.id) === String(taskId));
-            if (!task) return state;
-
-            const without = state.tasks.filter(t => String(t.id) !== String(taskId));
-
-            const destTasks = without.filter(t => {
-                const sameBoard = t.boardId === task.boardId;
-                if (!sameBoard) return false;
-                if (columnId) return String(t.columnId) === String(columnId);
-                if (status) return String(t.status) === String(status);
-                return false;
-            });
-
-            let insertIndex = destTasks.length;
-            if (targetTaskId) {
-                const idx = destTasks.findIndex(t => String(t.id) === String(targetTaskId));
-                if (idx !== -1) insertIndex = position === "below" ? idx + 1 : idx;
-            }
-
-            const updatedTask = {
-                ...task,
-                ...(status ? { status } : {}),
-                ...(columnId ? { columnId } : {}),
-            };
-
-            let globalInsertPos = without.length;
-            if (destTasks.length === 0) {
-                const lastSameBoardIdx = without.map((t, i) => ({ t, i }))
-                    .filter(x => x.t.boardId === task.boardId)
-                    .map(x => x.i)
-                    .pop();
-                globalInsertPos = (lastSameBoardIdx !== undefined) ? lastSameBoardIdx + 1 : without.length;
-            } else {
-                if (insertIndex < destTasks.length) {
-                    const destTaskAtIndex = destTasks[insertIndex];
-                    const globalIdx = without.findIndex(t => String(t.id) === String(destTaskAtIndex.id));
-                    globalInsertPos = globalIdx !== -1 ? globalIdx : without.length;
-                } else {
-                    const lastDest = destTasks[destTasks.length - 1];
-                    const globalIdx = without.findIndex(t => String(t.id) === String(lastDest.id));
-                    globalInsertPos = globalIdx !== -1 ? globalIdx + 1 : without.length;
-                }
-            }
-
-            const reordered = [
-                ...without.slice(0, globalInsertPos),
-                updatedTask,
-                ...without.slice(globalInsertPos)
-            ].map((t, i) => ({ ...t, order: i }));
-
-            saveTasks(reordered);
-            return { ...state, tasks: reordered };
-        }
-
-        case ACTIONS.UPDATE_TASK: {
-            const { taskId, changes } = action;
-            const updated = state.tasks.map(t =>
-                String(t.id) === String(taskId) ? { ...t, ...changes } : t
-            );
-            saveTasks(updated);
-            return { ...state, tasks: updated };
-        }
-
-        case ACTIONS.DELETE_TASK: {
-            const { taskId } = action;
-            const updated = state.tasks
-                .filter(t => String(t.id) !== String(taskId))
-                .map((t, i) => ({ ...t, order: i }));
-            saveTasks(updated);
-            return { ...state, tasks: updated };
-        }
-
-        case ACTIONS.CLEAR_TASKS: {
-            const { boardId: groupId } = action;
-            const updated = state.tasks.filter(t => {
-                const taskGroup = syncedBoardsMap[t.boardId] ?? t.boardId;
-                return taskGroup !== groupId;
-            });
-            saveTasks(updated);
-            return { ...state, tasks: updated };
-        }
-
-        default:
-            return state;
+    case ACTIONS.ADD_TASK: {
+      const newTask = action.task;
+      const updated = [...state.tasks, newTask];
+      saveTasks(updated);
+      return { tasks: updated, nextId: state.nextId + 1 };
     }
+
+    case ACTIONS.MOVE_TASK: {
+      const taskId = action.taskId ?? action.id;
+      const task = state.tasks.find(t => String(t.id) === String(taskId));
+      if (!task) return state;
+
+      const groupId = action.payload?.groupId ?? action.groupId ?? (syncedBoardsMap[task.boardId] ?? task.boardId);
+
+      const columnId = action.columnId ?? action.payload?.columnId ?? null;
+      const status = action.status ?? action.payload?.status ?? null;
+      const targetTaskId = action.targetTaskId ?? action.payload?.targetTaskId ?? null;
+      const position = action.position ?? action.payload?.position ?? null;
+
+      const outside = state.tasks.filter(t => (syncedBoardsMap[t.boardId] ?? t.boardId) !== groupId);
+      const groupTasks = state.tasks.filter(t => (syncedBoardsMap[t.boardId] ?? t.boardId) === groupId && String(t.id) !== String(taskId));
+
+      const updatedTask = {
+        ...task,
+        ...(status ? { status } : {}),
+        ...(columnId ? { columnId } : {}),
+      };
+
+      let insertIndex = groupTasks.length;
+      if (targetTaskId) {
+        const idx = groupTasks.findIndex(t => String(t.id) === String(targetTaskId));
+        if (idx !== -1) insertIndex = position === "below" ? idx + 1 : idx;
+      }
+
+      // new group ordering
+      const newGroupTasks = [
+        ...groupTasks.slice(0, insertIndex),
+        updatedTask,
+        ...groupTasks.slice(insertIndex)
+      ].map((t, i) => ({ ...t, order: i }));
+
+      const reordered = [
+        ...outside,
+        ...newGroupTasks
+      ];
+
+      const normalized = reordered.map((t, i) => ({ ...t, order: i }));
+
+      saveTasks(normalized);
+      return { ...state, tasks: normalized };
+    }
+
+    case ACTIONS.UPDATE_TASK: {
+      const groupId = action.groupId ?? (state.tasks.find(t => String(t.id) === String(action.taskId))?.boardId ?? null);
+
+      const updated = state.tasks.map(t => {
+        const taskGroup = syncedBoardsMap[t.boardId] ?? t.boardId;
+        if (groupId && taskGroup === groupId && String(t.id) === String(action.taskId)) {
+          return { ...t, ...action.changes };
+        }
+
+        if (!groupId && String(t.id) === String(action.taskId)) {
+          return { ...t, ...action.changes };
+        }
+        return t;
+      });
+
+      saveTasks(updated);
+      return { ...state, tasks: updated };
+    }
+
+    case ACTIONS.DELETE_TASK: {
+      const groupId = action.groupId ?? (state.tasks.find(t => String(t.id) === String(action.taskId))?.boardId ?? null);
+
+      const filtered = state.tasks
+        .filter(t => {
+          const taskGroup = syncedBoardsMap[t.boardId] ?? t.boardId;
+          if (groupId) {
+            return !(taskGroup === groupId && String(t.id) === String(action.taskId));
+          }
+          return String(t.id) !== String(action.taskId);
+        })
+        .map((t, i) => ({ ...t, order: i }));
+
+      saveTasks(filtered);
+      return { ...state, tasks: filtered };
+    }
+
+    case ACTIONS.CLEAR_TASKS: {
+      const groupId = action.boardId ?? null;
+      const filtered = state.tasks.filter(t => {
+        const taskGroup = syncedBoardsMap[t.boardId] ?? t.boardId;
+        return taskGroup !== groupId;
+      });
+      saveTasks(filtered);
+      return { ...state, tasks: filtered };
+    }
+
+    default:
+      return state;
+  }
 }

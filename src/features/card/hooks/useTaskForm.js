@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getDisplayStatus } from "../../board/utils/boardUtils";
+import { getDisplayStatus } from "@board/components/templates/templateMirror";
 
 export default function useTaskForm(task, columns, activeView) {
     const [title, setTitle] = useState("");

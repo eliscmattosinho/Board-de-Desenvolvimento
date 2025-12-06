@@ -1,49 +1,29 @@
 import { createContext, useContext, useMemo } from "react";
-import { useTasks } from "@task/context/TaskProvider";
+import { useTasks } from "@task/context/TaskContext";
+import { useColumnsContext } from "@column/context/ColumnContext";
 import { useModal } from "@context/ModalContext";
-import useColumns from "@board/hooks/useColumns";
-
 import { useBoardState } from "@board/hooks/useBoardState";
 import { useBoardDrag } from "@board/hooks/useBoardDrag";
 import { useBoardTasks } from "@board/hooks/useBoardTasks";
 import { useColumnModal } from "@column/hooks/useColumnModal";
-
-import boardTemplates from "@board/components/templates/boardTemplate";
+import { getActiveBoardTitle } from "@board/utils/boardUtils";
 
 const BoardContext = createContext(null);
 
-/**
- * Context provider que centraliza toda a lógica do board:
- * - Gerenciamento de boards ativos
- * - Gestão de colunas e tasks
- * - Drag & drop
- * - Abertura de modais para tarefas e colunas
- * - Limpeza de boards sincronizados
- */
 export function BoardProvider({ children }) {
-    const { openModal } = useModal();
     const { tasks, addTask, moveTask, clearTasks } = useTasks();
+    const { columns, addColumn, removeColumn, updateColumnInfo, updateColumnStyle } = useColumnsContext();
+    const { openModal } = useModal();
 
-    // Colunas do board
-    const [columns, addColumn, renameColumn, removeColumn] =
-        useColumns(boardTemplates.kanban, boardTemplates.scrum);
-
-    // Boards sincronizados
-    const syncedBoardsMap = useMemo(
-        () => ({ kanban: "shared", scrum: "shared" }),
-        []
-    );
-
-    // Boards e view ativa
     const { boards, activeView, setActiveView, createBoard } = useBoardState(
         [
             { id: "kanban", title: "Kanban" },
-            { id: "scrum", title: "Scrum" }
+            { id: "scrum", title: "Scrum" },
         ],
         columns
     );
 
-    // Drag & Drop de tasks
+    // Drag & Drop
     const { allowDrop, handleDragStart, handleDrop } = useBoardDrag(moveTask);
 
     // Tasks
@@ -52,7 +32,7 @@ export function BoardProvider({ children }) {
         handleAddTask,
         handleClearBoard,
         handleTaskClick,
-        activeBoardTaskCount
+        activeBoardTaskCount,
     } = useBoardTasks({
         tasks,
         addTask,
@@ -61,20 +41,23 @@ export function BoardProvider({ children }) {
         columns,
         activeView,
         openModal,
-        syncedBoardsMap
+        syncedBoardsMap: { kanban: "shared", scrum: "shared" },
     });
 
-    // Colunas
-    const { handleAddColumn, activeBoardTitle } = useColumnModal({
+    // Colunas e modal
+    const { handleAddColumn } = useColumnModal({
         columns,
         addColumn,
-        renameColumn,
+        updateColumnInfo,
+        updateColumnStyle,
         openModal,
         activeView,
-        boards
+        boards,
     });
 
-    // Memoriza o valor do contexto para evitar re-renderizações desnecessárias
+    // Título do board ativo
+    const activeBoardTitle = getActiveBoardTitle(boards, activeView);
+
     const contextValue = useMemo(
         () => ({
             activeView,
@@ -92,7 +75,8 @@ export function BoardProvider({ children }) {
             boards,
             createBoard,
             activeBoardTitle,
-            activeBoardTaskCount
+            activeBoardTaskCount,
+            openModal,
         }),
         [
             activeView,
@@ -109,19 +93,16 @@ export function BoardProvider({ children }) {
             boards,
             createBoard,
             activeBoardTitle,
-            activeBoardTaskCount
+            activeBoardTaskCount,
+            openModal,
         ]
     );
 
-    return (
-        <BoardContext.Provider value={contextValue}>
-            {children}
-        </BoardContext.Provider>
-    );
+    return <BoardContext.Provider value={contextValue}>{children}</BoardContext.Provider>;
 }
 
-export function useBoardContext() {
+export const useBoardContext = () => {
     const ctx = useContext(BoardContext);
     if (!ctx) throw new Error("useBoardContext must be used inside BoardProvider");
     return ctx;
-}
+};

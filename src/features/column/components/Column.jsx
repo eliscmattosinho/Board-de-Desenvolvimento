@@ -1,5 +1,4 @@
 import React from "react";
-
 import { CiCirclePlus } from "react-icons/ci";
 
 import ColumnHeader from "./ColumnHeader";
@@ -12,20 +11,17 @@ function Column({
   id,
   title,
   className,
-  onDrop,
+  style,
+  color,
+  applyTo,
   tasks,
+  onDrop,
   onTaskClick,
   onDragStart,
   onAddTask,
   onEdit,
   onRemove,
-  color,
-  applyTo,
-  style,
-  styleVars,
 }) {
-  const colKey = className?.split(" ").pop() || "default";
-
   const {
     colStyle,
     dragOverIndex,
@@ -36,7 +32,21 @@ function Column({
     handleAddTaskClick,
     handleEditClick,
     handleRemoveClick,
-  } = useColumn({ id, onDrop, onAddTask, onEdit, onRemove, style, styleVars, color, applyTo });
+  } = useColumn({
+    id,
+    onDrop,
+    onAddTask,
+    onEdit,
+    onRemove,
+    style,
+    color: color || style?.bg || "#EFEFEF",
+    applyTo,
+  });
+
+  const colKey = className?.split(" ").pop() || "default";
+
+  // Decide a cor do título: se a borda estiver aplicada, usa a cor da borda
+  const headerTextColor = colStyle.border !== "transparent" ? colStyle.border : colStyle.color;
 
   return (
     <div
@@ -51,6 +61,7 @@ function Column({
       <ColumnHeader
         title={title}
         tasksLength={tasks.length}
+        textColor={headerTextColor}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
         onDragOver={(e) => e.preventDefault()}

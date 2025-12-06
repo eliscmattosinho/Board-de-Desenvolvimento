@@ -7,7 +7,7 @@ export async function loadTasks() {
   try {
     const base = import.meta.env.BASE_URL || "/";
     const response = await fetch(`${base}assets/tarefas.txt`);
-
+  
     if (!response.ok) return [];
 
     const text = await response.text();

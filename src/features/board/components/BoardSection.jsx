@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 
-import { getDisplayStatus } from "@board/utils/boardUtils";
+import { getDisplayStatus } from "@board/components/templates/templateMirror";
 import { useBoardPanning } from "@board/hooks/useBoardPanning";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
@@ -29,15 +29,14 @@ function BoardSection({
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const { openModal, closeModal, isModalOpen } = useModal();
   const { isTouch } = useScreen();
-
   const { bind, setDraggingCard } = useBoardPanning({ containerId: id });
 
-  const handleCardDragStart = (...args) => {
+  const handleCardDragStart = useCallback((...args) => {
     setDraggingCard(true);
-    onDragStart && onDragStart(...args);
-  };
+    onDragStart?.(...args);
+  }, [onDragStart, setDraggingCard]);
 
-  const handleCardDragEnd = () => setDraggingCard(false);
+  const handleCardDragEnd = useCallback(() => setDraggingCard(false), [setDraggingCard]);
 
   const handleColumnHover = useCallback((action, index = null) => {
     setHoveredIndex(action === "hoverEnter" ? index : null);
@@ -57,16 +56,6 @@ function BoardSection({
     [removeColumn, activeView, openModal, closeModal]
   );
 
-  const tasksByColumn = useMemo(() => {
-    const map = {};
-    columns.forEach((col) => {
-      map[col.id] = tasks.filter(
-        (t) => getDisplayStatus(t.status, activeView) === col.title
-      );
-    });
-    return map;
-  }, [tasks, columns, activeView]);
-
   const handleEditColumn = useCallback(
     (index, col) => () => onAddColumn(index, col),
     [onAddColumn]
@@ -79,17 +68,27 @@ function BoardSection({
 
   const handleAddColumnAt = useCallback(
     (index, e) => {
-      if (e) e.stopPropagation();
+      e?.stopPropagation();
       onAddColumn(index);
     },
     [onAddColumn]
   );
 
+  // Agrupamento de tasks por coluna
+  const tasksByColumn = useMemo(() => {
+    return columns.reduce((acc, col) => {
+      acc[col.id] = tasks.filter(
+        (t) => getDisplayStatus(t.status, activeView) === col.title
+      );
+      return acc;
+    }, {});
+  }, [tasks, columns, activeView]);
+
   return (
     <div
       id={id}
       className={`board-container ${id}-board ${isActive ? "active" : ""}`}
-      {...(!isTouch ? bind : {})} // bind desktop (não-touch) para mouse
+      {...(!isTouch ? bind : {})}
     >
       {columns.map((col, index) => (
         <React.Fragment key={col.id}>
@@ -98,21 +97,20 @@ function BoardSection({
             title={col.title}
             className={col.className}
             style={col.style}
-            tasks={tasksByColumn[col.id]}
+            color={col.color}
+            applyTo={col.applyTo}
+            tasks={tasksByColumn[col.id] || []}
             onDrop={onDrop}
             onDragOver={onDragOver}
             onTaskClick={onTaskClick}
             onDragStart={handleCardDragStart}
             onDragEnd={handleCardDragEnd}
             onAddTask={onAddTask}
-            color={col.color}
-            applyTo={col.applyTo}
             onEdit={handleEditColumn(index, col)}
             onRemove={handleRemoveColumn(col)}
           />
 
-          {/* AddColumnIndicator apenas desktop */}
-          {index < columns.length - 1 && !isTouch && (
+          {!isTouch && index < columns.length - 1 && (
             <div
               className="add-column-zone"
               onMouseEnter={() => handleColumnHover("hoverEnter", index)}
@@ -129,12 +127,8 @@ function BoardSection({
         </React.Fragment>
       ))}
 
-      {/* Botão para adicionar coluna ao final */}
       <div className="col-add-last">
-        <button
-          className="add-col"
-          onClick={() => onAddColumn(columns.length)}
-        >
+        <button className="add-col" onClick={() => onAddColumn(columns.length)}>
           <CiCirclePlus className="plus-icon" size={30} />
         </button>
         <p>Criar nova coluna</p>
@@ -143,4 +137,4 @@ function BoardSection({
   );
 }
 
-export default BoardSection;
+export default React.memo(BoardSection);

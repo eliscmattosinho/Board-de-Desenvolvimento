@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { loadTasksFromStorage } from "@task/services/taskPersistence";
-import { initializeTasks } from "@task/services/initializeTasks";
+import { initializeTasks } from "@task/services/initializeTaskTemplates";
 import { taskReducer } from "./taskReducer";
 import { useTaskActions } from "./taskActions";
 
@@ -20,7 +20,6 @@ export const TaskProvider = ({ children }) => {
     async function load() {
       const loaded = await initializeTasks();
       if (!mounted) return;
-
       const normalized = loaded.map((t, i) => ({
         ...t,
         id: t.id ?? String(i + 1),
@@ -28,10 +27,18 @@ export const TaskProvider = ({ children }) => {
         boardId: t.boardId ?? "kanban",
       }));
 
-      const maxId = normalized.reduce((max, t) => Math.max(max, Number(t.id)), 0);
-      const calculatedNextId = maxId + 1;
+      const existing = loadTasksFromStorage();
+      let merged;
+      if (existing && existing.length > 0) {
+        const hasTemplateBoard = existing.some(t => t.boardId === "kanban" || t.boardId === "scrum");
+        merged = hasTemplateBoard ? existing : [...existing, ...normalized];
+      } else {
+        merged = normalized;
+      }
 
-      dispatch({ type: "SET_TASKS", tasks: normalized, nextId: calculatedNextId });
+      const maxId = merged.reduce((max, t) => Math.max(max, Number(t.id)), 0);
+      const calculatedNextId = maxId + 1;
+      dispatch({ type: "SET_TASKS", tasks: merged, nextId: calculatedNextId });
     }
     load();
     return () => { mounted = false; };

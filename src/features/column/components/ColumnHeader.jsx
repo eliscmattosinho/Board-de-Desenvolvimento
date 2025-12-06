@@ -3,7 +3,15 @@ import { IoTrashOutline } from "react-icons/io5";
 import { AiOutlineEdit } from "react-icons/ai";
 import { useScreen } from "@context/ScreenContext";
 
-const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragOver, onDrop }) => {
+const ColumnHeader = React.memo(({
+    title,
+    tasksLength,
+    textColor,
+    onEdit,
+    onRemove,
+    onDragOver,
+    onDrop
+}) => {
     const [hovered, setHovered] = React.useState(false);
     const { isTouch } = useScreen();
     const containerRef = useRef(null);
@@ -43,7 +51,7 @@ const ColumnHeader = React.memo(({ title, tasksLength, onEdit, onRemove, onDragO
                     </button>
                 )}
 
-                <p className={`col-title-board ${hovered ? "shrink" : ""}`}>
+                <p className={`col-title-board ${hovered ? "shrink" : ""}`} style={{ color: textColor }}>
                     {title}
                     <span className="task-counter">({tasksLength})</span>
                 </p>

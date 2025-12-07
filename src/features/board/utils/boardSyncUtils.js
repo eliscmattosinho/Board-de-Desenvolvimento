@@ -13,19 +13,28 @@ export function getSyncedBoardsMap() {
   return _syncedBoardsMap;
 }
 
+// para n quebrar pelo acento
+function normalizeText(s) {
+  return String(s || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+}
+
 export const explicitColumnMirrorMap = {
   kanban: {
     "to-do": "backlog",
     "k-in-progress": "s-in-progress",
-    "k-done": "s-done",
+    "k-done": "s-done"
   },
   scrum: {
     backlog: "to-do",
     "sprint-backlog": "to-do",
     "s-in-progress": "k-in-progress",
     review: "k-in-progress",
-    "s-done": "k-done",
-  },
+    "s-done": "k-done"
+  }
 };
 
 const _columnMirrorCache = {};
@@ -46,17 +55,24 @@ export function generateColumnMirrorMap(boardAId, boardBId) {
       return;
     }
 
-    const match = boardBCols.find(
-      colB => colB.title.toLowerCase() === colA.title.toLowerCase()
+    const normATitle = normalizeText(colA.title);
+    const normAStatus = normalizeText(colA.status);
+
+    const matchByTitle = boardBCols.find(
+      colB => normalizeText(colB.title) === normATitle
     );
-    if (match) {
-      mirrorMap[colA.id] = match.id;
+
+    if (matchByTitle) {
+      mirrorMap[colA.id] = matchByTitle.id;
+      return;
     }
-    else {
-      const matchByStatus = boardBCols.find(
-        colB => (colB.status || "").toLowerCase() === (colA.status || "").toLowerCase()
-      );
-      if (matchByStatus) mirrorMap[colA.id] = matchByStatus.id;
+
+    const matchByStatus = boardBCols.find(
+      colB => normalizeText(colB.status) === normAStatus
+    );
+
+    if (matchByStatus) {
+      mirrorMap[colA.id] = matchByStatus.id;
     }
   });
 
@@ -68,15 +84,11 @@ export function getMirrorColumnId(columnId, mirrorMap) {
   return mirrorMap[columnId] || columnId;
 }
 
-/**
- * --- EXPORTS
- */
 export const syncedBoardsMap = getSyncedBoardsMap();
 
-// Pre-generate using explicit map as primary
 export const columnMirrorMap = {
   kanban: generateColumnMirrorMap("kanban", "scrum"),
-  scrum: generateColumnMirrorMap("scrum", "kanban"),
+  scrum: generateColumnMirrorMap("scrum", "kanban")
 };
 
 export function getMirrorColumnIdSafe(view, columnId) {
@@ -84,9 +96,6 @@ export function getMirrorColumnIdSafe(view, columnId) {
   return getMirrorColumnId(columnId, mirrorMap);
 }
 
-/**
- * Utilitário para retornar outras boards no mesmo grupo
- */
 export function getBoardsInSameGroup(view) {
   const map = syncedBoardsMap;
   const groupId = map[view] ?? view;

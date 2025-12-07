@@ -1,58 +1,69 @@
 import { boardTemplates } from "@board/components/templates/boardTemplates";
 import { getMirrorColumnIdSafe as _getMirrorColumnIdSafe } from "@board/utils/boardSyncUtils";
 
+function normalizeText(s) {
+  return String(s || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+}
+
 export function getMirrorColumnIdSafe(view, columnId) {
   return _getMirrorColumnIdSafe(view, columnId);
 }
 
 export function getTaskColumns(task) {
-  const normalized = String(task.status || "").trim().toLowerCase();
+  const normalized = normalizeText(task.status);
 
-  const findByTitle = (boardId) => {
-    return (boardTemplates[boardId] || []).find(c => c.title.toLowerCase() === normalized) || null;
-  };
+  const findByTitle = (boardId) =>
+    (boardTemplates[boardId] || []).find(
+      c => normalizeText(c.title) === normalized
+    ) || null;
 
-  const findByStatus = (boardId) => {
-    return (boardTemplates[boardId] || []).find(c => (c.status || "").toLowerCase() === normalized) || null;
-  };
+  const findByStatus = (boardId) =>
+    (boardTemplates[boardId] || []).find(
+      c => normalizeText(c.status) === normalized
+    ) || null;
 
-  const kanbanColByTitle = findByTitle("kanban");
-  if (kanbanColByTitle) {
+  const kanbanTitle = findByTitle("kanban");
+  if (kanbanTitle) {
     return {
       boardId: "kanban",
-      columnId: kanbanColByTitle.id,
-      mirroredColumnId: getMirrorColumnIdSafe("kanban", kanbanColByTitle.id)
+      columnId: kanbanTitle.id,
+      mirroredColumnId: getMirrorColumnIdSafe("kanban", kanbanTitle.id)
     };
   }
 
-  const scrumColByTitle = findByTitle("scrum");
-  if (scrumColByTitle) {
+  const scrumTitle = findByTitle("scrum");
+  if (scrumTitle) {
     return {
       boardId: "scrum",
-      columnId: scrumColByTitle.id,
-      mirroredColumnId: getMirrorColumnIdSafe("scrum", scrumColByTitle.id)
+      columnId: scrumTitle.id,
+      mirroredColumnId: getMirrorColumnIdSafe("scrum", scrumTitle.id)
     };
   }
 
-  const kanbanColByStatus = findByStatus("kanban");
-  if (kanbanColByStatus) {
+  const kanbanStatus = findByStatus("kanban");
+  if (kanbanStatus) {
     return {
       boardId: "kanban",
-      columnId: kanbanColByStatus.id,
-      mirroredColumnId: getMirrorColumnIdSafe("kanban", kanbanColByStatus.id)
+      columnId: kanbanStatus.id,
+      mirroredColumnId: getMirrorColumnIdSafe("kanban", kanbanStatus.id)
     };
   }
 
-  const scrumColByStatus = findByStatus("scrum");
-  if (scrumColByStatus) {
+  const scrumStatus = findByStatus("scrum");
+  if (scrumStatus) {
     return {
       boardId: "scrum",
-      columnId: scrumColByStatus.id,
-      mirroredColumnId: getMirrorColumnIdSafe("scrum", scrumColByStatus.id)
+      columnId: scrumStatus.id,
+      mirroredColumnId: getMirrorColumnIdSafe("scrum", scrumStatus.id)
     };
   }
 
   const fallbackId = boardTemplates.kanban?.[0]?.id ?? null;
+
   return {
     boardId: "kanban",
     columnId: fallbackId,
@@ -60,12 +71,11 @@ export function getTaskColumns(task) {
   };
 }
 
-/**
- * Retorna título de coluna para exibição na view
- */
 export function getDisplayStatus(columnId, view = "kanban") {
-  const col = (boardTemplates[view] || []).find(c => c.id === columnId);
+  const cols = boardTemplates[view] || [];
+  const col = cols.find(c => c.id === columnId);
   if (col) return col.title;
+
   const mirrored = getMirrorColumnIdSafe(view, columnId);
-  return (boardTemplates[view] || []).find(c => c.id === mirrored)?.title || "";
+  return cols.find(c => c.id === mirrored)?.title || "";
 }

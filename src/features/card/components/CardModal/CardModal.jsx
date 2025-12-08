@@ -14,7 +14,7 @@ import CardActions from "./CardActions";
 
 import "./CardModal.css";
 
-export default function CardModal({ task, activeView, columns, moveTask }) {
+export default function CardModal({ task, activeBoard, columns, moveTask }) {
     const isCreating = !!task?.isNew;
 
     const [editMode, setEditMode] = useState(isCreating);
@@ -23,7 +23,7 @@ export default function CardModal({ task, activeView, columns, moveTask }) {
     const [dirty, setDirty] = useState(false);
 
     const { title, setTitle, description, setDescription, status, setStatus } =
-        useTaskForm(task, columns, activeView);
+        useTaskForm(task, columns, activeBoard);
 
     const { openModal, closeModal } = useModal();
     const { saveNewTask, updateTask, deleteTask } = useTasks();
@@ -56,13 +56,13 @@ export default function CardModal({ task, activeView, columns, moveTask }) {
     };
 
     const handleSelect = (colId) => {
-        const { columnId: canonical } = getTaskColumns({ status: columns.find(c => c.id === colId)?.title, boardId: activeView });
+        const { columnId: canonical } = getTaskColumns({ status: columns.find(c => c.id === colId)?.title, boardId: activeBoard });
         setStatus(colId);
 
         if (!editMode) {
             moveTask(task.id, {
                 columnId: colId,
-                mirroredColumnId: getMirrorColumnId(activeView, colId),
+                mirroredColumnId: getMirrorColumnId(activeBoard, colId),
                 status: canonical,
             });
         }
@@ -78,7 +78,7 @@ export default function CardModal({ task, activeView, columns, moveTask }) {
         if (!trimmedTitle) return showWarning("O título não pode ficar vazio.");
         if (!status) return showWarning("Escolha uma coluna antes de salvar.");
 
-        const { columnId: canonicalStatus } = getTaskColumns({ status: columns.find(c => c.id === status)?.title, boardId: activeView });
+        const { columnId: canonicalStatus } = getTaskColumns({ status: columns.find(c => c.id === status)?.title, boardId: activeBoard });
 
         if (task.isNew) {
             saveNewTask({
@@ -87,8 +87,8 @@ export default function CardModal({ task, activeView, columns, moveTask }) {
                 description: description.trim(),
                 status: canonicalStatus,
                 columnId: status,
-                mirroredColumnId: getMirrorColumnId(activeView, status),
-                boardId: activeView,
+                mirroredColumnId: getMirrorColumnId(activeBoard, status),
+                boardId: activeBoard,
             });
         } else {
             updateTask(task.id, {
@@ -96,7 +96,7 @@ export default function CardModal({ task, activeView, columns, moveTask }) {
                 description: description.trim(),
                 status: canonicalStatus,
                 columnId: status,
-                mirroredColumnId: getMirrorColumnId(activeView, status),
+                mirroredColumnId: getMirrorColumnId(activeBoard, status),
             });
         }
 

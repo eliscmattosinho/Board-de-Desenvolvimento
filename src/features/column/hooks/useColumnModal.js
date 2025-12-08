@@ -10,7 +10,7 @@ export function useColumnModal({
     updateColumnInfo,
     updateColumnStyle,
     openModal,
-    activeView,
+    activeBoard,
     boards,
 }) {
     /**
@@ -26,22 +26,22 @@ export function useColumnModal({
                 onSave: (data) => {
                     if (column) {
                         // Atualiza informações e estilo separadamente
-                        updateColumnInfo(activeView, column.id, {
+                        updateColumnInfo(activeBoard, column.id, {
                             title: data.title,
                             description: data.description,
                         });
-                        updateColumnStyle(activeView, column.id, {
+                        updateColumnStyle(activeBoard, column.id, {
                             color: data.color,
                             applyTo: data.applyTo,
                         });
                     } else {
                         // Criação de nova coluna
-                        addColumn(activeView, index, data);
+                        addColumn(activeBoard, index, data);
                     }
                 },
             });
         },
-        [activeView, addColumn, updateColumnInfo, updateColumnStyle, openModal]
+        [activeBoard, addColumn, updateColumnInfo, updateColumnStyle, openModal]
     );
 
     return { handleAddColumn };

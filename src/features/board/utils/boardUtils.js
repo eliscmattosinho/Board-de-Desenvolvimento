@@ -1,4 +1,4 @@
-export function getActiveBoardTitle(boards, activeView) {
-    const board = boards.find((b) => b.id === activeView);
-    return board?.title || activeView;
+export function getActiveBoardTitle(boards, activeBoard) {
+    const board = boards.find((b) => b.id === activeBoard);
+    return board?.title || activeBoard;
 }

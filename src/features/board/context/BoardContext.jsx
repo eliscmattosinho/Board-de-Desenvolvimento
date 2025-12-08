@@ -27,7 +27,7 @@ export function BoardProvider({ children }) {
         createBoard,
         updateBoard,
         deleteBoard,
-        setactiveBoard
+        setActiveBoard
     } = useBoardActions(state, dispatch);
 
     const { allowDrop, handleDragStart, handleDrop } = useBoardDrag(moveTask);
@@ -71,7 +71,7 @@ export function BoardProvider({ children }) {
     const contextValue = useMemo(
         () => ({
             activeBoard,
-            setactiveBoard,
+            setActiveBoard,
 
             columns,
             orderedTasks,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getTaskColumns } from "@board/components/templates/templateMirror";
 
-export default function useTaskForm(task, columns, activeView) {
+export default function useTaskForm(task, columns, activeBoard) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
@@ -14,12 +14,12 @@ export default function useTaskForm(task, columns, activeView) {
 
     let { columnId, mirroredColumnId } = getTaskColumns(task);
 
-    if (activeView !== task.boardId) {
+    if (activeBoard !== task.boardId) {
       columnId = mirroredColumnId;
     }
 
     setStatus(columnId || columns[0]?.id || "");
-  }, [task, columns, activeView]);
+  }, [task, columns, activeBoard]);
 
   return { title, setTitle, description, setDescription, status, setStatus };
 }

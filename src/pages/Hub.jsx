@@ -20,8 +20,8 @@ export default function Hub() {
   const navigate = useNavigate();
   const {
     theme,
-    activeView,
-    setActiveView,
+    activeBoard,
+    setActiveBoard,
     columns,
     orderedTasks,
     allowDrop,
@@ -69,7 +69,7 @@ export default function Hub() {
               <h2 className="hub-title title-thematic">Development Hub</h2>
               <p className="sub-title">Escolha seu board de visualização.</p>
             </div>
-            <BoardControls activeView={activeView} setActiveView={setActiveView} />
+            <BoardControls activeBoard={activeBoard} setActiveBoard={setActiveBoard} />
           </div>
           <div className="img-container hub-img-container">
             <img src={boardImage} alt="Illustration of a dashboard interface" />
@@ -86,7 +86,7 @@ export default function Hub() {
               </h3>
 
               <FloatingMenu
-                columns={columns[activeView]}
+                columns={columns[activeBoard]}
                 onAddTask={handleAddTask}
                 onAddColumn={handleAddColumn}
               />
@@ -104,8 +104,8 @@ export default function Hub() {
 
           <div className="board-content">
             <BoardSection
-              id={activeView}
-              columns={columns[activeView] || []}
+              id={activeBoard}
+              columns={columns[activeBoard] || []}
               tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}
@@ -114,7 +114,7 @@ export default function Hub() {
               onAddTask={handleAddTask}
               onAddColumn={handleAddColumn}
               removeColumn={removeColumn}
-              activeView={activeView}
+              activeBoard={activeBoard}
               isActive
             />
           </div>

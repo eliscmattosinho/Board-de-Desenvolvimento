@@ -22,7 +22,7 @@ function BoardSection({
   onAddTask,
   onAddColumn,
   removeColumn,
-  activeView,
+  activeBoard,
   isActive,
 }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -46,13 +46,13 @@ function BoardSection({
       openModal(ConfirmDeleteModal, {
         type: "column",
         onConfirm: () => {
-          removeColumn(activeView, col.id);
+          removeColumn(activeBoard, col.id);
           closeModal();
         },
         onCancel: closeModal,
       });
     },
-    [removeColumn, activeView, openModal, closeModal]
+    [removeColumn, activeBoard, openModal, closeModal]
   );
 
   const handleEditColumn = useCallback(
@@ -77,12 +77,12 @@ function BoardSection({
   const tasksByColumn = useMemo(() => {
     return columns.reduce((acc, col) => {
       acc[col.id] = tasks.filter(t => {
-        if (t.boardId === activeView) return t.columnId === col.id;
+        if (t.boardId === activeBoard) return t.columnId === col.id;
         return t.mirroredColumnId === col.id;
       });
       return acc;
     }, {});
-  }, [tasks, columns, activeView]);
+  }, [tasks, columns, activeBoard]);
 
   return (
     <div

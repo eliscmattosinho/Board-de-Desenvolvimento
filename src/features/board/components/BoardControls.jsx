@@ -5,7 +5,7 @@ import { useModal } from "@/context/ModalContext";
 import { FiSearch } from "react-icons/fi";
 import "./BoardControls.css";
 
-function BoardControls({ activeView, setActiveView }) {
+function BoardControls({ activeBoard, setActiveBoard }) {
   const { boards } = useBoardContext();
   const containerRef = useRef(null);
   const searchRef = useRef(null);
@@ -22,7 +22,7 @@ function BoardControls({ activeView, setActiveView }) {
 
   const getButtonClass = (board) => {
     const classes = ["btn", "btn-board", `btn-view-${board.id}`];
-    if (activeView === board.id) classes.push("active");
+    if (activeBoard === board.id) classes.push("active");
     if (["kanban", "scrum"].includes(board.id)) classes.push("title-thematic");
     return classes.join(" ");
   };
@@ -63,7 +63,7 @@ function BoardControls({ activeView, setActiveView }) {
         btnLeft - containerWidth / 2 + btnWidth / 2;
       container.scrollTo({ left: scrollPosition, behavior: "smooth" });
     }
-  }, [activeView, boards]);
+  }, [activeBoard, boards]);
 
   // Clean search
   useEffect(() => {
@@ -148,7 +148,7 @@ function BoardControls({ activeView, setActiveView }) {
             <button
               key={board.id}
               className={getButtonClass(board)}
-              onClick={() => setActiveView(board.id)}
+              onClick={() => setActiveBoard(board.id)}
             >
               {board.title}
             </button>

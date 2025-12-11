@@ -1,101 +1,110 @@
-/**
- * Persiste tasks no sessionStorage, diferenciando templates e tasks do usuário
- */
-
-const STORAGE_KEY = "tasks";
+import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
 
 /**
- * Salva todas as tasks no storage
- * @param {Array} tasks - lista completa de tasks, colocar por customBoard? excluindo espelho e fake backend?
+ * Constroi a chave usada no sessionStorage conforme groupId/boardId
  */
-export function saveTasks(tasks) {
-  if (!Array.isArray(tasks)) throw new Error("tasks precisa ser um array");
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+function storageKeyFor({ groupId = null, boardId = null } = {}) {
+  if (groupId) return `tasks_group_${groupId}`;
+  if (boardId) return `tasks_board_${boardId}`;
+  throw new Error("storageKeyFor chamado sem groupId ou boardId");
 }
 
 /**
- * Carrega tasks do storage
- * @param {string|null} boardId - se definido, retorna apenas tasks deste board
- * @returns {Array}
+ * Salva um array de tasks no storage apropriado
  */
-export function loadTasksFromStorage(boardId = null) {
-  const saved = sessionStorage.getItem(STORAGE_KEY);
-  if (!saved) return [];
-
-  const tasks = JSON.parse(saved);
-  if (boardId) {
-    return tasks.filter(t => t.boardId === boardId);
+export function saveTasks(tasks, { groupId = null, boardId = null } = {}) {
+  if (!Array.isArray(tasks)) {
+    throw new Error("tasks precisa ser um array");
   }
-  return tasks;
+  const key = storageKeyFor({ groupId, boardId });
+  sessionStorage.setItem(key, JSON.stringify(tasks));
 }
 
 /**
- * Calcula o próximo ID sequencial para um board
- * @param {string|null} boardId - board específico, ou null para todas
- * @returns {number}
+ * Carrega tasks do storage do grupo/board
  */
-export function getNextId(boardId = null) {
-  const tasks = loadTasksFromStorage(boardId);
-  if (tasks.length === 0) return 1;
+export function loadTasksFromStorage({ groupId = null, boardId = null } = {}) {
+  const key = storageKeyFor({ groupId, boardId });
+  const raw = sessionStorage.getItem(key);
+  return raw ? JSON.parse(raw) : [];
+}
 
+export const loadTasks = (opts = {}) => loadTasksFromStorage(opts);
+
+/**
+ * Retorna próximo id sequencial para o storage alvo (group ou board).
+ */
+export function getNextId({ groupId = null, boardId = null } = {}) {
+  const tasks = loadTasksFromStorage({ groupId, boardId });
+  if (!tasks || tasks.length === 0) return 1;
   return Math.max(...tasks.map(t => Number(t.id))) + 1;
 }
 
 /**
- * Adiciona uma nova task ao storage
- * @param {object} task - task com boardId definido
+ * Adiciona uma nova task determinando corretamente se o storage destino
  */
 export function addTask(task) {
   if (!task.boardId) task.boardId = "user";
-  const tasks = loadTasksFromStorage();
-  const nextId = getNextId(task.boardId);
+
+  const groupId = syncedBoardsMap[task.boardId] ?? null;
+  const loadOpts = groupId ? { groupId } : { boardId: task.boardId };
+
+  const tasks = loadTasksFromStorage(loadOpts);
+  const nextId = getNextId(loadOpts);
 
   const newTask = { ...task, id: String(nextId) };
   tasks.push(newTask);
 
-  saveTasks(tasks);
+  saveTasks(tasks, loadOpts);
   return newTask;
 }
 
 /**
- * Substitui ou atualiza uma task existente
- * @param {object} updatedTask
+ * Atualiza uma task existente no storage correto (baseado em boardId da task).
  */
 export function updateTask(updatedTask) {
   if (!updatedTask.id) throw new Error("Task precisa ter id");
-  const tasks = loadTasksFromStorage();
+  if (!updatedTask.boardId) throw new Error("Task precisa ter boardId");
+
+  const groupId = syncedBoardsMap[updatedTask.boardId] ?? null;
+  const opts = groupId ? { groupId } : { boardId: updatedTask.boardId };
+
+  const tasks = loadTasksFromStorage(opts);
   const index = tasks.findIndex(t => String(t.id) === String(updatedTask.id));
 
   if (index === -1) throw new Error("Task não encontrada");
   tasks[index] = { ...tasks[index], ...updatedTask };
 
-  saveTasks(tasks);
+  saveTasks(tasks, opts);
   return tasks[index];
 }
 
 /**
- * Remove task por id
- * @param {string|number} taskId
+ * Deleta task no storage correto.
  */
-export function deleteTask(taskId) {
-  const tasks = loadTasksFromStorage();
+export function deleteTask(taskId, boardId) {
+  if (!taskId) throw new Error("taskId requerido");
+  if (!boardId) throw new Error("deleteTask requer boardId");
+
+  const groupId = syncedBoardsMap[boardId] ?? null;
+  const opts = groupId ? { groupId } : { boardId };
+
+  const tasks = loadTasksFromStorage(opts);
   const filtered = tasks.filter(t => String(t.id) !== String(taskId));
-  saveTasks(filtered);
+
+  saveTasks(filtered, opts);
   return filtered;
 }
 
 /**
- * Limpa tasks de um board específico (ex: templates ou user)
- * @param {string|null} boardId
+ * Clear: remove a key do storage de acordo com groupId/boardId.
+ * Agora não há fallback para grupo shared.
  */
-export function clearTasks(boardId = null) {
-  if (!boardId) {
-    sessionStorage.removeItem(STORAGE_KEY);
-    return [];
+export function clearTasks({ groupId = null, boardId = null } = {}) {
+  if (!groupId && !boardId) {
+    throw new Error("clearTasks requer groupId ou boardId");
   }
-
-  const tasks = loadTasksFromStorage();
-  const filtered = tasks.filter(t => t.boardId !== boardId);
-  saveTasks(filtered);
-  return filtered;
+  const key = storageKeyFor({ groupId, boardId });
+  sessionStorage.removeItem(key);
+  return [];
 }

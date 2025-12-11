@@ -71,7 +71,7 @@ export function useBoardTasks({
     showCustom(({ closeToast }) => (
       <ClearBoardToast
         onConfirm={() => {
-          clearTasks(groupId);
+          clearTasks({ groupId });
           closeToast();
           showSuccess("Todas as tarefas foram removidas com sucesso!");
         }}

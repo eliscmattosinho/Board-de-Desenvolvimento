@@ -1,21 +1,30 @@
 import { ACTIONS } from "./taskReducer";
-import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
+import { boardTemplates } from "@board/components/templates/boardTemplates";
 
-/**
- * Criar actios que derivam groupId quando necessário
- */
+function columnIdToCanonicalStatus(columnId) {
+  if (!columnId) return "Backlog";
+
+  const boards = Object.keys(boardTemplates || {});
+  for (let i = 0; i < boards.length; i++) {
+    const cols = boardTemplates[boards[i]] || [];
+    const col = cols.find(c => String(c.id) === String(columnId));
+    if (col) return col.status || col.title || "Backlog";
+  }
+
+  return "Backlog";
+}
+
 export function useTaskActions(state, dispatch) {
-  const addTask = (columnId = null, { boardId = "user", mirroredColumnId = null } = {}) => {
-    const canonicalStatus = columnId;
+  const addTask = (columnId = null, { boardId } = {}) => {
+    if (!boardId) throw new Error("addTask requer boardId");
+    const canonicalStatus = columnId ? columnIdToCanonicalStatus(columnId) : "Backlog";
     const tempId = `${state.nextId}`;
-
     return {
       id: tempId,
       title: "",
       description: "",
-      status: canonicalStatus, // pensar melhor
-      columnId: canonicalStatus,
-      mirroredColumnId: mirroredColumnId ?? null,
+      status: canonicalStatus,
+      columnId,
       order: state.tasks.length,
       isNew: true,
       createdAt: new Date().toISOString(),
@@ -24,50 +33,30 @@ export function useTaskActions(state, dispatch) {
   };
 
   const saveNewTask = (task) => {
+    if (!task.boardId) throw new Error("saveNewTask requer boardId");
     const newTask = { ...task, id: String(state.nextId), isNew: false };
     dispatch({ type: ACTIONS.ADD_TASK, task: newTask });
     return newTask;
   };
 
   const moveTask = (taskId, statusOrPayload, targetTaskId = null, position = null) => {
-    const task = state.tasks.find(t => String(t.id) === String(taskId));
-    if (!task) return;
-
-    const groupId = syncedBoardsMap[task.boardId] ?? task.boardId;
-
     if (typeof statusOrPayload === "object" && statusOrPayload !== null) {
-      dispatch({
-        type: ACTIONS.MOVE_TASK,
-        taskId,
-        payload: { ...statusOrPayload, groupId },
-      });
+      dispatch({ type: ACTIONS.MOVE_TASK, taskId, payload: statusOrPayload });
     } else {
-      dispatch({
-        type: ACTIONS.MOVE_TASK,
-        taskId,
-        status: statusOrPayload,
-        targetTaskId,
-        position,
-        groupId,
-      });
+      dispatch({ type: ACTIONS.MOVE_TASK, taskId, status: statusOrPayload, targetTaskId, position });
     }
   };
 
-  const updateTask = (taskId, changes) => {
-    const task = state.tasks.find(t => String(t.id) === String(taskId));
-    const groupId = task ? (syncedBoardsMap[task.boardId] ?? task.boardId) : null;
-    dispatch({ type: ACTIONS.UPDATE_TASK, taskId, changes, groupId });
+  const updateTask = (taskId, changes) => dispatch({ type: ACTIONS.UPDATE_TASK, taskId, changes });
+
+  const deleteTask = (taskId, boardId) => {
+    if (!boardId) throw new Error("deleteTask requer boardId");
+    dispatch({ type: ACTIONS.DELETE_TASK, taskId, boardId });
   };
 
-  const deleteTask = (taskId) => {
-    const task = state.tasks.find(t => String(t.id) === String(taskId));
-    const groupId = task ? (syncedBoardsMap[task.boardId] ?? task.boardId) : null;
-    dispatch({ type: ACTIONS.DELETE_TASK, taskId, groupId });
-  };
-
-  const clearTasks = (boardId = null) => {
-    const groupId = syncedBoardsMap[boardId] ?? boardId;
-    dispatch({ type: ACTIONS.CLEAR_TASKS, boardId: groupId });
+  const clearTasks = ({ groupId, boardId } = {}) => {
+    if (!groupId && !boardId) throw new Error("clearTasks requer groupId ou boardId");
+    dispatch({ type: ACTIONS.CLEAR_TASKS, groupId, boardId });
   };
 
   return { addTask, saveNewTask, moveTask, updateTask, deleteTask, clearTasks };

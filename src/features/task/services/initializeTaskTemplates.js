@@ -1,7 +1,8 @@
-import { loadTasks } from "./loadTemplateTasks";
+import { loadTemplateTasks } from "./loadTemplateTasks";
 import { loadTasksFromStorage, saveTasks } from "./taskPersistence";
 import { getTaskColumns } from "@board/components/templates/templateMirror";
 
+// adk
 function signatureForTask(t) {
   const title = String(t.title || "").trim();
   const desc = String(t.description || "").trim();
@@ -23,14 +24,13 @@ function getNextSequentialId(existing) {
 
 export async function initializeTasks() {
   try {
-    const loaded = await loadTasks();
+    const loaded = await loadTemplateTasks();
     if (!loaded?.length) return [];
 
-    const existing = loadTasksFromStorage() || [];
+    // Carrega todas as tasks já existentes no grupo "shared"
+    const existing = loadTasksFromStorage({ groupId: "shared" }) || [];
 
-    // Construção do índice incremental
     let nextId = getNextSequentialId(existing);
-
     const existingSignatures = new Set(existing.map(signatureForTask));
 
     const normalized = loaded.map((t, i) => {
@@ -48,19 +48,13 @@ export async function initializeTasks() {
       };
     });
 
-    // Remove tasks duplicadas por conteúdo
-    const filteredNew = normalized.filter(t => {
-      const sig = signatureForTask(t);
-      return !existingSignatures.has(sig);
-    });
+    // Remove duplicadas
+    const filteredNew = normalized.filter(t => !existingSignatures.has(signatureForTask(t)));
 
     const merged = [...existing, ...filteredNew];
 
-    saveTasks(merged);
-
-    // console.debug(
-    //   `[initializeTasks] loaded=${loaded.length} existing=${existing.length} added=${filteredNew.length}`
-    // );
+    // Salva explicitamente no groupId "shared"
+    saveTasks(merged, { groupId: "shared" });
 
     return merged;
   } catch (err) {

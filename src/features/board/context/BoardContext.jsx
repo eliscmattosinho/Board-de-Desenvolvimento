@@ -64,7 +64,7 @@ export function BoardProvider({ children }) {
     const handleDeleteBoard = (boardId) => {
         deleteBoard(boardId, () => {
             removeColumn((col) => col.boardId === boardId);
-            clearTasks((task) => task.boardId === boardId);
+            clearTasks({ boardId });
         });
     };
 

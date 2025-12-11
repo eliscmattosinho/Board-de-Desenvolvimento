@@ -1,7 +1,7 @@
 let cachedTasks = [];
 let loadedOnce = false;
 
-export async function loadTasks() {
+export async function loadTemplateTasks() {
   if (loadedOnce && cachedTasks.length > 0) return cachedTasks;
 
   try {

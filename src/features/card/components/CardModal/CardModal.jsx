@@ -34,7 +34,10 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
         </>
     );
 
-    const getOriginalColumnId = useCallback(() => task?.columnId || columns[0]?.id || "", [task, columns]);
+    const getOriginalColumnId = useCallback(
+        () => task?.columnId || columns[0]?.id || "",
+        [task, columns]
+    );
 
     useEffect(() => {
         if (!editMode || !task) return;
@@ -56,7 +59,11 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
     };
 
     const handleSelect = (colId) => {
-        const { columnId: canonical } = getTaskColumns({ status: columns.find(c => c.id === colId)?.title, boardId: activeBoard });
+        const { columnId: canonical } = getTaskColumns({
+            status: columns.find(c => c.id === colId)?.title,
+            boardId: activeBoard,
+        });
+
         setStatus(colId);
 
         if (!editMode) {
@@ -78,7 +85,10 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
         if (!trimmedTitle) return showWarning("O título não pode ficar vazio.");
         if (!status) return showWarning("Escolha uma coluna antes de salvar.");
 
-        const { columnId: canonicalStatus } = getTaskColumns({ status: columns.find(c => c.id === status)?.title, boardId: activeBoard });
+        const { columnId: canonicalStatus } = getTaskColumns({
+            status: columns.find(c => c.id === status)?.title,
+            boardId: activeBoard,
+        });
 
         if (task.isNew) {
             saveNewTask({
@@ -118,7 +128,7 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
         openModal(ConfirmDeleteModal, {
             type: "task",
             onConfirm: () => {
-                deleteTask(task.id);
+                deleteTask(task.id, activeBoard);
                 closeModal();
                 handleClose();
             },
@@ -127,8 +137,10 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
     };
 
     const handleClose = () => {
-        // Remove task temporária se não foi editada
-        if (isCreating && !(title.trim() || description.trim())) deleteTask(task.id);
+        // Remove task temporária se não foi salva nem preenchida
+        if (isCreating && !(title.trim() || description.trim())) {
+            deleteTask(task.id, activeBoard);
+        }
 
         setEditMode(false);
         setShouldAnimate(false);
@@ -143,7 +155,10 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
             showHeader={true}
             closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
-            <div className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""}`}>
+            <div
+                className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""
+                    }`}
+            >
                 {isCreating ? (
                     <CardEditView
                         title={title}

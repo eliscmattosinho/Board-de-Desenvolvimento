@@ -1,6 +1,6 @@
 export const boardTemplate = {
   kanban: {
-    groupId: "shared", //group name, create more? feature: desativar espelhamento
+    groupId: "shared",
     columns: [
       { id: "to-do", title: "A Fazer", status: "todo", style: { bg: "#3DD6B3", color: "#EFEFEF" } },
       { id: "k-in-progress", title: "Em Progresso", status: "in-progress", style: { bg: "#2C7FA3", color: "#EFEFEF" } },

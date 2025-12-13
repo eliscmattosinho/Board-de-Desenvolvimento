@@ -1,78 +1,90 @@
+// Responsável por sincronização e espelhamento estrutural entre boards
+
+import { normalizeText } from "@utils/normalizeUtils";
 import { boardTemplate } from "@board/components/templates/boardTemplates";
 
 let _syncedBoardsMap;
 
+/**
+ * Retorna o mapa boardId -> groupId
+ * Boards no mesmo groupId compartilham tasks
+ */
 export function getSyncedBoardsMap() {
   if (_syncedBoardsMap) return _syncedBoardsMap;
 
   _syncedBoardsMap = {};
   Object.entries(boardTemplate).forEach(([boardId, config]) => {
-    if (config.groupId) _syncedBoardsMap[boardId] = config.groupId;
+    if (config.groupId) {
+      _syncedBoardsMap[boardId] = config.groupId;
+    }
   });
 
   return _syncedBoardsMap;
 }
 
-// para n quebrar pelo acento
-function normalizeText(s) {
-  return String(s || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "");
-}
-
-export const explicitColumnMirrorMap = {
+/**
+ * Mapeamento explícito e definitivo entre colunas
+ * Sempre tem prioridade sobre qualquer fallback
+ */
+const explicitColumnMirrorMap = {
   kanban: {
     "to-do": "backlog",
     "k-in-progress": "s-in-progress",
-    "k-done": "s-done"
+    "k-done": "s-done",
   },
   scrum: {
     backlog: "to-do",
     "sprint-backlog": "to-do",
     "s-in-progress": "k-in-progress",
     review: "k-in-progress",
-    "s-done": "k-done"
-  }
+    "s-done": "k-done",
+  },
 };
 
 const _columnMirrorCache = {};
 
-export function generateColumnMirrorMap(boardAId, boardBId) {
-  const cacheKey = `${boardAId}->${boardBId}`;
-  if (_columnMirrorCache[cacheKey]) return _columnMirrorCache[cacheKey];
+/**
+ * Gera (e cacheia) o mapa de colunas espelhadas entre dois boards
+ *
+ * Ordem de decisão:
+ * 1. Mapeamento explícito
+ * 2. Fallback por título normalizado
+ * 3. Fallback por status normalizado
+ */
+export function generateColumnMirrorMap(fromBoard, toBoard) {
+  const cacheKey = `${fromBoard}->${toBoard}`;
+  if (_columnMirrorCache[cacheKey]) {
+    return _columnMirrorCache[cacheKey];
+  }
 
-  const boardACols = boardTemplate[boardAId]?.columns || [];
-  const boardBCols = boardTemplate[boardBId]?.columns || [];
+  const fromCols = boardTemplate[fromBoard]?.columns || [];
+  const toCols = boardTemplate[toBoard]?.columns || [];
 
   const mirrorMap = {};
 
-  boardACols.forEach(colA => {
-    const explicitForA = explicitColumnMirrorMap[boardAId];
-    if (explicitForA && explicitForA[colA.id]) {
-      mirrorMap[colA.id] = explicitForA[colA.id];
+  fromCols.forEach((fromCol) => {
+    // Explícito
+    const explicit = explicitColumnMirrorMap[fromBoard]?.[fromCol.id];
+    if (explicit) {
+      mirrorMap[fromCol.id] = explicit;
       return;
     }
 
-    const normATitle = normalizeText(colA.title);
-    const normAStatus = normalizeText(colA.status);
-
-    const matchByTitle = boardBCols.find(
-      colB => normalizeText(colB.title) === normATitle
+    // Por título
+    const byTitle = toCols.find(
+      c => normalizeText(c.title) === normalizeText(fromCol.title)
     );
-
-    if (matchByTitle) {
-      mirrorMap[colA.id] = matchByTitle.id;
+    if (byTitle) {
+      mirrorMap[fromCol.id] = byTitle.id;
       return;
     }
 
-    const matchByStatus = boardBCols.find(
-      colB => normalizeText(colB.status) === normAStatus
+    // Por status
+    const byStatus = toCols.find(
+      c => normalizeText(c.status) === normalizeText(fromCol.status)
     );
-
-    if (matchByStatus) {
-      mirrorMap[colA.id] = matchByStatus.id;
+    if (byStatus) {
+      mirrorMap[fromCol.id] = byStatus.id;
     }
   });
 
@@ -80,24 +92,43 @@ export function generateColumnMirrorMap(boardAId, boardBId) {
   return mirrorMap;
 }
 
-export function getMirrorColumnId(columnId, mirrorMap) {
-  return mirrorMap[columnId] || columnId;
+/**
+ * Mapa bidirecional de espelhamento
+ */
+export const columnMirrorMap = {
+  kanban: generateColumnMirrorMap("kanban", "scrum"),
+  scrum: generateColumnMirrorMap("scrum", "kanban"),
+};
+
+/**
+ * Resolve a localização espelhada de uma task
+ *
+ * @param {string} boardId - board atual
+ * @param {string} columnId - coluna atual
+ * @returns {{ boardId: string|null, columnId: string|null }}
+ */
+export function getMirrorLocation(boardId, columnId) {
+  if (!boardId || !columnId) {
+    return { boardId: null, columnId: null };
+  }
+
+  const mirrorBoardId =
+    boardId === "kanban"
+      ? "scrum"
+      : boardId === "scrum"
+        ? "kanban"
+        : null;
+
+  if (!mirrorBoardId) {
+    return { boardId: null, columnId: null };
+  }
+
+  const mirrorColId = columnMirrorMap[boardId]?.[columnId] ?? null;
+
+  return {
+    boardId: mirrorBoardId,
+    columnId: mirrorColId,
+  };
 }
 
 export const syncedBoardsMap = getSyncedBoardsMap();
-
-export const columnMirrorMap = {
-  kanban: generateColumnMirrorMap("kanban", "scrum"),
-  scrum: generateColumnMirrorMap("scrum", "kanban")
-};
-
-export function getMirrorColumnIdSafe(view, columnId) {
-  const mirrorMap = columnMirrorMap[view] || {};
-  return getMirrorColumnId(columnId, mirrorMap);
-}
-
-export function getBoardsInSameGroup(view) {
-  const map = syncedBoardsMap;
-  const groupId = map[view] ?? view;
-  return Object.keys(map).filter(b => (map[b] ?? b) === groupId);
-}

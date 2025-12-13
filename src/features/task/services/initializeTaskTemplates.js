@@ -1,25 +1,10 @@
 import { loadTemplateTasks } from "./loadTemplateTasks";
 import { loadTasksFromStorage, saveTasks } from "./taskPersistence";
-import { getTaskColumns } from "@board/components/templates/templateMirror";
+import { getTaskColumn } from "@board/components/templates/taskBoardResolver";
+import { getMirrorLocation } from "@board/utils/boardSyncUtils";
 
-// adk
 function signatureForTask(t) {
-  const title = String(t.title || "").trim();
-  const desc = String(t.description || "").trim();
-  return `${title}|${desc}`;
-}
-
-function getNextSequentialId(existing) {
-  if (!existing.length) return 1;
-
-  // Filtra apenas IDs numéricos reais
-  const numericIds = existing
-    .map(t => Number(t.id))
-    .filter(n => !isNaN(n) && n > 0);
-
-  if (!numericIds.length) return 1;
-
-  return Math.max(...numericIds) + 1;
+  return `template:${t.id}`;
 }
 
 export async function initializeTasks() {
@@ -27,29 +12,34 @@ export async function initializeTasks() {
     const loaded = await loadTemplateTasks();
     if (!loaded?.length) return [];
 
-    // Carrega todas as tasks já existentes no grupo "shared"
+    // Tasks já persistidas no grupo "shared"
     const existing = loadTasksFromStorage({ groupId: "shared" }) || [];
 
-    let nextId = getNextSequentialId(existing);
     const existingSignatures = new Set(existing.map(signatureForTask));
 
     const normalized = loaded.map((t, i) => {
-      const { boardId, columnId, mirroredColumnId } = getTaskColumns(t);
+      // Define onde a task nasce
+      const { boardId, columnId } = getTaskColumn(t);
+
+      // Define onde ela se espelha
+      const mirror = getMirrorLocation(boardId, columnId);
 
       return {
-        id: nextId++,
+        id: t.id,
         title: t.title || "Sem título",
         description: t.description || "Sem descrição",
         status: t.status || "Sem status",
-        columnId,
-        mirroredColumnId,
-        order: i,
         boardId,
+        columnId,
+        mirrorColId: mirror.columnId ?? null,
+        order: i,
       };
     });
 
-    // Remove duplicadas
-    const filteredNew = normalized.filter(t => !existingSignatures.has(signatureForTask(t)));
+    // Remove duplicadas com base no templateId
+    const filteredNew = normalized.filter(
+      t => !existingSignatures.has(signatureForTask(t))
+    );
 
     const merged = [...existing, ...filteredNew];
 

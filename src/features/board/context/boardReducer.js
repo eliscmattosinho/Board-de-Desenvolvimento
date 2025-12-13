@@ -71,7 +71,7 @@ export function boardReducer(state, action) {
     }
 
     case ACTIONS.SET_ACTIVE_BOARD:
-      return { ...state, activeBoard: action.viewId };
+      return { ...state, activeBoard: action.boardId };
 
     default:
       return state;

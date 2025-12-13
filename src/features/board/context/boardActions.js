@@ -41,8 +41,8 @@ export function useBoardActions(state, dispatch) {
     if (syncCallback) syncCallback(id);
   };
 
-  const setActiveBoard = (viewId) => {
-    dispatch({ type: ACTIONS.SET_ACTIVE_BOARD, viewId });
+  const setActiveBoard = (boardId) => {
+    dispatch({ type: ACTIONS.SET_ACTIVE_BOARD, boardId });
   };
 
   return {

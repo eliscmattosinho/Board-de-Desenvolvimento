@@ -30,7 +30,10 @@ export function BoardProvider({ children }) {
         setActiveBoard
     } = useBoardActions(state, dispatch);
 
-    const { allowDrop, handleDragStart, handleDrop } = useBoardDrag(moveTask);
+    const { allowDrop, handleDragStart, handleDrop } = useBoardDrag({
+        moveTask,
+        activeBoard
+    });
 
     const {
         orderedTasks,

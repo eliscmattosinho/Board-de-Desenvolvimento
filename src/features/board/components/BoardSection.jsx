@@ -78,7 +78,7 @@ function BoardSection({
     return columns.reduce((acc, col) => {
       acc[col.id] = tasks.filter(t => {
         if (t.boardId === activeBoard) return t.columnId === col.id;
-        return t.mirroredColumnId === col.id;
+        return t.mirrorColId === col.id;
       });
       return acc;
     }, {});

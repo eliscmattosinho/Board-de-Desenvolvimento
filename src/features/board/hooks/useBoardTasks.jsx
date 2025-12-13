@@ -3,15 +3,11 @@ import { showWarning, showCustom, showSuccess } from "@utils/toastUtils";
 import ClearBoardToast from "@components/ToastProvider/toasts/ClearBoardToast";
 import CardModal from "@card/components/CardModal/CardModal";
 import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
-import { getMirrorColumnIdSafe, getDisplayStatus } from "@board/components/templates/templateMirror";
+import { getDisplayStatus } from "@board/components/templates/taskBoardResolver";
 
 /**
  * Hook responsável por preparar as tasks para exibição no board ativo,
  * expõe handlers para adicionar / limpar / abrir task.
- *
- * - Diferencia boards "shared" (espelhados) de boards independentes
- * - Para boards independentes: filtra apenas por boardId, não aplica espelhamento de colunas nem o group clearing
- * - Para boards compartilhados: agrupa por groupId e aplica mirror column id / displayStatus
  */
 export function useBoardTasks({
   tasks,
@@ -20,27 +16,25 @@ export function useBoardTasks({
   clearTasks,
   columns,
   activeBoard,
-  openModal
+  openModal,
 }) {
-  // ordenação global (base para operações de slice/filtragem)
+  /**
+   * Ordenação global
+   */
   const orderedGlobal = useMemo(
     () => [...tasks].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [tasks]
   );
 
-  // determina se o board ativo pertence a um grupo ou é independente
+  /**
+   * Identificação de board compartilhado
+   */
   const activeGroupId = syncedBoardsMap[activeBoard] ?? null;
   const isSharedBoard = Boolean(activeGroupId);
 
-  // lista de boards que pertencem ao mesmo grupo do activeBoard
-  const boardsInGroup = useMemo(() => {
-    if (!isSharedBoard) return [];
-    return Object.keys(syncedBoardsMap).filter(
-      (b) => (syncedBoardsMap[b] ?? b) === activeGroupId
-    );
-  }, [activeGroupId, isSharedBoard]);
-
-  // tasks ordenadas e adaptadas para exibição no view do activeBoard
+  /**
+   * Tasks adaptadas para exibição no board ativo
+   */
   const orderedTasks = useMemo(() => {
     return orderedGlobal
       .filter((t) => {
@@ -48,69 +42,58 @@ export function useBoardTasks({
           const tGroup = syncedBoardsMap[t.boardId] ?? null;
           return tGroup === activeGroupId;
         }
-        // board independente — apenas tasks com boardId igual
         return t.boardId === activeBoard;
       })
       .map((t) => {
         if (!isSharedBoard) {
-          // não aplicar espelhamento em boards independentes
           return {
             ...t,
             displayColumnId: t.columnId ?? null,
-            displayStatus: t.status ?? null
+            displayStatus: t.status ?? null,
           };
         }
 
         const displayColumnId =
-          t.boardId === activeBoard
-            ? t.columnId
-            : getMirrorColumnIdSafe(activeBoard, t.columnId);
-        const displayStatus = getDisplayStatus(displayColumnId, activeBoard);
+          t.boardId === activeBoard ? t.columnId : t.mirrorColId;
+
+        const displayStatus = getDisplayStatus(
+          displayColumnId,
+          activeBoard
+        );
 
         return {
           ...t,
           displayColumnId,
-          displayStatus
+          displayStatus,
         };
       });
   }, [orderedGlobal, activeBoard, isSharedBoard, activeGroupId]);
 
-  // adiciona nova task e abre modal, não tenta espelhar se o board for independente
+  /**
+   * Adiciona nova task e abre modal
+   */
   const handleAddTask = useCallback(
     (columnId = null) => {
       const viewColumns = columns?.[activeBoard] ?? [];
       const fallbackColumnId = viewColumns[0]?.id ?? null;
       const chosenColumnId = columnId ?? fallbackColumnId;
 
-      let mirroredColumnId = null;
-
-      if (isSharedBoard) {
-        // se tiver encontra outro board do group para calcular coluna espelhada
-        const otherBoard = boardsInGroup.find((b) => b !== activeBoard);
-        if (otherBoard) {
-          mirroredColumnId = getMirrorColumnIdSafe(otherBoard, chosenColumnId);
-        }
-      }
-
       const newTask = addTask(chosenColumnId, {
         boardId: activeBoard,
-        mirroredColumnId
       });
 
       openModal(CardModal, {
         task: { ...newTask, isNew: true },
         activeBoard,
-        columns: columns?.[activeBoard] ?? [],
-        moveTask
+        columns: viewColumns,
+        moveTask,
       });
     },
-    [addTask, activeBoard, columns, isSharedBoard, boardsInGroup, moveTask, openModal]
+    [addTask, activeBoard, columns, moveTask, openModal]
   );
 
   /**
-   * limpa o board:
-   * para shared -> limpa o grupo
-   * para independente -> limpa somente o board
+   * Limpa tasks do board ou grupo
    */
   const handleClearBoard = useCallback(() => {
     const groupId = syncedBoardsMap[activeBoard] ?? null;
@@ -143,26 +126,32 @@ export function useBoardTasks({
     ));
   }, [orderedGlobal, activeBoard, clearTasks]);
 
-  // abrir modal de edição / visualização da task, cols passadas são as do activeBoard
+  /**
+   * Abre modal de edição / visualização
+   */
   const handleTaskClick = useCallback(
     (task) => {
       openModal(CardModal, {
         task,
         activeBoard,
         columns: columns?.[activeBoard] ?? [],
-        moveTask
+        moveTask,
       });
     },
     [activeBoard, columns, moveTask, openModal]
   );
 
-  // contador de tarefas exibidas para o activeBoard (respeita shared ou independente)
+  /**
+   * Contador de tasks do board ativo
+   */
   const activeBoardTaskCount = useMemo(() => {
     const groupId = syncedBoardsMap[activeBoard] ?? null;
     const isShared = Boolean(groupId);
 
     return orderedGlobal.filter((t) =>
-      isShared ? (syncedBoardsMap[t.boardId] ?? null) === groupId : t.boardId === activeBoard
+      isShared
+        ? (syncedBoardsMap[t.boardId] ?? null) === groupId
+        : t.boardId === activeBoard
     ).length;
   }, [orderedGlobal, activeBoard]);
 
@@ -171,6 +160,6 @@ export function useBoardTasks({
     handleAddTask,
     handleClearBoard,
     handleTaskClick,
-    activeBoardTaskCount
+    activeBoardTaskCount,
   };
 }

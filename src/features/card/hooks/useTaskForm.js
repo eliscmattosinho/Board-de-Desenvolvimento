@@ -1,25 +1,30 @@
 import { useState, useEffect } from "react";
-import { getTaskColumns } from "@board/components/templates/templateMirror";
 
-export default function useTaskForm(task, columns, activeBoard) {
+export default function useTaskForm(task, columns) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("");
+  const [columnId, setColumnId] = useState(null);
 
   useEffect(() => {
-    if (!task || !columns?.length) return;
+    if (!task) return;
 
     setTitle(task.title || "");
     setDescription(task.description || "");
 
-    let { columnId, mirroredColumnId } = getTaskColumns(task);
+    // coluna vem diretamente da task
+    setColumnId(
+      task.columnId ??
+      columns?.[0]?.id ??
+      null
+    );
+  }, [task, columns]);
 
-    if (activeBoard !== task.boardId) {
-      columnId = mirroredColumnId;
-    }
-
-    setStatus(columnId || columns[0]?.id || "");
-  }, [task, columns, activeBoard]);
-
-  return { title, setTitle, description, setDescription, status, setStatus };
+  return {
+    title,
+    setTitle,
+    description,
+    setDescription,
+    status: columnId,
+    setStatus: setColumnId
+  };
 }

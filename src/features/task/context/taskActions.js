@@ -1,63 +1,101 @@
 import { ACTIONS } from "./taskReducer";
-import { boardTemplates } from "@board/components/templates/boardTemplates";
-
-function columnIdToCanonicalStatus(columnId) {
-  if (!columnId) return "Backlog";
-
-  const boards = Object.keys(boardTemplates || {});
-  for (let i = 0; i < boards.length; i++) {
-    const cols = boardTemplates[boards[i]] || [];
-    const col = cols.find(c => String(c.id) === String(columnId));
-    if (col) return col.status || col.title || "Backlog";
-  }
-
-  return "Backlog";
-}
 
 export function useTaskActions(state, dispatch) {
+  /**
+   * Cria task temporária (UI only)
+   */
   const addTask = (columnId = null, { boardId } = {}) => {
-    if (!boardId) throw new Error("addTask requer boardId");
-    const canonicalStatus = columnId ? columnIdToCanonicalStatus(columnId) : "Backlog";
-    const tempId = `${state.nextId}`;
+    if (!boardId) throw new Error("addTask requires boardId");
+
+    const tempId = String(state.nextId);
+
     return {
       id: tempId,
       title: "",
       description: "",
-      status: canonicalStatus,
+      status: null,
+      boardId,
       columnId,
+      mirrorColId: null,
       order: state.tasks.length,
       isNew: true,
       createdAt: new Date().toISOString(),
-      boardId,
     };
   };
 
+  /** Persiste nova task */
   const saveNewTask = (task) => {
-    if (!task.boardId) throw new Error("saveNewTask requer boardId");
-    const newTask = { ...task, id: String(state.nextId), isNew: false };
-    dispatch({ type: ACTIONS.ADD_TASK, task: newTask });
+    if (!task.boardId) throw new Error("saveNewTask requires boardId");
+    if (!task.columnId) throw new Error("saveNewTask requires columnId");
+
+    const newTask = {
+      ...task,
+      id: String(state.nextId),
+      isNew: false,
+    };
+
+    dispatch({
+      type: ACTIONS.ADD_TASK,
+      task: newTask,
+    });
+
     return newTask;
   };
 
-  const moveTask = (taskId, statusOrPayload, targetTaskId = null, position = null) => {
-    if (typeof statusOrPayload === "object" && statusOrPayload !== null) {
-      dispatch({ type: ACTIONS.MOVE_TASK, taskId, payload: statusOrPayload });
-    } else {
-      dispatch({ type: ACTIONS.MOVE_TASK, taskId, status: statusOrPayload, targetTaskId, position });
-    }
+  /** Move task entre colunas */
+  const moveTask = (taskId, { boardId, columnId }) => {
+    if (!taskId) throw new Error("moveTask requires taskId");
+    if (!boardId) throw new Error("moveTask requires boardId");
+
+    dispatch({
+      type: ACTIONS.MOVE_TASK,
+      taskId,
+      payload: {
+        boardId,
+        columnId,
+      },
+    });
   };
 
-  const updateTask = (taskId, changes) => dispatch({ type: ACTIONS.UPDATE_TASK, taskId, changes });
+  /** Atualiza campos semânticos */
+  const updateTask = (taskId, changes) => {
+    dispatch({
+      type: ACTIONS.UPDATE_TASK,
+      taskId,
+      changes,
+    });
+  };
 
+  /** Remove task */
   const deleteTask = (taskId, boardId) => {
-    if (!boardId) throw new Error("deleteTask requer boardId");
-    dispatch({ type: ACTIONS.DELETE_TASK, taskId, boardId });
+    if (!boardId) throw new Error("deleteTask requires boardId");
+
+    dispatch({
+      type: ACTIONS.DELETE_TASK,
+      taskId,
+      boardId,
+    });
   };
 
+  /** Limpa tasks por escopo */
   const clearTasks = ({ groupId, boardId } = {}) => {
-    if (!groupId && !boardId) throw new Error("clearTasks requer groupId ou boardId");
-    dispatch({ type: ACTIONS.CLEAR_TASKS, groupId, boardId });
+    if (!groupId && !boardId) {
+      throw new Error("clearTasks requires groupId or boardId");
+    }
+
+    dispatch({
+      type: ACTIONS.CLEAR_TASKS,
+      groupId,
+      boardId,
+    });
   };
 
-  return { addTask, saveNewTask, moveTask, updateTask, deleteTask, clearTasks };
+  return {
+    addTask,
+    saveNewTask,
+    moveTask,
+    updateTask,
+    deleteTask,
+    clearTasks,
+  };
 }

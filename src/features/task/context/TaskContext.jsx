@@ -1,56 +1,104 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
+
 import { loadTasksFromStorage } from "@task/services/taskPersistence";
 import { initializeTasks } from "@task/services/initializeTaskTemplates";
 import { taskReducer, ACTIONS } from "./taskReducer";
 import { useTaskActions } from "./taskActions";
+import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
 
-const TaskContext = createContext();
+const TaskContext = createContext(null);
 
 export const TaskProvider = ({ children, boardId = "kanban" }) => {
-  if (!boardId) throw new Error("TaskProvider requer boardId");
+  if (!boardId) {
+    throw new Error("TaskProvider requires boardId");
+  }
 
-  // Carrega tasks apenas do boardId especificado
-  const saved = loadTasksFromStorage({ boardId }) || [];
-  const initialNextId = saved.length > 0 ? Math.max(...saved.map(t => Number(t.id))) + 1 : 1;
+  /**
+   * Define escopo de persistência
+   * Boards sincronizados compartilham groupId
+   */
+  const groupId = syncedBoardsMap[boardId] ?? null;
+  const loadOpts = groupId ? { groupId } : { boardId };
+
+  /**
+   * Estado inicial vindo do storage
+   */
+  const saved = loadTasksFromStorage(loadOpts) || [];
+
+  const initialNextId =
+    saved.length > 0 ? Math.max(...saved.map((t) => Number(t.id))) + 1 : 1;
 
   const [state, dispatch] = useReducer(taskReducer, {
     tasks: saved,
     nextId: initialNextId,
   });
 
+  /**
+   * Inicialização de templates
+   * Executa apenas uma vez por boardId
+   */
   useEffect(() => {
     let mounted = true;
-    async function load() {
-      const loaded = await initializeTasks();
+
+    async function bootstrap() {
+      const initialized = await initializeTasks();
       if (!mounted) return;
 
-      const normalized = loaded.map((t, i) => ({
-        ...t,
-        id: t.id ?? String(i + 1),
-        order: t.order ?? i,
-        boardId: t.boardId ?? boardId,
-      }));
+      /**
+       * Sempre prioriza o que já está persistido.
+       * Templates só entram se storage estiver vazio.
+       */
+      const persisted = loadTasksFromStorage(loadOpts) || [];
 
-      const existing = loadTasksFromStorage({ boardId }) || [];
-      const merged = existing.length > 0 ? existing : normalized;
+      const source =
+        persisted.length > 0
+          ? persisted
+          : initialized.map((t, i) => ({
+            ...t,
+            id: String(t.id ?? i + 1),
+            order: t.order ?? i,
+          }));
 
-      const maxId = merged.reduce((max, t) => Math.max(max, Number(t.id)), 0);
-      const calculatedNextId = maxId + 1;
+      const maxId = source.reduce((max, t) => Math.max(max, Number(t.id)), 0);
 
-      dispatch({ type: ACTIONS.SET_MIRROR_TASKS, tasks: merged, nextId: calculatedNextId });
+      dispatch({
+        type: ACTIONS.SET_MIRROR_TASKS,
+        tasks: source,
+        nextId: maxId + 1,
+      });
     }
 
-    load();
-    return () => { mounted = false; };
-  }, [boardId]);
+    bootstrap();
 
+    return () => {
+      mounted = false;
+    };
+  }, [boardId, groupId]);
+
+  /**
+   * Actions desacopladas da lógica estrutural
+   */
   const actions = useTaskActions(state, dispatch);
 
   return (
-    <TaskContext.Provider value={{ tasks: state.tasks, ...actions }}>
+    <TaskContext.Provider
+      value={{
+        tasks: state.tasks,
+        ...actions,
+      }}
+    >
       {children}
     </TaskContext.Provider>
   );
 };
 
-export const useTasks = () => useContext(TaskContext);
+/**
+ * Hook público
+ */
+export const useTasks = () => {
+  const ctx = useContext(TaskContext);
+  if (!ctx) {
+    throw new Error("useTasks must be used within TaskProvider");
+  }
+  return ctx;
+};

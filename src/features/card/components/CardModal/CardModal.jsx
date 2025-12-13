@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { getTaskColumns } from "@board/components/templates/templateMirror";
-import { getMirrorColumnId } from "@board/utils/boardSyncUtils";
 import { showWarning } from "@utils/toastUtils";
 import useTaskForm from "@card/hooks/useTaskForm.js";
 import { useModal } from "@context/ModalContext";
@@ -14,16 +12,30 @@ import CardActions from "./CardActions";
 
 import "./CardModal.css";
 
-export default function CardModal({ task, activeBoard, columns, moveTask }) {
-    const isCreating = !!task?.isNew;
+export default function CardModal({
+    task,
+    activeBoard,
+    columns,
+    moveTask,
+}) {
+    const isCreating = Boolean(task?.isNew);
 
     const [editMode, setEditMode] = useState(isCreating);
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const [dirty, setDirty] = useState(false);
 
-    const { title, setTitle, description, setDescription, status, setStatus } =
-        useTaskForm(task, columns, activeBoard);
+    /**
+     * useTaskForm apenas com columnId (estrutura), não com status semântico
+     */
+    const {
+        title,
+        setTitle,
+        description,
+        setDescription,
+        status: columnId,
+        setStatus: setColumnId,
+    } = useTaskForm(task, columns, activeBoard);
 
     const { openModal, closeModal } = useModal();
     const { saveNewTask, updateTask, deleteTask } = useTasks();
@@ -35,21 +47,32 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
     );
 
     const getOriginalColumnId = useCallback(
-        () => task?.columnId || columns[0]?.id || "",
+        () => task?.columnId ?? columns[0]?.id ?? null,
         [task, columns]
     );
 
+    /**
+     * Detecta alterações locais para habilitar Save
+     */
     useEffect(() => {
         if (!editMode || !task) return;
 
-        const originalColId = getOriginalColumnId();
+        const originalColumnId = getOriginalColumnId();
+
         const hasChanges =
             title.trim() !== (task.title || "").trim() ||
             description.trim() !== (task.description || "").trim() ||
-            status !== originalColId;
+            columnId !== originalColumnId;
 
         setDirty(hasChanges);
-    }, [title, description, status, editMode, task, getOriginalColumnId]);
+    }, [
+        title,
+        description,
+        columnId,
+        editMode,
+        task,
+        getOriginalColumnId,
+    ]);
 
     if (!task) return null;
 
@@ -58,19 +81,18 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
         setIsAnimating(true);
     };
 
-    const handleSelect = (colId) => {
-        const { columnId: canonical } = getTaskColumns({
-            status: columns.find(c => c.id === colId)?.title,
-            boardId: activeBoard,
-        });
-
-        setStatus(colId);
+    /**
+     * Seleção de coluna:
+     * - Atualiza estado local
+     * - Se não estiver em edição, dispara MOVE_TASK
+     */
+    const handleSelect = (nextColumnId) => {
+        setColumnId(nextColumnId);
 
         if (!editMode) {
             moveTask(task.id, {
-                columnId: colId,
-                mirroredColumnId: getMirrorColumnId(activeBoard, colId),
-                status: canonical,
+                boardId: activeBoard,
+                columnId: nextColumnId,
             });
         }
     };
@@ -82,31 +104,30 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
 
     const handleSave = () => {
         const trimmedTitle = title.trim();
-        if (!trimmedTitle) return showWarning("O título não pode ficar vazio.");
-        if (!status) return showWarning("Escolha uma coluna antes de salvar.");
 
-        const { columnId: canonicalStatus } = getTaskColumns({
-            status: columns.find(c => c.id === status)?.title,
-            boardId: activeBoard,
-        });
+        if (!trimmedTitle) {
+            showWarning("O título não pode ficar vazio.");
+            return;
+        }
+
+        if (!columnId) {
+            showWarning("Escolha uma coluna antes de salvar.");
+            return;
+        }
 
         if (task.isNew) {
             saveNewTask({
                 ...task,
                 title: trimmedTitle,
                 description: description.trim(),
-                status: canonicalStatus,
-                columnId: status,
-                mirroredColumnId: getMirrorColumnId(activeBoard, status),
+                columnId,
                 boardId: activeBoard,
             });
         } else {
             updateTask(task.id, {
                 title: trimmedTitle,
                 description: description.trim(),
-                status: canonicalStatus,
-                columnId: status,
-                mirroredColumnId: getMirrorColumnId(activeBoard, status),
+                columnId,
             });
         }
 
@@ -119,7 +140,7 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
         triggerAnimation();
         setTitle(task.title || "");
         setDescription(task.description || "");
-        setStatus(isCreating ? "" : getOriginalColumnId());
+        setColumnId(isCreating ? null : getOriginalColumnId());
         setEditMode(false);
         setDirty(false);
     };
@@ -137,8 +158,16 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
     };
 
     const handleClose = () => {
-        // Remove task temporária se não foi salva nem preenchida
-        if (isCreating && !(title.trim() || description.trim())) {
+        /**
+         * Remove task temporária se:
+         * - está criando
+         * - não salvou
+         * - não digitou nada
+         */
+        if (
+            isCreating &&
+            !(title.trim() || description.trim())
+        ) {
             deleteTask(task.id, activeBoard);
         }
 
@@ -152,7 +181,7 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
         <Modal
             title={modalTitle}
             onClose={handleClose}
-            showHeader={true}
+            showHeader
             closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
             <div
@@ -166,9 +195,9 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
                         description={description}
                         setDescription={setDescription}
                         columns={columns}
-                        currentColumnId={status}
+                        currentColumnId={columnId}
                         onSelect={handleSelect}
-                        isCreating={true}
+                        isCreating
                     />
                 ) : (
                     <CardTransition
@@ -183,7 +212,7 @@ export default function CardModal({ task, activeBoard, columns, moveTask }) {
                         description={description}
                         setDescription={setDescription}
                         columns={columns}
-                        currentColumnId={status}
+                        currentColumnId={columnId}
                         onSelect={handleSelect}
                     />
                 )}

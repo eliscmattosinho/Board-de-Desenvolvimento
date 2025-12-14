@@ -1,112 +1,32 @@
-import React, { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useRef, useState, useMemo } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import { useDismiss } from "@hooks/useDismiss";
+import { useDropdownPosition } from "@hooks/useDropdownPosition";
+import { StatusDropdownMenu } from "./StatusDropdownMenu";
 import "./StatusDropdown.css";
 
 export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
-  const [coords, setCoords] = useState(null);
 
-  // Fecha ao clicar fora ou pressionar Esc
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (triggerRef.current && triggerRef.current.contains(e.target)) return;
-      if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false);
-    };
-    const handleKey = (e) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, []);
+  const coords = useDropdownPosition(open, triggerRef);
 
-  // Calcula posição do menu quando aberto
-  useEffect(() => {
-    if (!open || !triggerRef.current) return;
+  useDismiss({
+    open,
+    onClose: () => setOpen(false),
+    refs: [triggerRef, menuRef],
+  });
 
-    const updatePosition = () => {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setCoords({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: Math.min(rect.width, 200),
-        height: rect.height,
-      });
-    };
+  const currentCol = useMemo(() => {
+    if (!currentColumnId) return null;
+    return columns?.find((col) => col.id === currentColumnId) ?? null;
+  }, [columns, currentColumnId]);
 
-    updatePosition(); // initial position
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition, true);
-
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition, true);
-    };
-  }, [open]);
-
-  const currentCol = columns.find((c) => c.id === currentColumnId);
-  const colStyle = currentCol?.style || { bg: "transparent", border: "transparent", color: "inherit" };
-
-  // Renderiza o menu (portal)
-  const menu =
-    open && coords
-      ? createPortal(
-        <div
-          ref={menuRef}
-          className="dropdown-options-portal"
-          style={{
-            position: "absolute",
-            top: `${coords.top}px`,
-            left: `${coords.left}px`,
-            minWidth: `${coords.width}px`,
-            maxWidth: `150px`,
-            minHeight: `${coords.height}px`,
-            zIndex: 2000,
-          }}
-          role="menu"
-        >
-          {columns.map((col) => {
-            const styleVars = col.style || col.styleVars || {
-              bg: "transparent",
-              border: "transparent",
-            };
-
-            return (
-              <div
-                key={col.id}
-                className="dropdown-option w-600"
-                role="menuitem"
-                tabIndex={0}
-                onClick={() => {
-                  onSelect(col.id);
-                  setOpen(false);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    onSelect(col.id);
-                    setOpen(false);
-                  }
-                }}
-                style={{
-                  "--col-bg": styleVars.bg,
-                  "--col-border": styleVars.border,
-                }}
-              >
-                <span className="col-circle"></span>
-                {col.title}
-              </div>
-            );
-          })}
-        </div>,
-        document.body
-      )
-      : null;
+  const style = currentCol?.style ?? {
+    bg: "transparent",
+    border: "transparent",
+  };
 
   return (
     <>
@@ -114,25 +34,35 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
         <div
           className={`dropdown-selected ${open ? "open" : ""}`}
           onClick={() => setOpen((o) => !o)}
-          aria-haspopup="true"
-          aria-expanded={open}
         >
           <span
             className="col-circle"
             style={{
-              "--col-bg": currentCol?.style?.bg || colStyle.bg,
-              "--col-border": currentCol?.style?.border || colStyle.border,
+              "--col-bg": style.bg,
+              "--col-border": style.border,
             }}
-          ></span>
-
-          <span className="status-value">{currentCol?.title || "Selecione"}</span>
+          />
+          <span className="status-value">
+            {currentCol ? currentCol.title : "Selecione um status"}
+          </span>
           <IoIosArrowDown
             size={15}
             className={`dropdown-icon ${open ? "open" : ""}`}
           />
         </div>
       </div>
-      {menu}
+
+      {open && (
+        <StatusDropdownMenu
+          columns={columns}
+          coords={coords}
+          menuRef={menuRef}
+          onSelect={(id) => {
+            onSelect(id);
+            setOpen(false);
+          }}
+        />
+      )}
     </>
   );
 }

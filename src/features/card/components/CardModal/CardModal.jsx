@@ -25,17 +25,14 @@ export default function CardModal({
     const [isAnimating, setIsAnimating] = useState(false);
     const [dirty, setDirty] = useState(false);
 
-    /**
-     * useTaskForm apenas com columnId (estrutura), não com status semântico
-     */
     const {
         title,
         setTitle,
         description,
         setDescription,
-        status: columnId,
-        setStatus: setColumnId,
-    } = useTaskForm(task, columns, activeBoard);
+        columnId,
+        setColumnId,
+    } = useTaskForm(task, columns);
 
     const { openModal, closeModal } = useModal();
     const { saveNewTask, updateTask, deleteTask } = useTasksContext();
@@ -51,9 +48,7 @@ export default function CardModal({
         [task, columns]
     );
 
-    /**
-     * Detecta alterações locais para habilitar Save
-     */
+    // Detecta alterações locais para habilitar Save
     useEffect(() => {
         if (!editMode || !task) return;
 
@@ -140,7 +135,11 @@ export default function CardModal({
         triggerAnimation();
         setTitle(task.title || "");
         setDescription(task.description || "");
-        setColumnId(isCreating ? null : getOriginalColumnId());
+        setColumnId(
+            isCreating
+                ? columns?.[0]?.id ?? null
+                : getOriginalColumnId()
+        );
         setEditMode(false);
         setDirty(false);
     };

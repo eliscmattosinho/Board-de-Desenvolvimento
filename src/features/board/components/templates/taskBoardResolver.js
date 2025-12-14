@@ -20,7 +20,7 @@ export function getTaskColumn(task) {
 
   const findByTitle = (boardId) =>
     (boardTemplates[boardId] || []).find(
-      col => normalizeText(col.title) === normalizedStatus
+      (col) => normalizeText(col.title) === normalizedStatus
     ) || null;
 
   // Kanban por título
@@ -50,13 +50,21 @@ export function getTaskColumn(task) {
 
 /**
  * Resolve o label de status APENAS para exibição
+ * - null -> "não resolvido"
  */
 export function getDisplayStatus(columnId, boardId) {
+  if (!columnId || !boardId) return null;
+
   const cols = boardTemplates[boardId] || [];
 
-  const direct = cols.find(c => c.id === columnId);
+  // Match direto
+  const direct = cols.find((c) => c.id === columnId);
   if (direct) return direct.title;
 
-  const mirrored = getMirrorLocation(boardId, columnId);
-  return cols.find(c => c.id === mirrored)?.title || "";
+  // Tentativa via mirror
+  const mirroredColumnId = getMirrorLocation(boardId, columnId);
+  if (!mirroredColumnId) return null;
+
+  const mirrored = cols.find((c) => c.id === mirroredColumnId);
+  return mirrored?.title ?? null;
 }

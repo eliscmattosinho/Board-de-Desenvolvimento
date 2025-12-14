@@ -46,10 +46,12 @@ export function useBoardTasks({
       })
       .map((t) => {
         if (!isSharedBoard) {
+          const displayColumnId = t.columnId ?? null;
+
           return {
             ...t,
-            displayColumnId: t.columnId ?? null,
-            displayStatus: t.status ?? null,
+            displayColumnId,
+            displayStatus: getDisplayStatus(displayColumnId, activeBoard),
           };
         }
 
@@ -128,11 +130,15 @@ export function useBoardTasks({
 
   /**
    * Abre modal de edição / visualização
+   * normaliza columnId usando displayColumnId
    */
   const handleTaskClick = useCallback(
     (task) => {
       openModal(CardModal, {
-        task,
+        task: {
+          ...task,
+          columnId: task.displayColumnId ?? task.columnId ?? null,
+        },
         activeBoard,
         columns: columns?.[activeBoard] ?? [],
         moveTask,

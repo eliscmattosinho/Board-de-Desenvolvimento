@@ -11,12 +11,14 @@ export default function useTaskForm(task, columns) {
     setTitle(task.title || "");
     setDescription(task.description || "");
 
-    // coluna vem diretamente da task
-    setColumnId(
-      task.columnId ??
-      columns?.[0]?.id ??
-      null
-    );
+    if (task.columnId) {
+      setColumnId(task.columnId);
+      return;
+    }
+
+    if (columns?.length) {
+      setColumnId(columns[0].id);
+    }
   }, [task, columns]);
 
   return {
@@ -24,7 +26,7 @@ export default function useTaskForm(task, columns) {
     setTitle,
     description,
     setDescription,
-    status: columnId,
-    setStatus: setColumnId
+    columnId,
+    setColumnId,
   };
 }

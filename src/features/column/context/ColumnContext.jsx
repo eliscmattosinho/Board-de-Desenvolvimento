@@ -1,16 +1,25 @@
 import React, { createContext, useContext, useReducer } from "react";
-import { columnReducer, ACTIONS } from "./columnReducer";
+import { columnReducer } from "./columnReducer";
 import { columnActions } from "./columnActions";
 import { boardTemplates } from "@board/components/templates/boardTemplates";
 
 const ColumnContext = createContext(null);
 
-export const ColumnProvider = ({ children }) => {
-    const initialColumns = {
-        kanban: boardTemplates.kanban.map(col => ({ ...col, style: { ...col.style }, isTemplate: true })),
-        scrum: boardTemplates.scrum.map(col => ({ ...col, style: { ...col.style }, isTemplate: true })),
-    };
+const initializeColumns = (templates) => {
+    return Object.fromEntries(
+        Object.entries(templates).map(([boardId, cols]) => [
+            boardId,
+            cols.map(col => ({
+                ...col,
+                style: { ...col.style },
+                isTemplate: true,
+            })),
+        ])
+    );
+};
 
+export const ColumnProvider = ({ children }) => {
+    const initialColumns = initializeColumns(boardTemplates);
     const [state, dispatch] = useReducer(columnReducer, { columns: initialColumns });
     const actions = columnActions(dispatch);
 

@@ -1,34 +1,52 @@
 import { ACTIONS } from "./columnReducer";
-import { getMirrorColumnId } from "@board/utils/boardSyncUtils";
 
 export function columnActions(dispatch) {
-    const addColumn = (view, index, columnData) => {
-        dispatch({ type: ACTIONS.ADD_COLUMN, view, index, columnData });
+    const createDispatch = (type) => (...args) => dispatch({ type, ...args });
+
+    const addColumn = (boardId, index, columnData) => dispatch({
+        type: ACTIONS.ADD_COLUMN,
+        boardId,
+        index,
+        columnData,
+    });
+
+    const removeColumn = (boardId, id) => dispatch({ type: ACTIONS.REMOVE_COLUMN, boardId, id });
+
+    const updateColumnInfo = (boardId, id, newData) => dispatch({
+        type: ACTIONS.UPDATE_COLUMN_INFO,
+        boardId,
+        id,
+        newData,
+    });
+
+    const updateColumnStyle = (boardId, id, newData) => dispatch({
+        type: ACTIONS.UPDATE_COLUMN_STYLE,
+        boardId,
+        id,
+        newData,
+    });
+
+    // Template helpers
+    const addTemplateColumn = (boardId, index, templateColumn) => addColumn(boardId, index, { ...templateColumn, isTemplate: true });
+    const updateTemplateColumnInfo = (boardId, id, newData) => {
+        updateColumnInfo(boardId, id, newData);
+        const mirror = boardId === "kanban" ? "scrum" : "kanban";
+        updateColumnInfo(mirror, id, newData);
     };
 
-    const removeColumn = (view, id) => {
-        dispatch({ type: ACTIONS.REMOVE_COLUMN, view, id });
+    const updateTemplateColumnStyle = (boardId, id, newData) => {
+        updateColumnStyle(boardId, id, newData);
+        const mirror = boardId === "kanban" ? "scrum" : "kanban";
+        updateColumnStyle(mirror, id, newData);
     };
 
-    const updateColumnInfo = (view, id, newData) => {
-        dispatch({ type: ACTIONS.UPDATE_COLUMN_INFO, view, id, newData });
+    return {
+        addColumn,
+        removeColumn,
+        updateColumnInfo,
+        updateColumnStyle,
+        addTemplateColumn,
+        updateTemplateColumnInfo,
+        updateTemplateColumnStyle,
     };
-
-    const updateColumnStyle = (view, id, newData) => {
-        dispatch({ type: ACTIONS.UPDATE_COLUMN_STYLE, view, id, newData });
-    };
-
-    const addTemplateColumn = (view, index, templateColumn) => {
-        addColumn(view, index, { ...templateColumn, isTemplate: true });
-
-        const mirrorView = view === "kanban" ? "scrum" : "kanban";
-        const mirrorId = getMirrorColumnId(view, templateColumn.id);
-
-        if (mirrorId) {
-            const mirroredColumn = { ...templateColumn, id: mirrorId, isTemplate: true };
-            addColumn(mirrorView, index || 0, mirroredColumn);
-        }
-    };
-
-    return { addColumn, removeColumn, updateColumnInfo, updateColumnStyle, addTemplateColumn };
 }

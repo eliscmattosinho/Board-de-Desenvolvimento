@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from "react";
 
-import { useTasks } from "@task/context/TaskContext";
+import { useTasksContext } from "@task/context/TaskContext";
 import { useColumnsContext } from "@column/context/ColumnContext";
 import { useModal } from "@context/ModalContext";
 
@@ -15,11 +15,21 @@ import { getActiveBoardTitle } from "@board/utils/boardUtils";
 const BoardContext = createContext(null);
 
 export function BoardProvider({ children }) {
-    const { tasks, addTask, moveTask, clearTasks } = useTasks();
-    const { columns, addColumn, removeColumn, updateColumnInfo, updateColumnStyle } =
-        useColumnsContext();
+    // Tasks
+    const { tasks, addTask, moveTask, clearTasks } = useTasksContext();
+
+    // Cols
+    const {
+        columns,
+        addColumn,
+        removeColumn,
+        updateColumnInfo,
+        updateColumnStyle,
+    } = useColumnsContext();
+
     const { openModal } = useModal();
 
+    // Estado dos boards
     const { state, dispatch, boards, activeBoard } =
         useBoardState({ initialGroup: "shared", columns });
 
@@ -27,20 +37,22 @@ export function BoardProvider({ children }) {
         createBoard,
         updateBoard,
         deleteBoard,
-        setActiveBoard
+        setActiveBoard,
     } = useBoardActions(state, dispatch);
 
+    // Drag & Drop
     const { allowDrop, handleDragStart, handleDrop } = useBoardDrag({
         moveTask,
-        activeBoard
+        activeBoard,
     });
 
+    // Tasks visíveis no board ativo
     const {
         orderedTasks,
         handleAddTask,
         handleClearBoard,
         handleTaskClick,
-        activeBoardTaskCount
+        activeBoardTaskCount,
     } = useBoardTasks({
         tasks,
         addTask,
@@ -48,9 +60,10 @@ export function BoardProvider({ children }) {
         clearTasks,
         columns,
         activeBoard,
-        openModal
+        openModal,
     });
 
+    // Modal de colunas
     const { handleAddColumn } = useColumnModal({
         columns,
         addColumn,
@@ -58,19 +71,29 @@ export function BoardProvider({ children }) {
         updateColumnStyle,
         openModal,
         activeBoard,
-        boards
+        boards,
     });
 
     const activeBoardTitle = getActiveBoardTitle(boards, activeBoard);
 
-    // sincronização ao deletar board (colunas e tasks por board)
+    /**
+     * Delete de board
+     * - remove colunas do board
+     * - limpa tasks do board
+     */
     const handleDeleteBoard = (boardId) => {
         deleteBoard(boardId, () => {
-            removeColumn((col) => col.boardId === boardId);
+            const boardColumns = columns?.[boardId] ?? [];
+
+            boardColumns.forEach((col) => {
+                removeColumn(boardId, col.id);
+            });
+
             clearTasks({ boardId });
         });
     };
 
+    // Context value
     const contextValue = useMemo(
         () => ({
             activeBoard,
@@ -97,7 +120,7 @@ export function BoardProvider({ children }) {
 
             activeBoardTitle,
             activeBoardTaskCount,
-            openModal
+            openModal,
         }),
         [
             activeBoard,
@@ -114,10 +137,9 @@ export function BoardProvider({ children }) {
             boards,
             createBoard,
             updateBoard,
-            deleteBoard,
             activeBoardTitle,
             activeBoardTaskCount,
-            openModal
+            openModal,
         ]
     );
 
@@ -128,8 +150,11 @@ export function BoardProvider({ children }) {
     );
 }
 
+// Hook público
 export const useBoardContext = () => {
     const ctx = useContext(BoardContext);
-    if (!ctx) throw new Error("useBoardContext must be used inside BoardProvider");
+    if (!ctx) {
+        throw new Error("useBoardContext must be used inside BoardProvider");
+    }
     return ctx;
 };

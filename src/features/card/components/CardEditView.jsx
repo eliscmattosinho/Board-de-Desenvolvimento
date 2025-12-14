@@ -1,8 +1,16 @@
 import React from "react";
-
 import StatusDropdown from "@components/StatusDropdown/StatusDropdown";
 
-export default function CardEditView({ title, setTitle, description, setDescription, columns, currentColumnId, onSelect, isCreating }) {
+export default function CardEditView({
+    title,
+    setTitle,
+    description,
+    setDescription,
+    columns,
+    currentColumnId,
+    onSelect,
+    isCreating
+}) {
     return (
         <div className={`modal-content card-edit ${isCreating ? "card-create" : ""}`}>
             <div className="modal-field title-block">
@@ -17,7 +25,11 @@ export default function CardEditView({ title, setTitle, description, setDescript
 
             <div className="status-block">
                 <label className="input-title">Status:</label>
-                <StatusDropdown columns={columns} currentColumnId={currentColumnId} onSelect={onSelect} />
+                <StatusDropdown
+                    columns={columns}
+                    currentColumnId={currentColumnId}
+                    onSelect={onSelect}
+                />
             </div>
 
             <div className="modal-field">

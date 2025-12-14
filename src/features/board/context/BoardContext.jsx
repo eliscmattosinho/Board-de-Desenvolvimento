@@ -1,32 +1,52 @@
 import { createContext, useContext, useMemo } from "react";
-import { useTasks } from "@task/context/TaskContext";
+
+import { useTasksContext } from "@task/context/TaskContext";
 import { useColumnsContext } from "@column/context/ColumnContext";
 import { useModal } from "@context/ModalContext";
+
 import { useBoardState } from "@board/hooks/useBoardState";
 import { useBoardDrag } from "@board/hooks/useBoardDrag";
 import { useBoardTasks } from "@board/hooks/useBoardTasks";
 import { useColumnModal } from "@column/hooks/useColumnModal";
+import { useBoardActions } from "./boardActions";
+
 import { getActiveBoardTitle } from "@board/utils/boardUtils";
 
 const BoardContext = createContext(null);
 
 export function BoardProvider({ children }) {
-    const { tasks, addTask, moveTask, clearTasks } = useTasks();
-    const { columns, addColumn, removeColumn, updateColumnInfo, updateColumnStyle } = useColumnsContext();
+    // Tasks
+    const { tasks, addTask, moveTask, clearTasks } = useTasksContext();
+
+    // Cols
+    const {
+        columns,
+        addColumn,
+        removeColumn,
+        updateColumnInfo,
+        updateColumnStyle,
+    } = useColumnsContext();
+
     const { openModal } = useModal();
 
-    const { boards, activeView, setActiveView, createBoard } = useBoardState(
-        [
-            { id: "kanban", title: "Kanban" },
-            { id: "scrum", title: "Scrum" },
-        ],
-        columns
-    );
+    // Estado dos boards
+    const { state, dispatch, boards, activeBoard } =
+        useBoardState({ initialGroup: "shared", columns });
+
+    const {
+        createBoard,
+        updateBoard,
+        deleteBoard,
+        setActiveBoard,
+    } = useBoardActions(state, dispatch);
 
     // Drag & Drop
-    const { allowDrop, handleDragStart, handleDrop } = useBoardDrag(moveTask);
+    const { allowDrop, handleDragStart, handleDrop } = useBoardDrag({
+        moveTask,
+        activeBoard,
+    });
 
-    // Tasks
+    // Tasks visíveis no board ativo
     const {
         orderedTasks,
         handleAddTask,
@@ -39,47 +59,71 @@ export function BoardProvider({ children }) {
         moveTask,
         clearTasks,
         columns,
-        activeView,
+        activeBoard,
         openModal,
-        syncedBoardsMap: { kanban: "shared", scrum: "shared" },
     });
 
-    // Colunas e modal
+    // Modal de colunas
     const { handleAddColumn } = useColumnModal({
         columns,
         addColumn,
         updateColumnInfo,
         updateColumnStyle,
         openModal,
-        activeView,
+        activeBoard,
         boards,
     });
 
-    // Título do board ativo
-    const activeBoardTitle = getActiveBoardTitle(boards, activeView);
+    const activeBoardTitle = getActiveBoardTitle(boards, activeBoard);
 
+    /**
+     * Delete de board
+     * - remove colunas do board
+     * - limpa tasks do board
+     */
+    const handleDeleteBoard = (boardId) => {
+        deleteBoard(boardId, () => {
+            const boardColumns = columns?.[boardId] ?? [];
+
+            boardColumns.forEach((col) => {
+                removeColumn(boardId, col.id);
+            });
+
+            clearTasks({ boardId });
+        });
+    };
+
+    // Context value
     const contextValue = useMemo(
         () => ({
-            activeView,
-            setActiveView,
+            activeBoard,
+            setActiveBoard,
+
             columns,
             orderedTasks,
+
             allowDrop,
             handleDragStart,
             handleDrop,
+
             handleAddTask,
             handleClearBoard,
             handleTaskClick,
+
             handleAddColumn,
             removeColumn,
+
             boards,
             createBoard,
+            updateBoard,
+            deleteBoard: handleDeleteBoard,
+
             activeBoardTitle,
             activeBoardTaskCount,
             openModal,
         }),
         [
-            activeView,
+            activeBoard,
             columns,
             orderedTasks,
             allowDrop,
@@ -92,17 +136,25 @@ export function BoardProvider({ children }) {
             removeColumn,
             boards,
             createBoard,
+            updateBoard,
             activeBoardTitle,
             activeBoardTaskCount,
             openModal,
         ]
     );
 
-    return <BoardContext.Provider value={contextValue}>{children}</BoardContext.Provider>;
+    return (
+        <BoardContext.Provider value={contextValue}>
+            {children}
+        </BoardContext.Provider>
+    );
 }
 
+// Hook público
 export const useBoardContext = () => {
     const ctx = useContext(BoardContext);
-    if (!ctx) throw new Error("useBoardContext must be used inside BoardProvider");
+    if (!ctx) {
+        throw new Error("useBoardContext must be used inside BoardProvider");
+    }
     return ctx;
 };

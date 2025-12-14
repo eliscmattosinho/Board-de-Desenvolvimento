@@ -1,122 +1,194 @@
-import { saveTasks } from "@task/services/taskPersistence";
+import {
+  saveTasks,
+  clearTasks as persistenceClearTasks,
+} from "@task/services/taskPersistence";
+
+import {
+  getSyncedBoardsMap,
+  getMirrorLocation,
+} from "@board/utils/boardSyncUtils";
 
 export const ACTIONS = {
-    SET_TASKS: "SET_TASKS",
-    ADD_TASK: "ADD_TASK",
-    MOVE_TASK: "MOVE_TASK",
-    UPDATE_TASK: "UPDATE_TASK",
-    DELETE_TASK: "DELETE_TASK",
-    CLEAR_TASKS: "CLEAR_TASKS",
+  SET_MIRROR_TASKS: "SET_MIRROR_TASKS",
+  ADD_TASK: "ADD_TASK",
+  MOVE_TASK: "MOVE_TASK",
+  UPDATE_TASK: "UPDATE_TASK",
+  DELETE_TASK: "DELETE_TASK",
+  CLEAR_TASKS: "CLEAR_TASKS",
 };
 
-const syncedBoardsMap = {
-    kanban: "shared",
-    scrum: "shared",
-};
+const syncedBoardsMap = getSyncedBoardsMap();
+
+/**
+ * Persiste subconjunto de tasks:
+ * - se existir groupId → salva por grupo
+ * - senão → salva por boardId
+ */
+function persistSubset(tasks, target, isGroup) {
+  const subset = isGroup
+    ? tasks.filter(
+      t => (syncedBoardsMap[t.boardId] ?? t.boardId) === target
+    )
+    : tasks.filter(t => t.boardId === target);
+
+  saveTasks(subset, isGroup ? { groupId: target } : { boardId: target });
+}
 
 export function taskReducer(state, action) {
-    switch (action.type) {
-        case ACTIONS.SET_TASKS:
-            return { ...state, tasks: action.tasks, nextId: action.nextId };
+  switch (action.type) {
+    /** Inicialização (load + merge) */
+    case ACTIONS.SET_MIRROR_TASKS:
+      return {
+        ...state,
+        tasks: action.tasks,
+        nextId: action.nextId,
+      };
 
-        case ACTIONS.ADD_TASK: {
-            const newTask = action.task;
-            const updated = [...state.tasks, newTask];
-            saveTasks(updated);
-            return { tasks: updated, nextId: state.nextId + 1 };
-        }
+    /* Adição de task*/
+    case ACTIONS.ADD_TASK: {
+      const task = action.task;
+      const groupId = syncedBoardsMap[task.boardId];
 
-        case ACTIONS.MOVE_TASK: {
-            const taskId = action.taskId ?? action.id;
-            const payload = action.payload ?? {};
-            const columnId = action.columnId ?? payload.columnId ?? null;
-            const status = action.status ?? payload.status ?? null;
-            const targetTaskId = action.targetTaskId ?? payload.targetTaskId ?? null;
-            const position = action.position ?? payload.position ?? null;
+      let mirrorColId = null;
 
-            const task = state.tasks.find(t => String(t.id) === String(taskId));
-            if (!task) return state;
+      // Se o board pertence a um groupId, resolve espelhamento já na criação
+      if (groupId && task.columnId) {
+        const mirror = getMirrorLocation(task.boardId, task.columnId);
+        mirrorColId = mirror.columnId ?? null;
+      }
 
-            const without = state.tasks.filter(t => String(t.id) !== String(taskId));
+      const updatedTask = {
+        ...task,
+        mirrorColId,
+      };
 
-            const destTasks = without.filter(t => {
-                const sameBoard = t.boardId === task.boardId;
-                if (!sameBoard) return false;
-                if (columnId) return String(t.columnId) === String(columnId);
-                if (status) return String(t.status) === String(status);
-                return false;
-            });
+      const updated = [...state.tasks, updatedTask];
 
-            let insertIndex = destTasks.length;
-            if (targetTaskId) {
-                const idx = destTasks.findIndex(t => String(t.id) === String(targetTaskId));
-                if (idx !== -1) insertIndex = position === "below" ? idx + 1 : idx;
-            }
+      persistSubset(
+        updated,
+        groupId ?? task.boardId,
+        Boolean(groupId)
+      );
 
-            const updatedTask = {
-                ...task,
-                ...(status ? { status } : {}),
-                ...(columnId ? { columnId } : {}),
-            };
-
-            let globalInsertPos = without.length;
-            if (destTasks.length === 0) {
-                const lastSameBoardIdx = without.map((t, i) => ({ t, i }))
-                    .filter(x => x.t.boardId === task.boardId)
-                    .map(x => x.i)
-                    .pop();
-                globalInsertPos = (lastSameBoardIdx !== undefined) ? lastSameBoardIdx + 1 : without.length;
-            } else {
-                if (insertIndex < destTasks.length) {
-                    const destTaskAtIndex = destTasks[insertIndex];
-                    const globalIdx = without.findIndex(t => String(t.id) === String(destTaskAtIndex.id));
-                    globalInsertPos = globalIdx !== -1 ? globalIdx : without.length;
-                } else {
-                    const lastDest = destTasks[destTasks.length - 1];
-                    const globalIdx = without.findIndex(t => String(t.id) === String(lastDest.id));
-                    globalInsertPos = globalIdx !== -1 ? globalIdx + 1 : without.length;
-                }
-            }
-
-            const reordered = [
-                ...without.slice(0, globalInsertPos),
-                updatedTask,
-                ...without.slice(globalInsertPos)
-            ].map((t, i) => ({ ...t, order: i }));
-
-            saveTasks(reordered);
-            return { ...state, tasks: reordered };
-        }
-
-        case ACTIONS.UPDATE_TASK: {
-            const { taskId, changes } = action;
-            const updated = state.tasks.map(t =>
-                String(t.id) === String(taskId) ? { ...t, ...changes } : t
-            );
-            saveTasks(updated);
-            return { ...state, tasks: updated };
-        }
-
-        case ACTIONS.DELETE_TASK: {
-            const { taskId } = action;
-            const updated = state.tasks
-                .filter(t => String(t.id) !== String(taskId))
-                .map((t, i) => ({ ...t, order: i }));
-            saveTasks(updated);
-            return { ...state, tasks: updated };
-        }
-
-        case ACTIONS.CLEAR_TASKS: {
-            const { boardId: groupId } = action;
-            const updated = state.tasks.filter(t => {
-                const taskGroup = syncedBoardsMap[t.boardId] ?? t.boardId;
-                return taskGroup !== groupId;
-            });
-            saveTasks(updated);
-            return { ...state, tasks: updated };
-        }
-
-        default:
-            return state;
+      return {
+        tasks: updated,
+        nextId: state.nextId + 1,
+      };
     }
+
+    /* Move task entre colunas */
+    case ACTIONS.MOVE_TASK: {
+      const { taskId, payload } = action;
+      const { boardId, columnId } = payload;
+
+      const original = state.tasks.find(
+        t => String(t.id) === String(taskId)
+      );
+      if (!original) return state;
+
+      const mirror = getMirrorLocation(boardId, columnId);
+      const groupId = syncedBoardsMap[boardId];
+      const isGrouped = Boolean(groupId);
+
+      const boardsInScope = isGrouped
+        ? Object.keys(syncedBoardsMap).filter(
+          b => (syncedBoardsMap[b] ?? b) === groupId
+        )
+        : [original.boardId];
+
+      const updated = state.tasks
+        .map(t => {
+          if (!boardsInScope.includes(t.boardId)) return t;
+          if (String(t.id) !== String(taskId)) return t;
+
+          const nextColumnId =
+            t.boardId === boardId
+              ? columnId
+              : mirror.columnId ?? columnId;
+
+          return {
+            ...t,
+            boardId: t.boardId === original.boardId ? boardId : t.boardId,
+            columnId: nextColumnId,
+            mirrorColId: mirror.columnId ?? null,
+          };
+        })
+        .map((t, i) => ({ ...t, order: i }));
+
+      persistSubset(
+        updated,
+        groupId ?? boardId,
+        isGrouped
+      );
+
+      return { ...state, tasks: updated };
+    }
+
+    /** Atualização semântica */
+    case ACTIONS.UPDATE_TASK: {
+      const updated = state.tasks.map(t =>
+        String(t.id) === String(action.taskId)
+          ? { ...t, ...action.changes }
+          : t
+      );
+
+      const changed = updated.find(
+        t => String(t.id) === String(action.taskId)
+      );
+
+      if (changed) {
+        const groupId = syncedBoardsMap[changed.boardId];
+        persistSubset(
+          updated,
+          groupId ?? changed.boardId,
+          Boolean(groupId)
+        );
+      }
+
+      return { ...state, tasks: updated };
+    }
+
+    /* Remoção de task */
+    case ACTIONS.DELETE_TASK: {
+      const updated = state.tasks
+        .filter(t => String(t.id) !== String(action.taskId))
+        .map((t, i) => ({ ...t, order: i }));
+
+      const removed = state.tasks.find(
+        t => String(t.id) === String(action.taskId)
+      );
+
+      if (removed) {
+        const groupId = syncedBoardsMap[removed.boardId];
+        persistSubset(
+          updated,
+          groupId ?? removed.boardId,
+          Boolean(groupId)
+        );
+      }
+
+      return { ...state, tasks: updated };
+    }
+
+    /* Limpeza por groupId ou boardId */
+    case ACTIONS.CLEAR_TASKS: {
+      const { groupId, boardId } = action;
+
+      const filtered = state.tasks.filter(t => {
+        const realGroup = syncedBoardsMap[t.boardId];
+        if (groupId) return realGroup !== groupId;
+        if (boardId) return t.boardId !== boardId;
+        return true;
+      });
+
+      groupId
+        ? persistenceClearTasks({ groupId })
+        : persistenceClearTasks({ boardId });
+
+      return { ...state, tasks: filtered };
+    }
+
+    default:
+      return state;
+  }
 }

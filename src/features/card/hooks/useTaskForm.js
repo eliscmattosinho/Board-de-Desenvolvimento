@@ -1,23 +1,30 @@
 import { useState, useEffect } from "react";
-import { getDisplayStatus } from "@board/components/templates/templateMirror";
 
-export default function useTaskForm(task, columns, activeView) {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [status, setStatus] = useState("");
+export default function useTaskForm(task, columns) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [columnId, setColumnId] = useState(null);
 
-    useEffect(() => {
-        if (!task || !columns?.length) return;
+  useEffect(() => {
+    if (!task) return;
 
-        setTitle(task.title || "");
-        setDescription(task.description || "");
+    setTitle(task.title || "");
+    setDescription(task.description || "");
 
-        const currentCol = columns.find(
-            (col) => getDisplayStatus(task.status, activeView) === col.title
-        );
+    // coluna vem diretamente da task
+    setColumnId(
+      task.columnId ??
+      columns?.[0]?.id ??
+      null
+    );
+  }, [task, columns]);
 
-        setStatus(currentCol?.id || columns[0]?.id || "");
-    }, [task, columns, activeView]);
-
-    return { title, setTitle, description, setDescription, status, setStatus };
+  return {
+    title,
+    setTitle,
+    description,
+    setDescription,
+    status: columnId,
+    setStatus: setColumnId
+  };
 }

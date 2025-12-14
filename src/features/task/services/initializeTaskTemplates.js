@@ -1,58 +1,52 @@
-import { loadTasks } from "./loadTemplateTasks";
+import { loadTemplateTasks } from "./loadTemplateTasks";
 import { loadTasksFromStorage, saveTasks } from "./taskPersistence";
-import {
-  boardTemplates,
-  getDisplayStatus,
-  columnIdToCanonicalStatus,
-  resolveBoardColumnsForTask,
-} from "@board/components/templates/templateMirror";
+import { getTaskColumn } from "@board/components/templates/taskBoardResolver";
+import { getMirrorLocation } from "@board/utils/boardSyncUtils";
+
+function signatureForTask(t) {
+  return `template:${t.id}`;
+}
 
 export async function initializeTasks() {
   try {
-    const loaded = await loadTasks();
-    if (!loaded || !loaded.length) return [];
+    const loaded = await loadTemplateTasks();
+    if (!loaded?.length) return [];
+
+    // Tasks já persistidas no grupo "shared"
+    const existing = loadTasksFromStorage({ groupId: "shared" }) || [];
+
+    const existingSignatures = new Set(existing.map(signatureForTask));
 
     const normalized = loaded.map((t, i) => {
-      const statusText = t.status?.trim() ?? "";
-      const resolved = resolveBoardColumnsForTask(statusText);
-      let boardId = "kanban";
-      let columnId = null;
+      // Define onde a task nasce
+      const { boardId, columnId } = getTaskColumn(t);
 
-      if (resolved.scrum) {
-        boardId = "scrum";
-        columnId = resolved.scrum;
-      } else if (resolved.kanban) {
-        boardId = "kanban";
-        columnId = resolved.kanban;
-      } else {
-        boardId = "kanban";
-        columnId = boardTemplates["kanban"]?.[0]?.id ?? null;
-      }
-
-      const canonical = columnId ? columnIdToCanonicalStatus(columnId) : (statusText || "Backlog");
+      // Define onde ela se espelha
+      const mirror = getMirrorLocation(boardId, columnId);
 
       return {
-        id: String(i + 1),
+        id: t.id,
         title: t.title || "Sem título",
         description: t.description || "Sem descrição",
-        status: canonical,
-        columnId,
-        order: i,
+        status: t.status || "Sem status",
         boardId,
+        columnId,
+        mirrorColId: mirror.columnId ?? null,
+        order: i,
       };
     });
 
-    const existing = loadTasksFromStorage();
-    let merged;
-    if (existing && existing.length > 0) {
-      const hasAnyTemplateBoard = existing.some(x => x.boardId === "kanban" || x.boardId === "scrum");
-      merged = hasAnyTemplateBoard ? existing : [...existing, ...normalized];
-    } else {
-      merged = normalized;
-    }
+    // Remove duplicadas com base no templateId
+    const filteredNew = normalized.filter(
+      t => !existingSignatures.has(signatureForTask(t))
+    );
 
-    saveTasks(merged);
-    return merged.filter(t => t.boardId === "kanban" || t.boardId === "scrum");
+    const merged = [...existing, ...filteredNew];
+
+    // Salva explicitamente no groupId "shared"
+    saveTasks(merged, { groupId: "shared" });
+
+    return merged;
   } catch (err) {
     console.error("Erro ao inicializar tasks:", err);
     return [];

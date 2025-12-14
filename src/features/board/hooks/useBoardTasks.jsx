@@ -2,77 +2,164 @@ import { useMemo, useCallback } from "react";
 import { showWarning, showCustom, showSuccess } from "@utils/toastUtils";
 import ClearBoardToast from "@components/ToastProvider/toasts/ClearBoardToast";
 import CardModal from "@card/components/CardModal/CardModal";
+import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
+import { getDisplayStatus } from "@board/components/templates/taskBoardResolver";
 
+/**
+ * Hook responsável por preparar as tasks para exibição no board ativo,
+ * expõe handlers para adicionar / limpar / abrir task.
+ */
 export function useBoardTasks({
-    tasks,
-    addTask,
-    moveTask,
-    clearTasks,
-    columns,
-    activeView,
-    openModal,
-    syncedBoardsMap
+  tasks,
+  addTask,
+  moveTask,
+  clearTasks,
+  columns,
+  activeBoard,
+  openModal,
 }) {
-    const orderedTasks = useMemo(() => [...tasks].sort((a, b) => a.order - b.order), [tasks]);
+  /**
+   * Ordenação global
+   */
+  const orderedGlobal = useMemo(
+    () => [...tasks].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    [tasks]
+  );
 
-    const handleAddTask = useCallback(
-        (columnId = null) => {
-            const viewColumns = columns?.[activeView] ?? [];
-            const fallbackColumnId = viewColumns[0]?.id ?? null;
-            const chosenColumnId = columnId ?? fallbackColumnId;
-            const newTask = addTask(chosenColumnId, { boardId: activeView });
-            openModal(CardModal, {
-                task: { ...newTask, isNew: true },
-                activeView,
-                columns: columns[activeView],
-                moveTask,
-            });
-        },
-        [addTask, activeView, columns, moveTask, openModal]
-    );
+  /**
+   * Identificação de board compartilhado
+   */
+  const activeGroupId = syncedBoardsMap[activeBoard] ?? null;
+  const isSharedBoard = Boolean(activeGroupId);
 
-    const handleClearBoard = useCallback(() => {
-        const groupId = syncedBoardsMap[activeView] ?? activeView;
-
-        const boardTasks = orderedTasks.filter(
-            t => (syncedBoardsMap[t.boardId] ?? t.boardId) === groupId
-        );
-
-        if (boardTasks.length === 0) {
-            showWarning("Não há tarefas para remover — o board já está vazio!");
-            return;
+  /**
+   * Tasks adaptadas para exibição no board ativo
+   */
+  const orderedTasks = useMemo(() => {
+    return orderedGlobal
+      .filter((t) => {
+        if (isSharedBoard) {
+          const tGroup = syncedBoardsMap[t.boardId] ?? null;
+          return tGroup === activeGroupId;
+        }
+        return t.boardId === activeBoard;
+      })
+      .map((t) => {
+        if (!isSharedBoard) {
+          return {
+            ...t,
+            displayColumnId: t.columnId ?? null,
+            displayStatus: t.status ?? null,
+          };
         }
 
-        showCustom(({ closeToast }) => (
-            <ClearBoardToast
-                onConfirm={() => {
-                    clearTasks(groupId);
-                    closeToast();
-                    showSuccess("Todas as tarefas foram removidas com sucesso!");
-                }}
-                onCancel={closeToast}
-            />
-        ));
-    }, [orderedTasks, activeView, clearTasks, syncedBoardsMap]);
+        const displayColumnId =
+          t.boardId === activeBoard ? t.columnId : t.mirrorColId;
 
-    const handleTaskClick = useCallback(
-        (task) => {
-            openModal(CardModal, {
-                task,
-                activeView,
-                columns: columns[activeView],
-                moveTask,
-            });
-        },
-        [activeView, columns, moveTask, openModal]
+        const displayStatus = getDisplayStatus(
+          displayColumnId,
+          activeBoard
+        );
+
+        return {
+          ...t,
+          displayColumnId,
+          displayStatus,
+        };
+      });
+  }, [orderedGlobal, activeBoard, isSharedBoard, activeGroupId]);
+
+  /**
+   * Adiciona nova task e abre modal
+   */
+  const handleAddTask = useCallback(
+    (columnId = null) => {
+      const viewColumns = columns?.[activeBoard] ?? [];
+      const fallbackColumnId = viewColumns[0]?.id ?? null;
+      const chosenColumnId = columnId ?? fallbackColumnId;
+
+      const newTask = addTask(chosenColumnId, {
+        boardId: activeBoard,
+      });
+
+      openModal(CardModal, {
+        task: { ...newTask, isNew: true },
+        activeBoard,
+        columns: viewColumns,
+        moveTask,
+      });
+    },
+    [addTask, activeBoard, columns, moveTask, openModal]
+  );
+
+  /**
+   * Limpa tasks do board ou grupo
+   */
+  const handleClearBoard = useCallback(() => {
+    const groupId = syncedBoardsMap[activeBoard] ?? null;
+    const isShared = Boolean(groupId);
+
+    const boardTasks = orderedGlobal.filter((t) =>
+      isShared
+        ? (syncedBoardsMap[t.boardId] ?? null) === groupId
+        : t.boardId === activeBoard
     );
 
-    const activeBoardTaskCount = useMemo(() => {
-        const countBoardId = syncedBoardsMap[activeView] ?? activeView;
-        return orderedTasks.filter(
-            t => (syncedBoardsMap[t.boardId] ?? t.boardId) === countBoardId
-        ).length;
-    }, [orderedTasks, activeView, syncedBoardsMap]);
+    if (boardTasks.length === 0) {
+      showWarning("Não há tarefas para remover — o board já está vazio!");
+      return;
+    }
 
-    return { orderedTasks, handleAddTask, handleClearBoard, handleTaskClick, activeBoardTaskCount };
+    showCustom(({ closeToast }) => (
+      <ClearBoardToast
+        onConfirm={() => {
+          if (isShared) {
+            clearTasks({ groupId });
+          } else {
+            clearTasks({ boardId: activeBoard });
+          }
+          closeToast();
+          showSuccess("Todas as tarefas foram removidas com sucesso!");
+        }}
+        onCancel={closeToast}
+      />
+    ));
+  }, [orderedGlobal, activeBoard, clearTasks]);
+
+  /**
+   * Abre modal de edição / visualização
+   */
+  const handleTaskClick = useCallback(
+    (task) => {
+      openModal(CardModal, {
+        task,
+        activeBoard,
+        columns: columns?.[activeBoard] ?? [],
+        moveTask,
+      });
+    },
+    [activeBoard, columns, moveTask, openModal]
+  );
+
+  /**
+   * Contador de tasks do board ativo
+   */
+  const activeBoardTaskCount = useMemo(() => {
+    const groupId = syncedBoardsMap[activeBoard] ?? null;
+    const isShared = Boolean(groupId);
+
+    return orderedGlobal.filter((t) =>
+      isShared
+        ? (syncedBoardsMap[t.boardId] ?? null) === groupId
+        : t.boardId === activeBoard
+    ).length;
+  }, [orderedGlobal, activeBoard]);
+
+  return {
+    orderedTasks,
+    handleAddTask,
+    handleClearBoard,
+    handleTaskClick,
+    activeBoardTaskCount,
+  };
 }

@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 
-import { getDisplayStatus } from "@board/components/templates/templateMirror";
 import { useBoardPanning } from "@board/hooks/useBoardPanning";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
@@ -23,7 +22,7 @@ function BoardSection({
   onAddTask,
   onAddColumn,
   removeColumn,
-  activeView,
+  activeBoard,
   isActive,
 }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -47,13 +46,13 @@ function BoardSection({
       openModal(ConfirmDeleteModal, {
         type: "column",
         onConfirm: () => {
-          removeColumn(activeView, col.id);
+          removeColumn(activeBoard, col.id);
           closeModal();
         },
         onCancel: closeModal,
       });
     },
-    [removeColumn, activeView, openModal, closeModal]
+    [removeColumn, activeBoard, openModal, closeModal]
   );
 
   const handleEditColumn = useCallback(
@@ -74,15 +73,16 @@ function BoardSection({
     [onAddColumn]
   );
 
-  // Agrupamento de tasks por coluna
+  // Agrupamento de tasks por coluna com espelhamento
   const tasksByColumn = useMemo(() => {
     return columns.reduce((acc, col) => {
-      acc[col.id] = tasks.filter(
-        (t) => getDisplayStatus(t.status, activeView) === col.title
-      );
+      acc[col.id] = tasks.filter(t => {
+        if (t.boardId === activeBoard) return t.columnId === col.id;
+        return t.mirrorColId === col.id;
+      });
       return acc;
     }, {});
-  }, [tasks, columns, activeView]);
+  }, [tasks, columns, activeBoard]);
 
   return (
     <div

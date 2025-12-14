@@ -81,12 +81,12 @@ export default function Hub() {
           <div className="board-header">
             <div className="board-title-container">
               <h3 id="board-title" className="title-thematic">
-                {activeBoardTitle}
-                <span className="task-counter">({activeBoardTaskCount})</span>
+                {activeBoardTitle ?? "Board"}
+                <span className="task-counter">({activeBoardTaskCount ?? 0})</span>
               </h3>
 
               <FloatingMenu
-                columns={columns[activeBoard]}
+                columns={columns?.[activeBoard] ?? []}
                 onAddTask={handleAddTask}
                 onAddColumn={handleAddColumn}
               />
@@ -105,7 +105,7 @@ export default function Hub() {
           <div className="board-content">
             <BoardSection
               id={activeBoard}
-              columns={columns[activeBoard] || []}
+              columns={columns?.[activeBoard] ?? []}
               tasks={orderedTasks}
               onDrop={handleDrop}
               onDragOver={allowDrop}

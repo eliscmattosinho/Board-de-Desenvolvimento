@@ -95,10 +95,10 @@ export const TaskProvider = ({ children, boardId = "kanban" }) => {
 /**
  * Hook público
  */
-export const useTasks = () => {
+export const useTasksContext = () => {
   const ctx = useContext(TaskContext);
   if (!ctx) {
-    throw new Error("useTasks must be used within TaskProvider");
+    throw new Error("useTasksContext must be used within TaskProvider");
   }
   return ctx;
 };

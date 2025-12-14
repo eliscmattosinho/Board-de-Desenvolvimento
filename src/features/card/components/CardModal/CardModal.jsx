@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { showWarning } from "@utils/toastUtils";
 import useTaskForm from "@card/hooks/useTaskForm.js";
 import { useModal } from "@context/ModalContext";
-import { useTasks } from "@task/context/TaskContext";
+import { useTasksContext } from "@task/context/TaskContext";
 
 import Modal from "@components/Modal/Modal";
 import ConfirmDeleteModal from "@components/Modal/DeleteModal/ConfirmDeleteModal";
@@ -38,7 +38,7 @@ export default function CardModal({
     } = useTaskForm(task, columns, activeBoard);
 
     const { openModal, closeModal } = useModal();
-    const { saveNewTask, updateTask, deleteTask } = useTasks();
+    const { saveNewTask, updateTask, deleteTask } = useTasksContext();
 
     const modalTitle = (
         <>

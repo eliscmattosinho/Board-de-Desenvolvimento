@@ -13,10 +13,10 @@ export default function ExceptionPage({
     const { theme } = useTheme();
 
     return (
-        <div className="exception-container" data-theme={theme}>
-            <h2 className="exception-title title-thematic">{title}</h2>
+        <main className="exception-container" data-theme={theme}>
+            <h1 className="exception-title title-thematic">{title}</h1>
 
-            <div className="exception-info">
+            <section className="exception-info">
                 {messages.map((msg, index) => (
                     <p key={index} dangerouslySetInnerHTML={{ __html: msg }} />
                 ))}
@@ -25,11 +25,11 @@ export default function ExceptionPage({
                         {link.label}
                     </Link>
                 )}
-            </div>
+            </section>
 
-            <div className="exception-img-container">
+            <figure className="exception-img-container">
                 <img src={image} alt={title + " illustration"} />
-            </div>
-        </div>
+            </figure>
+        </main>
     );
 }

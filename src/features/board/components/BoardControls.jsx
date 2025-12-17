@@ -154,9 +154,9 @@ function BoardControls({ activeBoard, setActiveBoard }) {
             </button>
           ))
         ) : (
-          <div className="no-boards-placeholder">
+          <p className="no-boards-placeholder">
             Nenhum board encontrado
-          </div>
+          </p>
         )}
       </div>
 

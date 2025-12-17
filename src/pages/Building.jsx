@@ -10,29 +10,29 @@ function Building() {
   const navigate = useNavigate();
 
   return (
-    <div id="building-container">
-      <div className="building-content">
-        <div className="intro-section">
-          <h2 className="building-title">
+    <main id="building-container">
+      <section className="building-content">
+        <article className="building-intro">
+          <h1 className="building-title">
             <TypingText text="Ops..." />
-          </h2>
-          <div className="img-container">
+          </h1>
+          <figure className="illustration">
             <img
               src={builder}
-              id="img-builder"
+              className="illustration-image"
               alt="Illustration of a person climbing a ladder among clouds, reaching out with a cloth as if cleaning or touching one of the clouds. The background is green with additional small clouds scattered around."
             />
-          </div>
-        </div>
+          </figure>
+        </article>
 
-        <div className="communicate-section">
+        <article className="communicate-section">
           <p className="intro-text">
             <span className="w-600">Bem-vindo(a)!</span> Você chegou um pouco
             cedo. Gostaria de ver o <span className="w-600">status atual</span>{" "}
             do projeto?
           </p>
 
-          <div className="actions-block">
+          <div className="actions">
             <button
               className="btn btn-building"
               onClick={() => navigate("/hub")}
@@ -48,9 +48,9 @@ function Building() {
               projeto original
             </a>
           </div>
-        </div>
-      </div>
-    </div>
+        </article>
+      </section>
+    </main>
   );
 }
 

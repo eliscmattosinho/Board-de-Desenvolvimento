@@ -32,10 +32,14 @@ export default function ModalMobile({
                     transition: "height 0.25s ease",
                 }}
                 ref={sheetRef}
+                role="dialog"
+                aria-modal="true"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div
                     className="bottom-sheet-handle"
+                    role="presentation"
+                    aria-hidden="true"
                     onMouseDown={handleDragStart}
                     onTouchStart={handleDragStart}
                     onMouseMove={handleDragMove}
@@ -45,9 +49,9 @@ export default function ModalMobile({
                     onTouchEnd={handleDragEnd}
                 />
                 {showHeader && (
-                    <div className="bottom-sheet-header">
+                    <header className="bottom-sheet-header">
                         {title && <h2 className="modal-title">{title}</h2>}
-                    </div>
+                    </header>
                 )}
                 <div className="bottom-sheet-body">{children}</div>
             </div>

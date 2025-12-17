@@ -43,13 +43,14 @@ export default function Hub() {
   const openNewBoardModal = () => openModal(BoardForm, { onConfirm: createBoard });
 
   return (
-    <div id="hub-container">
-      <div className="hub-content">
+    <main id="hub-container">
+      <section className="hub-content">
         {/* Actions */}
         <div className="hub-actions">
           <button onClick={() => navigate("/")} className="board-icon btn-back">
             <FaArrowCircleLeft size={30} />
           </button>
+
           <div className="hub-sub-actions">
             <ThemeToggle />
             <button
@@ -63,10 +64,10 @@ export default function Hub() {
         </div>
 
         {/* Header */}
-        <div className="hub-header">
+        <header className="hub-header">
           <div className="hub-introduction">
             <div className="hub-infos">
-              <h2 className="hub-title title-thematic">Development Hub</h2>
+              <h1 className="hub-title title-thematic">Development Hub</h1>
               <p className="sub-title">Escolha seu board de visualização.</p>
             </div>
             <BoardControls activeBoard={activeBoard} setActiveBoard={setActiveBoard} />
@@ -74,11 +75,11 @@ export default function Hub() {
           <div className="img-container hub-img-container">
             <img src={boardImage} alt="Illustration of a dashboard interface" />
           </div>
-        </div>
+        </header>
 
         {/* Active Board */}
-        <div className="hub-active-board">
-          <div className="board-header">
+        <article className="hub-active-board">
+          <header className="board-header">
             <div className="board-title-container">
               <h3 id="board-title" className="title-thematic">
                 {activeBoardTitle ?? "Board"}
@@ -100,7 +101,7 @@ export default function Hub() {
             >
               <SiCcleaner size={30} />
             </button>
-          </div>
+          </header>
 
           <div className="board-content">
             <BoardSection
@@ -118,8 +119,8 @@ export default function Hub() {
               isActive
             />
           </div>
-        </div>
-      </div>
-    </div>
+        </article>
+      </section>
+    </main>
   );
 }

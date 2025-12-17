@@ -15,6 +15,7 @@ export default function ConfirmDeleteModal({
 
     return (
         <Modal
+            title={`Excluir ${entityText}`}
             onClose={onCancel}
             showHeader={false}
             width="300px"

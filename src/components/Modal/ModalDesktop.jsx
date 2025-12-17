@@ -43,12 +43,15 @@ export default function ModalDesktop({
             <div
                 className={`modal-container ${className} ${animationState}`}
                 style={{ width }}
+                role="dialog"
+                aria-modal="true"
+                onClick={(e) => e.stopPropagation()}
             >
-                <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-inner">
                     {showHeader && (
-                        <div className="modal-header">
+                        <header className="modal-header">
                             {title && <h2 className="modal-title">{title}</h2>}
-                        </div>
+                        </header>
                     )}
 
                     <div className="modal-body">{children}</div>
@@ -57,6 +60,7 @@ export default function ModalDesktop({
                         type="button"
                         className="btn-close"
                         onClick={handleClose}
+                        aria-label={closeTooltip}
                         data-tooltip={closeTooltip}
                     >
                         <IoIosCloseCircleOutline size={25} />

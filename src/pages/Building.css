@@ -23,7 +23,7 @@
     font-size: clamp(2.5rem, calc(2.5rem + 1.5vw), 4rem);
 }
 
-.img-container {
+.illustration {
     width: clamp(350px, calc(300px + 10vw), 600px);
     margin: 0 auto;
 }
@@ -39,7 +39,7 @@
     max-width: 350px;
 }
 
-.actions-block {
+.actions {
     display: flex;
     flex-direction: column;
     align-items: center;

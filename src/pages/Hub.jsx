@@ -7,8 +7,10 @@ import ThemeToggle from "@components/ThemeToggle/ThemeToggle";
 import BoardSection from "@board/components/BoardSection";
 import BoardControls from "@board/components/BoardControls";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
+import DragPreview from "@board/components/DragPreview/DragPreview";
 
 import { useBoardContext } from "@board/context/BoardContext";
+import { useGesture } from "@board/context/GestureContext";
 import BoardForm from "@features/board/components/BoardForm";
 
 import svgDarkBoard from "@assets/images/svg-board.svg";
@@ -18,15 +20,15 @@ import "./Hub.css";
 
 export default function Hub() {
   const navigate = useNavigate();
+  const { onPointerUp } = useGesture();
+
   const {
     theme,
     activeBoard,
     setActiveBoard,
     columns,
     orderedTasks,
-    allowDrop,
-    handleDragStart,
-    handleDrop,
+    commitDrop,
     handleAddTask,
     handleClearBoard,
     handleTaskClick,
@@ -40,87 +42,120 @@ export default function Hub() {
 
   const boardImage = theme === "dark" ? svgDarkBoard : svgLightBoard;
 
-  const openNewBoardModal = () => openModal(BoardForm, { onConfirm: createBoard });
+  const openNewBoardModal = () =>
+    openModal(BoardForm, { onConfirm: createBoard });
 
   return (
-    <main id="hub-container">
-      <section className="hub-content">
-        {/* Actions */}
-        <div className="hub-actions">
-          <button onClick={() => navigate("/")} className="board-icon btn-back">
-            <FaArrowCircleLeft size={30} />
-          </button>
+    <>
+      {/* Preview flutuante do card (portal) */}
+      <DragPreview />
 
-          <div className="hub-sub-actions">
-            <ThemeToggle />
+      <main id="hub-container">
+        <section className="hub-content">
+          {/* Actions */}
+          <div className="hub-actions">
             <button
-              id="new-board"
-              className="btn btn-thematic"
-              onClick={openNewBoardModal}
+              onClick={() => navigate("/")}
+              className="board-icon btn-back"
             >
-              Novo board
+              <FaArrowCircleLeft size={30} />
             </button>
-          </div>
-        </div>
 
-        {/* Header */}
-        <header className="hub-header">
-          <div className="hub-introduction">
-            <div className="hub-infos">
-              <h1 className="hub-title title-thematic">Development Hub</h1>
-              <p className="sub-title">Escolha seu board de visualização.</p>
+            <div className="hub-sub-actions">
+              <ThemeToggle />
+              <button
+                id="new-board"
+                className="btn btn-thematic"
+                onClick={openNewBoardModal}
+              >
+                Novo board
+              </button>
             </div>
-            <BoardControls activeBoard={activeBoard} setActiveBoard={setActiveBoard} />
           </div>
-          <div className="img-container hub-img-container">
-            <img src={boardImage} alt="Illustration of a dashboard interface" />
-          </div>
-        </header>
 
-        {/* Active Board */}
-        <article className="hub-active-board">
-          <header className="board-header">
-            <div className="board-title-container">
-              <h3 id="board-title" className="title-thematic">
-                {activeBoardTitle ?? "Board"}
-                <span className="task-counter">({activeBoardTaskCount ?? 0})</span>
-              </h3>
+          {/* Header */}
+          <header className="hub-header">
+            <div className="hub-introduction">
+              <div className="hub-infos">
+                <h1 className="hub-title title-thematic">
+                  Development Hub
+                </h1>
+                <p className="sub-title">
+                  Escolha seu board de visualização.
+                </p>
+              </div>
 
-              <FloatingMenu
-                columns={columns?.[activeBoard] ?? []}
-                onAddTask={handleAddTask}
-                onAddColumn={handleAddColumn}
+              <BoardControls
+                activeBoard={activeBoard}
+                setActiveBoard={setActiveBoard}
               />
             </div>
 
-            <button
-              id="board-cleaner"
-              className="board-icon clean-icon"
-              onClick={handleClearBoard}
-              data-tooltip="Limpar tarefas"
-            >
-              <SiCcleaner size={30} />
-            </button>
+            <div className="img-container hub-img-container">
+              <img
+                src={boardImage}
+                alt="Illustration of a dashboard interface"
+              />
+            </div>
           </header>
 
-          <div className="board-content">
-            <BoardSection
-              id={activeBoard}
-              columns={columns?.[activeBoard] ?? []}
-              tasks={orderedTasks}
-              onDrop={handleDrop}
-              onDragOver={allowDrop}
-              onTaskClick={handleTaskClick}
-              onDragStart={handleDragStart}
-              onAddTask={handleAddTask}
-              onAddColumn={handleAddColumn}
-              removeColumn={removeColumn}
-              activeBoard={activeBoard}
-              isActive
-            />
-          </div>
-        </article>
-      </section>
-    </main>
+          <article className="hub-active-board">
+            <header className="board-header">
+              <div className="board-title-container">
+                <h3 id="board-title" className="title-thematic">
+                  {activeBoardTitle ?? "Board"}
+                  <span className="task-counter">
+                    ({activeBoardTaskCount ?? 0})
+                  </span>
+                </h3>
+
+                <FloatingMenu
+                  columns={columns?.[activeBoard] ?? []}
+                  onAddTask={handleAddTask}
+                  onAddColumn={handleAddColumn}
+                />
+              </div>
+
+              <button
+                id="board-cleaner"
+                className="board-icon clean-icon"
+                onClick={handleClearBoard}
+                data-tooltip="Limpar tarefas"
+              >
+                <SiCcleaner size={30} />
+              </button>
+            </header>
+
+            <div
+              className="board-content"
+              onPointerUp={(e) => {
+                onPointerUp(e);
+                commitDrop();
+              }}
+              onPointerCancel={(e) => {
+                onPointerUp(e);
+                commitDrop();
+              }}
+              onLostPointerCapture={(e) => {
+                onPointerUp(e);
+                commitDrop();
+              }}
+            >
+              <BoardSection
+                id={activeBoard}
+                columns={columns?.[activeBoard] ?? []}
+                tasks={orderedTasks}
+                onTaskClick={handleTaskClick}
+                onAddTask={handleAddTask}
+                onAddColumn={handleAddColumn}
+                removeColumn={removeColumn}
+                activeBoard={activeBoard}
+                isActive
+              />
+            </div>
+          </article>
+        </section>
+      </main>
+    </>
   );
 }

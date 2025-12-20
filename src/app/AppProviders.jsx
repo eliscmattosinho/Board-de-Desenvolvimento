@@ -8,6 +8,10 @@ import { TaskProvider } from "@task/context/TaskContext";
 import { ColumnProvider } from "@column/context/ColumnContext";
 import { BoardProvider } from "@board/context/BoardContext";
 
+import { GestureProvider } from "@board/context/GestureContext";
+import { BoardPanProvider } from "@board/context/BoardPanContext";
+import { CardDragProvider } from "@board/context/CardDragContext";
+
 const AppProviders = ({ children }) => {
   return (
     <ThemeProvider>
@@ -15,9 +19,15 @@ const AppProviders = ({ children }) => {
         <ScreenProvider>
           <ModalProvider>
             <ColumnProvider>
-              <BoardProvider>
-                {children}
-              </BoardProvider>
+              <GestureProvider>
+                <BoardPanProvider>
+                  <CardDragProvider>
+                    <BoardProvider>
+                      {children}
+                    </BoardProvider>
+                  </CardDragProvider>
+                </BoardPanProvider>
+              </GestureProvider>
             </ColumnProvider>
           </ModalProvider>
         </ScreenProvider>

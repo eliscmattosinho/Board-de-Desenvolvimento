@@ -54,10 +54,10 @@ export const TaskProvider = ({ children, boardId = "kanban" }) => {
         persisted.length > 0
           ? persisted
           : initialized.map((t, i) => ({
-            ...t,
-            id: String(t.id ?? i + 1),
-            order: t.order ?? i,
-          }));
+              ...t,
+              id: String(t.id ?? i + 1),
+              order: t.order ?? i,
+            }));
 
       const maxId = source.reduce((max, t) => Math.max(max, Number(t.id)), 0);
 

@@ -7,6 +7,13 @@
   width: 100%;
   height: calc(100vh - 120px);
   overflow: auto;
+  cursor: grab;
+
+  touch-action: pan-y pinch-zoom;
+}
+
+.board-container.panning {
+  cursor: grabbing;
 }
 
 .add-col {
@@ -70,10 +77,10 @@
   -webkit-user-drag: none;
 }
 
-.board-container, 
-.board-col, 
-.col-items, 
-.task-item {  
+.board-container,
+.board-col,
+.col-items,
+.task-item {
   user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;

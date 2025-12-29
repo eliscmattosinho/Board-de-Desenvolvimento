@@ -1,50 +1,72 @@
-import React from 'react';
-import { useDragEvents } from '@column/hooks/useDragEvents';
-import './TaskItem.css';
+import React, { useEffect, useRef, useState } from "react";
+import { useCardDrag } from "@board/context/CardDragContext";
+import "./TaskItem.css";
 
 function TaskItem({
   task,
   onClick,
-  onDragStart,
-  onDrop,
-  onDragOver,
-  onDragLeave,
+  onPointerMove,
+  onPointerLeave,
   dragPosition,
 }) {
-  const { handleDragStart, handleDrop, handleDragOver, handleDragLeave } = useDragEvents(
-    task.id,
-    onDragStart,
-    onDrop,
-    onDragOver,
-    onDragLeave
-  );
+  const { startDrag, endDrag, isDraggingCard } = useCardDrag();
+  const ref = useRef(null);
+  const [dragging, setDragging] = useState(false);
+
+  // Encerramento global seguro
+  useEffect(() => {
+    const handlePointerUp = () => {
+      if (!dragging) return;
+      setDragging(false);
+      endDrag();
+    };
+
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
+
+    return () => {
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
+    };
+  }, [dragging, endDrag]);
+
+  const handlePointerMove = (e) => {
+    if (!dragging || !ref.current) return;
+
+    const rect = ref.current.getBoundingClientRect();
+    const middleY = rect.top + rect.height / 2;
+    const position = e.clientY < middleY ? "above" : "below";
+
+    onPointerMove?.(e, position);
+  };
 
   return (
     <div
-      id={task.id}
-      className={`item task-item ${dragPosition === 'above' ? 'drag-over-above' : dragPosition === 'below' ? 'drag-over-below' : ''}`}
-      draggable
-      onDragStart={handleDragStart}
-      onClick={() => onClick?.(task)}
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
+      ref={ref}
+      className={`item task-item ${dragging ? "ghost" : ""}`}
+      onPointerDown={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setDragging(true);
+        startDrag(task);
+      }}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={() => {
+        if (!isDraggingCard()) return;
+        onPointerLeave?.();
+      }}
+      onClick={() => {
+        if (dragging) return;
+        onClick?.(task);
+      }}
     >
       <h3 className="item-title">{task.title}</h3>
-      <p className="item-description">{task.description || 'Sem descrição.'}</p>
+      <p className="item-description">
+        {task.description || "Sem descrição."}
+      </p>
     </div>
   );
 }
 
-/**
- * Memoização segura:
- * re-renderiza apenas quando dados relevantes mudam
- */
-export default React.memo(TaskItem, (prev, next) => {
-  return (
-    prev.task.id === next.task.id &&
-    prev.task.title === next.task.title &&
-    prev.task.description === next.task.description &&
-    prev.dragPosition === next.dragPosition
-  );
-});
+export default React.memo(TaskItem);

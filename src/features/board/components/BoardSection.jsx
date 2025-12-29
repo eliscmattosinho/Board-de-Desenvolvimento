@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 
-import { useBoardPanning } from "@board/hooks/useBoardPanning";
+import { useGesture } from "@board/context/GestureContext";
+import { useBoardPan } from "@board/context/BoardPanContext";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
 
@@ -15,10 +16,7 @@ function BoardSection({
   id,
   columns,
   tasks,
-  onDrop,
-  onDragOver,
   onTaskClick,
-  onDragStart,
   onAddTask,
   onAddColumn,
   removeColumn,
@@ -26,16 +24,14 @@ function BoardSection({
   isActive,
 }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
+
   const { openModal, closeModal, isModalOpen } = useModal();
   const { isTouch } = useScreen();
-  const { bind, setDraggingCard } = useBoardPanning({ containerId: id });
 
-  const handleCardDragStart = useCallback((...args) => {
-    setDraggingCard(true);
-    onDragStart?.(...args);
-  }, [onDragStart, setDraggingCard]);
+  const { onPointerDown, onPointerMove, onPointerUp } = useGesture();
+  const { start, onMove, end } = useBoardPan();
 
-  const handleCardDragEnd = useCallback(() => setDraggingCard(false), [setDraggingCard]);
+  const containerRef = useRef(null);
 
   const handleColumnHover = useCallback((action, index = null) => {
     setHoveredIndex(action === "hoverEnter" ? index : null);
@@ -73,11 +69,15 @@ function BoardSection({
     [onAddColumn]
   );
 
-  // Agrupamento de tasks por coluna com espelhamento
+  /**
+   * Agrupamento de tasks por coluna
+   */
   const tasksByColumn = useMemo(() => {
     return columns.reduce((acc, col) => {
-      acc[col.id] = tasks.filter(t => {
-        if (t.boardId === activeBoard) return t.columnId === col.id;
+      acc[col.id] = tasks.filter((t) => {
+        if (t.boardId === activeBoard) {
+          return t.columnId === col.id;
+        }
         return t.mirrorColId === col.id;
       });
       return acc;
@@ -86,25 +86,42 @@ function BoardSection({
 
   return (
     <div
+      ref={containerRef}
       id={id}
       className={`board-container ${id}-board ${isActive ? "active" : ""}`}
-      {...(!isTouch ? bind : {})}
+      onPointerDown={(e) => {
+        onPointerDown({
+          e,
+          source: "board",
+          meta: { boardId: id },
+        });
+
+        // Board apenas observa e inicia pan (sem capturar)
+        start(e, containerRef.current);
+      }}
+      onPointerMove={(e) => {
+        onPointerMove(e);
+        onMove(e, containerRef.current);
+      }}
+      onPointerUp={(e) => {
+        end(containerRef.current);
+        onPointerUp(e);
+      }}
+      onPointerCancel={(e) => {
+        end(containerRef.current);
+        onPointerUp(e);
+      }}
+      onLostPointerCapture={(e) => {
+        end(containerRef.current);
+        onPointerUp(e);
+      }}
     >
       {columns.map((col, index) => (
         <React.Fragment key={col.id}>
           <Column
-            id={col.id}
-            title={col.title}
-            className={col.className}
-            style={col.style}
-            color={col.color}
-            applyTo={col.applyTo}
+            {...col}
             tasks={tasksByColumn[col.id] || []}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
             onTaskClick={onTaskClick}
-            onDragStart={handleCardDragStart}
-            onDragEnd={handleCardDragEnd}
             onAddTask={onAddTask}
             onEdit={handleEditColumn(index, col)}
             onRemove={handleRemoveColumn(col)}
@@ -113,12 +130,18 @@ function BoardSection({
           {!isTouch && index < columns.length - 1 && (
             <div
               className="add-column-zone"
-              onMouseEnter={() => handleColumnHover("hoverEnter", index)}
-              onMouseLeave={() => handleColumnHover("hoverLeave")}
+              onMouseEnter={() =>
+                handleColumnHover("hoverEnter", index)
+              }
+              onMouseLeave={() =>
+                handleColumnHover("hoverLeave")
+              }
             >
               {hoveredIndex === index && (
                 <AddColumnIndicator
-                  onClick={(e) => handleAddColumnAt(index + 1, e)}
+                  onClick={(e) =>
+                    handleAddColumnAt(index + 1, e)
+                  }
                   isBlocked={isModalOpen}
                 />
               )}
@@ -128,7 +151,10 @@ function BoardSection({
       ))}
 
       <div className="col-add-last">
-        <button className="add-col" onClick={() => onAddColumn(columns.length)}>
+        <button
+          className="add-col"
+          onClick={() => onAddColumn(columns.length)}
+        >
           <CiCirclePlus className="plus-icon" size={30} />
         </button>
         <p>Criar nova coluna</p>

@@ -1,10 +1,23 @@
 import React from "react";
 
-export default function CardActions({ editMode, isCreating, dirty, onSave, onCancel, onEdit, onDelete }) {
+export default function CardActions({
+    editMode,
+    isCreating,
+    dirty,
+    onSave,
+    onCancel,
+    onEdit,
+    onDelete,
+}) {
     return (
         <div className="modal-actions">
             {!editMode && !isCreating && (
-                <button type="button" className="modal-btn btn-edit" onClick={onEdit} data-tooltip="Editar tarefa">
+                <button
+                    type="button"
+                    className="modal-btn btn-edit"
+                    onClick={onEdit}
+                    data-tooltip="Editar tarefa"
+                >
                     Editar
                 </button>
             )}
@@ -22,7 +35,12 @@ export default function CardActions({ editMode, isCreating, dirty, onSave, onCan
                     </button>
 
                     {!isCreating && (
-                        <button type="button" className="modal-btn btn-cancel" onClick={onCancel} data-tooltip="Descartar edição">
+                        <button
+                            type="button"
+                            className="modal-btn btn-cancel"
+                            onClick={onCancel}
+                            data-tooltip="Descartar edição"
+                        >
                             Cancelar
                         </button>
                     )}
@@ -30,7 +48,12 @@ export default function CardActions({ editMode, isCreating, dirty, onSave, onCan
             )}
 
             {!isCreating && (
-                <button type="button" className="modal-btn btn-delete" onClick={onDelete} data-tooltip="Excluir tarefa">
+                <button
+                    type="button"
+                    className="modal-btn btn-delete"
+                    onClick={onDelete}
+                    data-tooltip="Excluir tarefa"
+                >
                     Excluir
                 </button>
             )}

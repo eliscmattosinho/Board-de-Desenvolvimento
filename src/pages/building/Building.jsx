@@ -4,7 +4,7 @@ import builder from "@assets/images/builder.svg";
 import TypingText from "@/components/TypingText/TypingText";
 
 import "./Building.css";
-import "@styles/BuildingDots.scss";
+import "./BuildingDots.scss";
 
 function Building() {
   const navigate = useNavigate();

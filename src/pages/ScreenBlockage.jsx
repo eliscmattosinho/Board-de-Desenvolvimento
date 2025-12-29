@@ -1,5 +1,5 @@
 import React from "react";
-import ExceptionPage from "./ExceptionPage";
+import ExceptionPage from "@components/ExceptionPage/ExceptionPage";
 import screenBlockage from "@assets/images/screen-blockage.svg";
 
 export default function ScreenBlockage() {

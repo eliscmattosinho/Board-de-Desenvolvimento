@@ -1,0 +1,85 @@
+import { showWarning } from "@utils/toastUtils";
+import ConfirmDeleteModal from "@components/Modal/DeleteModal/ConfirmDeleteModal";
+
+export function useCardModalActions({
+    card,
+    activeBoard,
+    columns,
+    form,
+    state,
+    modal,
+    cards,
+    moveCard,
+}) {
+    const { title, setTitle, description, setDescription, columnId, setColumnId } = form;
+    const { isCreating, editMode, setEditMode, triggerAnimation, resetAnimation } = state;
+
+    const handleSelect = (nextColumnId) => {
+        setColumnId(nextColumnId);
+
+        if (!editMode) {
+            moveCard(card.id, { boardId: activeBoard, columnId: nextColumnId });
+        }
+    };
+
+    const handleEdit = () => {
+        setEditMode(true); // animação será disparada pelo CSSTransition
+    };
+
+    const handleSave = () => {
+        if (!title.trim()) return showWarning("O título não pode ficar vazio.");
+        if (!columnId) return showWarning("Escolha uma coluna.");
+
+        const payload = {
+            title: title.trim(),
+            description: description.trim(),
+            columnId,
+            boardId: activeBoard,
+        };
+
+        card.isNew
+            ? cards.saveNewCard({ ...card, ...payload })
+            : cards.updateCard(card.id, payload);
+
+        setEditMode(false);
+        resetAnimation();
+        modal.closeModal();
+    };
+
+    const handleCancel = () => {
+        setTitle(card.title || "");
+        setDescription(card.description || "");
+        setColumnId(card.columnId ?? columns?.[0]?.id ?? null);
+        setEditMode(false);
+    };
+
+    const handleDelete = () => {
+        modal.openModal(ConfirmDeleteModal, {
+            type: "card",
+            onConfirm: () => {
+                cards.deleteCard(card.id, activeBoard);
+                modal.closeModal();
+            },
+            onCancel: modal.closeModal,
+        });
+    };
+
+    const handleClose = () => {
+        if (isCreating && !(title.trim() || description.trim())) {
+            cards.deleteCard(card.id, activeBoard);
+        }
+
+        resetAnimation();
+        setEditMode(false);
+        modal.closeModal();
+    };
+
+    return {
+        handleSelect,
+        handleEdit,
+        handleSave,
+        handleCancel,
+        handleDelete,
+        handleClose,
+    };
+}

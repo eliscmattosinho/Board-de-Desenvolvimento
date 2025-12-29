@@ -1,0 +1,76 @@
+import React from "react";
+import { SiCcleaner } from "react-icons/si";
+
+import BoardSection from "@board/components/BoardSection";
+import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
+
+import "./ActiveBoard.css"
+
+export default function ActiveBoard({
+    activeBoard,
+    columns,
+    orderedTasks,
+    commitDrop,
+    onPointerUp,
+    title,
+    taskCount,
+    handlers,
+}) {
+    return (
+        <article className="hub-active-board">
+            <header className="board-header">
+                <div className="board-title-container">
+                    <h3 id="board-title" className="title-thematic">
+                        {title}
+                        <span className="task-counter">
+                            ({taskCount})
+                        </span>
+                    </h3>
+
+                    <FloatingMenu
+                        columns={columns}
+                        onAddTask={handlers.addTask}
+                        onAddColumn={handlers.addColumn}
+                    />
+                </div>
+
+                <button
+                    id="board-cleaner"
+                    className="board-icon clean-icon"
+                    onClick={handlers.clear}
+                    data-tooltip="Limpar tarefas"
+                >
+                    <SiCcleaner size={30} />
+                </button>
+            </header>
+
+            <div
+                className="board-content"
+                onPointerUp={(e) => {
+                    commitDrop();
+                    onPointerUp(e);
+                }}
+                onPointerCancel={(e) => {
+                    commitDrop();
+                    onPointerUp(e);
+                }}
+                onLostPointerCapture={(e) => {
+                    commitDrop();
+                    onPointerUp(e);
+                }}
+            >
+                <BoardSection
+                    id={activeBoard}
+                    columns={columns}
+                    tasks={orderedTasks}
+                    onTaskClick={handlers.onTaskClick}
+                    onAddTask={handlers.addTask}
+                    onAddColumn={handlers.addColumn}
+                    removeColumn={handlers.removeColumn}
+                    activeBoard={activeBoard}
+                    isActive
+                />
+            </div>
+        </article>
+    );
+}

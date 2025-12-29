@@ -1,0 +1,18 @@
+.hub-content {
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    flex-direction: column;
+    gap: 3rem;
+
+    max-width: 960px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+    overflow: hidden;
+}
+
+#board-title::first-letter,
+.hub-boards .btn-board::first-letter {
+    text-transform: uppercase;
+}

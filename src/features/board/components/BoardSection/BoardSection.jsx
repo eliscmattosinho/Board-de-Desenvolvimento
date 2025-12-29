@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 
-import { useGesture } from "@board/context/GestureContext";
+import { useGesture } from "@/context/GestureContext";
 import { useBoardPan } from "@board/context/BoardPanContext";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";

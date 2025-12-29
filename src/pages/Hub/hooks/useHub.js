@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { useBoardContext } from "@board/context/BoardContext";
-import { useGesture } from "@board/context/GestureContext";
+import { useGesture } from "@/context/GestureContext";
 
 export function useHub() {
     const navigate = useNavigate();

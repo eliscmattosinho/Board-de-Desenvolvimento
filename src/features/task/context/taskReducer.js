@@ -27,11 +27,29 @@ const syncedBoardsMap = getSyncedBoardsMap();
 function persistSubset(tasks, target, isGroup) {
   const subset = isGroup
     ? tasks.filter(
-      t => (syncedBoardsMap[t.boardId] ?? t.boardId) === target
-    )
-    : tasks.filter(t => t.boardId === target);
+        (t) => (syncedBoardsMap[t.boardId] ?? t.boardId) === target
+      )
+    : tasks.filter((t) => t.boardId === target);
 
   saveTasks(subset, isGroup ? { groupId: target } : { boardId: target });
+}
+
+/**
+ * Reordena tasks de uma coluna específica
+ */
+function normalizeColumnOrder(tasks, boardId, columnId) {
+  const scoped = tasks
+    .filter(
+      (t) =>
+        t.boardId === boardId &&
+        (t.columnId === columnId || t.mirrorColId === columnId)
+    )
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  return tasks.map((t) => {
+    const idx = scoped.findIndex((s) => s.id === t.id);
+    return idx === -1 ? t : { ...t, order: idx };
+  });
 }
 
 export function taskReducer(state, action) {
@@ -57,21 +75,22 @@ export function taskReducer(state, action) {
         mirrorColId = mirror.columnId ?? null;
       }
 
-      const updatedTask = {
-        ...task,
-        mirrorColId,
-      };
+      const updated = [...state.tasks, { ...task, mirrorColId }];
 
-      const updated = [...state.tasks, updatedTask];
+      const normalized = normalizeColumnOrder(
+        updated,
+        task.boardId,
+        task.columnId
+      );
 
       persistSubset(
-        updated,
+        normalized,
         groupId ?? task.boardId,
         Boolean(groupId)
       );
 
       return {
-        tasks: updated,
+        tasks: normalized,
         nextId: state.nextId + 1,
       };
     }
@@ -79,45 +98,77 @@ export function taskReducer(state, action) {
     /* Move task entre colunas */
     case ACTIONS.MOVE_TASK: {
       const { taskId, payload } = action;
-      const { boardId, columnId } = payload;
+      const { boardId, columnId, position, targetTaskId } = payload;
 
       const original = state.tasks.find(
-        t => String(t.id) === String(taskId)
+        (t) => String(t.id) === String(taskId)
       );
       if (!original) return state;
 
-      const mirror = getMirrorLocation(boardId, columnId);
-      const groupId = syncedBoardsMap[boardId];
+      const resolvedBoardId = boardId ?? original.boardId;
+      const groupId = syncedBoardsMap[resolvedBoardId];
       const isGrouped = Boolean(groupId);
+      const mirror = getMirrorLocation(resolvedBoardId, columnId);
 
       const boardsInScope = isGrouped
         ? Object.keys(syncedBoardsMap).filter(
-          b => (syncedBoardsMap[b] ?? b) === groupId
-        )
+            (b) => (syncedBoardsMap[b] ?? b) === groupId
+          )
         : [original.boardId];
 
-      const updated = state.tasks
-        .map(t => {
-          if (!boardsInScope.includes(t.boardId)) return t;
-          if (String(t.id) !== String(taskId)) return t;
+      let updated = state.tasks.map((t) => {
+        if (!boardsInScope.includes(t.boardId)) return t;
+        if (String(t.id) !== String(taskId)) return t;
 
-          const nextColumnId =
-            t.boardId === boardId
-              ? columnId
-              : mirror.columnId ?? columnId;
+        const nextColumnId =
+          t.boardId === resolvedBoardId
+            ? columnId
+            : mirror.columnId ?? columnId;
 
-          return {
-            ...t,
-            boardId: t.boardId === original.boardId ? boardId : t.boardId,
-            columnId: nextColumnId,
-            mirrorColId: mirror.columnId ?? null,
-          };
-        })
-        .map((t, i) => ({ ...t, order: i }));
+        return {
+          ...t,
+          boardId:
+            t.boardId === original.boardId ? resolvedBoardId : t.boardId,
+          columnId: nextColumnId,
+          mirrorColId: mirror.columnId ?? null,
+        };
+      });
+
+      const columnTasks = updated
+        .filter(
+          (t) =>
+            t.boardId === resolvedBoardId &&
+            (t.columnId === columnId || t.mirrorColId === columnId)
+        )
+        .filter((t) => String(t.id) !== String(taskId))
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+      let insertIndex = 0;
+
+      if (position === "before" || position === "after") {
+        const targetIndex = columnTasks.findIndex(
+          (t) => String(t.id) === String(targetTaskId)
+        );
+        if (targetIndex !== -1) {
+          insertIndex =
+            position === "before" ? targetIndex : targetIndex + 1;
+        }
+      }
+
+      const movedTask = updated.find(
+        (t) => String(t.id) === String(taskId)
+      );
+
+      columnTasks.splice(insertIndex, 0, movedTask);
+
+      updated = updated.map((t) => {
+        const idx = columnTasks.findIndex((c) => c.id === t.id);
+        return idx === -1 ? t : { ...t, order: idx };
+      });
 
       persistSubset(
         updated,
-        groupId ?? boardId,
+        groupId ?? resolvedBoardId,
         isGrouped
       );
 
@@ -126,14 +177,14 @@ export function taskReducer(state, action) {
 
     /** Atualização semântica */
     case ACTIONS.UPDATE_TASK: {
-      const updated = state.tasks.map(t =>
+      const updated = state.tasks.map((t) =>
         String(t.id) === String(action.taskId)
           ? { ...t, ...action.changes }
           : t
       );
 
       const changed = updated.find(
-        t => String(t.id) === String(action.taskId)
+        (t) => String(t.id) === String(action.taskId)
       );
 
       if (changed) {
@@ -150,31 +201,39 @@ export function taskReducer(state, action) {
 
     /* Remoção de task */
     case ACTIONS.DELETE_TASK: {
-      const updated = state.tasks
-        .filter(t => String(t.id) !== String(action.taskId))
-        .map((t, i) => ({ ...t, order: i }));
-
       const removed = state.tasks.find(
-        t => String(t.id) === String(action.taskId)
+        (t) => String(t.id) === String(action.taskId)
+      );
+
+      const updated = state.tasks.filter(
+        (t) => String(t.id) !== String(action.taskId)
       );
 
       if (removed) {
+        const normalized = normalizeColumnOrder(
+          updated,
+          removed.boardId,
+          removed.columnId
+        );
+
         const groupId = syncedBoardsMap[removed.boardId];
         persistSubset(
-          updated,
+          normalized,
           groupId ?? removed.boardId,
           Boolean(groupId)
         );
+
+        return { ...state, tasks: normalized };
       }
 
-      return { ...state, tasks: updated };
+      return state;
     }
 
     /* Limpeza por groupId ou boardId */
     case ACTIONS.CLEAR_TASKS: {
       const { groupId, boardId } = action;
 
-      const filtered = state.tasks.filter(t => {
+      const filtered = state.tasks.filter((t) => {
         const realGroup = syncedBoardsMap[t.boardId];
         if (groupId) return realGroup !== groupId;
         if (boardId) return t.boardId !== boardId;

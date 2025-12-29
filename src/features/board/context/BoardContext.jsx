@@ -60,12 +60,12 @@ export function BoardProvider({ children }) {
     if (!result) return;
 
     const { taskId, target } = result;
-    moveTask(taskId, target);
-  }, [commitDrop, moveTask]);
+    moveTask(taskId, {
+      boardId: activeBoard,
+      ...target,
+    });
+  }, [commitDrop, moveTask, activeBoard]);
 
-  /**
-   * Tasks visíveis no board ativo
-   */
   const {
     orderedTasks,
     handleAddTask,
@@ -105,11 +105,7 @@ export function BoardProvider({ children }) {
   const handleDeleteBoard = (boardId) => {
     deleteBoard(boardId, () => {
       const boardColumns = columns?.[boardId] ?? [];
-
-      boardColumns.forEach((col) => {
-        removeColumn(boardId, col.id);
-      });
-
+      boardColumns.forEach((col) => removeColumn(boardId, col.id));
       clearTasks({ boardId });
     });
   };

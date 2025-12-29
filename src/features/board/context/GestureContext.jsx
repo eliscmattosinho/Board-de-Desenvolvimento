@@ -14,12 +14,10 @@ export function GestureProvider({ children }) {
     lastX: 0,
     lastY: 0,
     source: null, // "board" | "card"
-    meta: {},
+    meta: null,
   });
 
-  const timers = useRef({
-    longPress: null,
-  });
+  const timers = useRef({ longPress: null });
 
   const reset = useCallback(() => {
     clearTimeout(timers.current.longPress);
@@ -29,7 +27,7 @@ export function GestureProvider({ children }) {
       mode: "idle",
       pointerId: null,
       source: null,
-      meta: {},
+      meta: null,
     });
   }, []);
 
@@ -50,63 +48,39 @@ export function GestureProvider({ children }) {
     if (source === "card") {
       timers.current.longPress = setTimeout(() => {
         s.mode = "drag-card";
-        e.currentTarget?.setPointerCapture?.(e.pointerId);
       }, LONG_PRESS_DELAY);
     }
   }, []);
 
-  const onPointerMove = useCallback(
-    (e) => {
-      const s = stateRef.current;
-      if (e.pointerId !== s.pointerId) return;
+  const onPointerMove = useCallback((e) => {
+    const s = stateRef.current;
+    if (e.pointerId !== s.pointerId) return;
 
-      if (e.buttons === 0) {
-        reset();
-        return;
+    const dx = e.clientX - s.startX;
+    const dy = e.clientY - s.startY;
+    const distance = Math.hypot(dx, dy);
+
+    if (s.mode === "idle" && distance > DRAG_THRESHOLD) {
+      clearTimeout(timers.current.longPress);
+
+      if (s.source === "board") {
+        s.mode = "pan";
       }
+    }
 
-      const dx = e.clientX - s.startX;
-      const dy = e.clientY - s.startY;
-      const distance = Math.hypot(dx, dy);
+    s.lastX = e.clientX;
+    s.lastY = e.clientY;
+  }, []);
 
-      if (s.mode === "idle" && distance > DRAG_THRESHOLD) {
-        clearTimeout(timers.current.longPress);
-        timers.current.longPress = null;
-
-        if (s.source === "board") {
-          s.mode = "pan";
-          e.currentTarget?.setPointerCapture?.(e.pointerId);
-        }
-      }
-
-      s.lastX = e.clientX;
-      s.lastY = e.clientY;
-    },
-    [reset]
-  );
-
-  const onPointerUp = useCallback(
-    (e) => {
-      const snapshot = { ...stateRef.current };
-
-      try {
-        e.currentTarget?.releasePointerCapture?.(snapshot.pointerId);
-      } catch {}
-
-      reset();
-      return snapshot;
-    },
-    [reset]
-  );
+  const onPointerUp = useCallback(() => {
+    const snapshot = { ...stateRef.current };
+    reset();
+    return snapshot;
+  }, [reset]);
 
   return (
     <GestureContext.Provider
-      value={{
-        stateRef,
-        onPointerDown,
-        onPointerMove,
-        onPointerUp,
-      }}
+      value={{ stateRef, onPointerDown, onPointerMove, onPointerUp }}
     >
       {children}
     </GestureContext.Provider>

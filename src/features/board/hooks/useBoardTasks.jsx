@@ -5,10 +5,6 @@ import CardModal from "@card/components/CardModal/CardModal";
 import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
 import { getDisplayStatus } from "@board/components/templates/taskBoardResolver";
 
-/**
- * Hook responsável por preparar as tasks para exibição no board ativo,
- * expõe handlers para adicionar / limpar / abrir task.
- */
 export function useBoardTasks({
   tasks,
   addTask,
@@ -18,62 +14,39 @@ export function useBoardTasks({
   activeBoard,
   openModal,
 }) {
-  /**
-   * Ordenação global
-   */
-  const orderedGlobal = useMemo(
-    () => [...tasks].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
-    [tasks]
-  );
-
-  /**
-   * Identificação de board compartilhado
-   */
   const activeGroupId = syncedBoardsMap[activeBoard] ?? null;
   const isSharedBoard = Boolean(activeGroupId);
 
-  /**
-   * Tasks adaptadas para exibição no board ativo
-   */
   const orderedTasks = useMemo(() => {
-    return orderedGlobal
-      .filter((t) => {
-        if (isSharedBoard) {
-          const tGroup = syncedBoardsMap[t.boardId] ?? null;
-          return tGroup === activeGroupId;
-        }
-        return t.boardId === activeBoard;
-      })
+    const visible = tasks.filter((t) => {
+      if (isSharedBoard) {
+        return (syncedBoardsMap[t.boardId] ?? null) === activeGroupId;
+      }
+      return t.boardId === activeBoard;
+    });
+
+    return visible
       .map((t) => {
-        if (!isSharedBoard) {
-          const displayColumnId = t.columnId ?? null;
-
-          return {
-            ...t,
-            displayColumnId,
-            displayStatus: getDisplayStatus(displayColumnId, activeBoard),
-          };
-        }
-
         const displayColumnId =
-          t.boardId === activeBoard ? t.columnId : t.mirrorColId;
-
-        const displayStatus = getDisplayStatus(
-          displayColumnId,
-          activeBoard
-        );
+          !isSharedBoard
+            ? t.columnId
+            : t.boardId === activeBoard
+              ? t.columnId
+              : t.mirrorColId;
 
         return {
           ...t,
           displayColumnId,
-          displayStatus,
+          displayStatus: getDisplayStatus(displayColumnId, activeBoard),
         };
+      })
+      .sort((a, b) => {
+        if (a.displayColumnId < b.displayColumnId) return -1;
+        if (a.displayColumnId > b.displayColumnId) return 1;
+        return (a.order ?? 0) - (b.order ?? 0);
       });
-  }, [orderedGlobal, activeBoard, isSharedBoard, activeGroupId]);
+  }, [tasks, activeBoard, isSharedBoard, activeGroupId]);
 
-  /**
-   * Adiciona nova task e abre modal
-   */
   const handleAddTask = useCallback(
     (columnId = null) => {
       const viewColumns = columns?.[activeBoard] ?? [];
@@ -94,14 +67,11 @@ export function useBoardTasks({
     [addTask, activeBoard, columns, moveTask, openModal]
   );
 
-  /**
-   * Limpa tasks do board ou grupo
-   */
   const handleClearBoard = useCallback(() => {
     const groupId = syncedBoardsMap[activeBoard] ?? null;
     const isShared = Boolean(groupId);
 
-    const boardTasks = orderedGlobal.filter((t) =>
+    const boardTasks = tasks.filter((t) =>
       isShared
         ? (syncedBoardsMap[t.boardId] ?? null) === groupId
         : t.boardId === activeBoard
@@ -115,23 +85,17 @@ export function useBoardTasks({
     showCustom(({ closeToast }) => (
       <ClearBoardToast
         onConfirm={() => {
-          if (isShared) {
-            clearTasks({ groupId });
-          } else {
-            clearTasks({ boardId: activeBoard });
-          }
+          isShared
+            ? clearTasks({ groupId })
+            : clearTasks({ boardId: activeBoard });
           closeToast();
           showSuccess("Todas as tarefas foram removidas com sucesso!");
         }}
         onCancel={closeToast}
       />
     ));
-  }, [orderedGlobal, activeBoard, clearTasks]);
+  }, [tasks, activeBoard, clearTasks]);
 
-  /**
-   * Abre modal de edição / visualização
-   * normaliza columnId usando displayColumnId
-   */
   const handleTaskClick = useCallback(
     (task) => {
       openModal(CardModal, {
@@ -147,19 +111,9 @@ export function useBoardTasks({
     [activeBoard, columns, moveTask, openModal]
   );
 
-  /**
-   * Contador de tasks do board ativo
-   */
   const activeBoardTaskCount = useMemo(() => {
-    const groupId = syncedBoardsMap[activeBoard] ?? null;
-    const isShared = Boolean(groupId);
-
-    return orderedGlobal.filter((t) =>
-      isShared
-        ? (syncedBoardsMap[t.boardId] ?? null) === groupId
-        : t.boardId === activeBoard
-    ).length;
-  }, [orderedGlobal, activeBoard]);
+    return orderedTasks.length;
+  }, [orderedTasks]);
 
   return {
     orderedTasks,

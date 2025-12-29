@@ -4,6 +4,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import ColumnHeader from "./ColumnHeader";
 import ColumnTasks from "./ColumnTasks";
 import useColumn from "@column/hooks/useColumn";
+import { useCardDrag } from "@board/context/CardDragContext";
 
 import "./Column.css";
 
@@ -15,26 +16,24 @@ function Column({
   color,
   applyTo,
   tasks,
-  onDrop,
   onTaskClick,
-  onDragStart,
   onAddTask,
   onEdit,
   onRemove,
 }) {
+  const { setDropTarget, isDraggingCard } = useCardDrag();
+
   const {
     colStyle,
     dragOverIndex,
     dragPosition,
-    handleDropTask,
-    handleDragOverTask,
-    handleDragLeaveTask,
+    setDragOver,
+    clearDragOver,
     handleAddTaskClick,
     handleEditClick,
     handleRemoveClick,
   } = useColumn({
     id,
-    onDrop,
     onAddTask,
     onEdit,
     onRemove,
@@ -43,56 +42,63 @@ function Column({
     applyTo,
   });
 
-  const colKey = className?.split(" ").pop() || "default";
-
-  // Decide a cor do título: se a borda estiver aplicada, usa a cor da borda
-  const headerTextColor = colStyle.border !== "transparent" ? colStyle.border : colStyle.color;
-
   return (
     <div
-      className={`board-col ${className}`}
+      className={`board-col ${className ?? ""}`}
       id={id}
       style={{
         "--col-bg": colStyle.bg,
         "--col-border": colStyle.border,
         "--col-font": colStyle.color,
       }}
+      onPointerEnter={() => {
+        if (!isDraggingCard()) return;
+
+        setDropTarget({
+          columnId: id,
+          position: "top",
+        });
+      }}
+      onPointerLeave={() => {
+        clearDragOver();
+      }}
     >
       <ColumnHeader
         title={title}
         tasksLength={tasks.length}
-        textColor={headerTextColor}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => handleDropTask(e, null)}
       />
 
-      <div className={`col-items ${colKey}-items ${tasks.length === 0 ? "none" : ""}`}>
+      <div className="col-items">
         <ColumnTasks
           tasks={tasks}
           dragOverIndex={dragOverIndex}
           dragPosition={dragPosition}
           onTaskClick={onTaskClick}
-          onDragStart={onDragStart}
-          onDropTask={handleDropTask}
-          onDragOverTask={handleDragOverTask}
-          onDragLeaveTask={handleDragLeaveTask}
+          onHoverTask={(taskId, position) => {
+            if (!isDraggingCard()) return;
+
+            setDragOver(taskId, position);
+            setDropTarget({
+              columnId: id,
+              targetTaskId: taskId,
+              position,
+            });
+          }}
+          onLeaveTask={clearDragOver}
         />
-        {tasks.length === 0 && <div className="task-placeholder active"></div>}
+
+        {tasks.length === 0 && isDraggingCard() && (
+          <div className="task-placeholder active" />
+        )}
       </div>
 
       {onAddTask && (
         <button className="add-task" onClick={handleAddTaskClick}>
-          <CiCirclePlus size={30} className="plus-icon" />
+          <CiCirclePlus size={30} />
         </button>
       )}
-
-      <div
-        className="drop-zone"
-        onDrop={(e) => handleDropTask(e, null)}
-        onDragOver={(e) => e.preventDefault()}
-      />
     </div>
   );
 }

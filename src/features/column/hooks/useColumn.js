@@ -1,54 +1,22 @@
 import { useState, useCallback } from "react";
 import { useColumnStyle } from "./useColumnStyle";
 
-export function useDnDLogic({ id, onDrop, onAddTask, onEdit, onRemove }) {
+export default function useColumn({ id, onAddTask, onEdit, onRemove, style, color, applyTo, }) {
+  const colStyle = useColumnStyle({ id, style, color, applyTo });
+
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
 
-  /**
-   * Assinatura
-   * handleDrop(event, columnId, targetTaskId, position)
-   */
-  const handleDropTask = useCallback(
-    (e, targetTaskId = null, position = null) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      setDragOverIndex(null);
-      setDragPosition(null);
-
-      if (!id) return;
-
-      onDrop?.(e, id, targetTaskId, position);
-    },
-    [id, onDrop]
-  );
-
-  /**
-   * Drag over em uma task (define posição above / below)
-   */
-  const handleDragOverTask = useCallback((e, taskId) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const { top, height } = e.currentTarget.getBoundingClientRect();
-    const isAbove = e.clientY - top < height / 2;
-
+  const setDragOver = useCallback((taskId, position) => {
     setDragOverIndex(taskId);
-    setDragPosition(isAbove ? "above" : "below");
+    setDragPosition(position);
   }, []);
 
-  /**
-   * Saiu do hover de uma task
-   */
-  const handleDragLeaveTask = useCallback(() => {
+  const clearDragOver = useCallback(() => {
     setDragOverIndex(null);
     setDragPosition(null);
   }, []);
 
-  /**
-   * Ações auxiliares
-   */
   const handleAddTaskClick = useCallback(
     () => onAddTask?.(id),
     [id, onAddTask]
@@ -71,20 +39,13 @@ export function useDnDLogic({ id, onDrop, onAddTask, onEdit, onRemove }) {
   );
 
   return {
+    colStyle,
     dragOverIndex,
     dragPosition,
-    handleDropTask,
-    handleDragOverTask,
-    handleDragLeaveTask,
+    setDragOver,
+    clearDragOver,
     handleAddTaskClick,
     handleEditClick,
     handleRemoveClick,
   };
-}
-
-export default function useColumn(props) {
-  const colStyle = useColumnStyle(props);
-  const dndLogic = useDnDLogic(props);
-
-  return { colStyle, ...dndLogic };
 }

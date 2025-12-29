@@ -3,11 +3,21 @@ import { ACTIONS } from "./taskReducer";
 export function useTaskActions(state, dispatch) {
   /**
    * Cria task temporária (UI only)
+   * Define order inicial com base na coluna
    */
   const addTask = (columnId = null, { boardId } = {}) => {
     if (!boardId) throw new Error("addTask requires boardId");
 
     const tempId = String(state.nextId);
+
+    const columnTasks = state.tasks.filter(
+      (t) => t.boardId === boardId && t.columnId === columnId
+    );
+
+    const nextOrder =
+      columnTasks.length > 0
+        ? Math.max(...columnTasks.map((t) => t.order ?? 0)) + 1
+        : 0;
 
     return {
       id: tempId,
@@ -17,7 +27,7 @@ export function useTaskActions(state, dispatch) {
       boardId,
       columnId,
       mirrorColId: null,
-      order: state.tasks.length,
+      order: nextOrder,
       isNew: true,
       createdAt: new Date().toISOString(),
     };
@@ -42,10 +52,11 @@ export function useTaskActions(state, dispatch) {
     return newTask;
   };
 
-  /** Move task entre colunas */
-  const moveTask = (taskId, { boardId, columnId }) => {
+  /**
+   * Move task com suporte a DnD posicional
+   */
+  const moveTask = (taskId, { boardId, columnId, position, targetTaskId } = {}) => {
     if (!taskId) throw new Error("moveTask requires taskId");
-    if (!boardId) throw new Error("moveTask requires boardId");
 
     dispatch({
       type: ACTIONS.MOVE_TASK,
@@ -53,6 +64,8 @@ export function useTaskActions(state, dispatch) {
       payload: {
         boardId,
         columnId,
+        position,
+        targetTaskId,
       },
     });
   };

@@ -10,22 +10,20 @@ export function BoardPanProvider({ children }) {
   const lastX = useRef(0);
 
   const start = useCallback((e, container) => {
+    if (!container) return;
     lastX.current = e.clientX;
     container.classList.add("panning");
   }, []);
 
-  const onMove = useCallback(
-    (e, container) => {
-      if (stateRef.current.mode !== "pan") return;
+  const onMove = useCallback((e, container) => {
+    if (stateRef.current.mode !== "pan") return;
 
-      const dx = e.clientX - lastX.current;
-      lastX.current = e.clientX;
+    const dx = e.clientX - lastX.current;
+    lastX.current = e.clientX;
 
-      velocity.current = dx;
-      container.scrollLeft -= dx;
-    },
-    [stateRef]
-  );
+    velocity.current = dx;
+    container.scrollLeft -= dx;
+  }, [stateRef]);
 
   const end = useCallback((container) => {
     if (!container) return;

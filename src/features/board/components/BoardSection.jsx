@@ -95,6 +95,8 @@ function BoardSection({
           source: "board",
           meta: { boardId: id },
         });
+
+        // Board apenas observa e inicia pan (sem capturar)
         start(e, containerRef.current);
       }}
       onPointerMove={(e) => {
@@ -131,7 +133,9 @@ function BoardSection({
               onMouseEnter={() =>
                 handleColumnHover("hoverEnter", index)
               }
-              onMouseLeave={() => handleColumnHover("hoverLeave")}
+              onMouseLeave={() =>
+                handleColumnHover("hoverLeave")
+              }
             >
               {hoveredIndex === index && (
                 <AddColumnIndicator

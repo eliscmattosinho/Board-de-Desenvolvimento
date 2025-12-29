@@ -4,7 +4,7 @@ import { useCardsContext } from "@card/context/CardContext";
 import useCardForm from "@card/hooks/useCardForm";
 
 import Modal from "@components/Modal/Modal";
-import CardContent from "@card/components/CardContent";
+import CardContent from "@/features/card/components/CardModal/CardContent";
 import CardActions from "./CardActions";
 
 import { useCardModalState } from "@card/hooks/useCardModalState";

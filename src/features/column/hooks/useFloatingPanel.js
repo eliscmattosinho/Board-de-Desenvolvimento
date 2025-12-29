@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
  * @param {object} panelRef - useRef para o painel
  * @param {object} anchorRef - useRef para o elemento que abre o painel
  */
-export default function useDragFloatingPanel(panelRef, anchorRef) {
+export default function useFloatingPanel(panelRef, anchorRef) {
     const [position, setPosition] = useState(null);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);

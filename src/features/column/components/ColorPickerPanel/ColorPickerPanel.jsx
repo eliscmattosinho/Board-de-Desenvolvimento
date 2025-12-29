@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { FiRefreshCcw } from "react-icons/fi";
 
-import useDragFloatingPanel from "@column/hooks/useDragFloatingPanel";
+import useFloatingPanel from "@column/hooks/useFloatingPanel";
 import ColorPickerBase from "./ColorPickerBase";
 
 import "./ColorPickerPanel.css";
@@ -22,7 +22,7 @@ export default function ColorPickerPanel({
         isDragging,
         handleMouseDown,
         handleTouchStart
-    } = useDragFloatingPanel(panelRef, anchorRef);
+    } = useFloatingPanel(panelRef, anchorRef);
 
     // fechar ao clicar fora
     useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import CardItem from "./CardItem/CardItem";
+import CardItem from "@card/components/CardItem/CardItem";
 
 const ColumnCards = React.memo(
   ({

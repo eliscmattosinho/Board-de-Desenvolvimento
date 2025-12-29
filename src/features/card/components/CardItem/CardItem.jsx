@@ -6,8 +6,7 @@ function CardItem({
   card,
   onClick,
   onPointerMove,
-  onPointerLeave,
-  dragPosition,
+  onPointerLeave
 }) {
   const { startDrag, endDrag, isDraggingCard } = useCardDrag();
   const ref = useRef(null);

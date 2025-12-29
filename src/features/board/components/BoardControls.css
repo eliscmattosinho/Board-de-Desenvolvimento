@@ -25,6 +25,25 @@
     cursor: grabbing;
 }
 
+.hub-boards {
+    flex-shrink: 0;
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.hub-boards::-webkit-scrollbar {
+    display: none;
+}
+
+.hub-boards .btn-board {
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
 .btn-board {
     position: relative;
     background: transparent;

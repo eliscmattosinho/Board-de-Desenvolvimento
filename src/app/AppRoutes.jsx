@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Building from "@pages/Building";
-import Hub from "@pages/Hub";
+import Hub from "@/pages/Hub/Hub";
 import NotFound from "@pages/NotFound";
 
 import { BoardProvider } from "@board/context/BoardContext";

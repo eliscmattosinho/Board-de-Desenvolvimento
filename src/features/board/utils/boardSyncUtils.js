@@ -7,7 +7,7 @@ let _syncedBoardsMap;
 
 /**
  * Retorna o mapa boardId -> groupId
- * Boards no mesmo groupId compartilham tasks
+ * Boards no mesmo groupId compartilham cards
  */
 export function getSyncedBoardsMap() {
   if (_syncedBoardsMap) return _syncedBoardsMap;
@@ -101,7 +101,7 @@ export const columnMirrorMap = {
 };
 
 /**
- * Resolve a localização espelhada de uma task
+ * Resolve a localização espelhada de uma card
  *
  * @param {string} boardId - board atual
  * @param {string} columnId - coluna atual

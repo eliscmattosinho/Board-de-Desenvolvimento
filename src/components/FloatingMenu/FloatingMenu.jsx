@@ -3,7 +3,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { showWarning } from "@utils/toastUtils";
 import "./FloatingMenu.css";
 
-function FloatingMenu({ onAddTask, onAddColumn, columns }) {
+function FloatingMenu({ onAddCard, onAddColumn, columns }) {
     const [open, setOpen] = useState(false);
     const [isTouch, setIsTouch] = useState(false);
     const menuRef = useRef(null);
@@ -27,15 +27,15 @@ function FloatingMenu({ onAddTask, onAddColumn, columns }) {
         }
     }, [isTouch]);
 
-    const handleAddTaskClick = useCallback(() => {
+    const handleAddCardClick = useCallback(() => {
         if (!columns || columns.length === 0) {
             showWarning("Ops! Não tenho para onde ir, crie algumas colunas primeiro.");
             setOpen(false);
             return;
         }
-        onAddTask();
+        onAddCard();
         setOpen(false);
-    }, [onAddTask, columns]);
+    }, [onAddCard, columns]);
 
     const handleAddColumnClick = useCallback(() => {
         onAddColumn(columns.length);
@@ -76,7 +76,7 @@ function FloatingMenu({ onAddTask, onAddColumn, columns }) {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
-                    <button className="menu-item" onClick={handleAddTaskClick}>
+                    <button className="menu-item" onClick={handleAddCardClick}>
                         Adicionar tarefa
                     </button>
                     <button className="menu-item" onClick={handleAddColumnClick}>

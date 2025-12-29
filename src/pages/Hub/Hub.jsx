@@ -32,18 +32,18 @@ export default function Hub() {
           activeBoard={hub.activeBoard}
           columns={hub.columns?.[hub.activeBoard] ?? []}
 
-          orderedTasks={hub.orderedTasks}
+          orderedCards={hub.orderedCards}
           commitDrop={hub.commitDrop}
           onPointerUp={hub.onPointerUp}
 
           title={hub.activeBoardTitle ?? "Board"}
-          taskCount={hub.activeBoardTaskCount ?? 0}
+          cardCount={hub.activeBoardCardCount ?? 0}
           handlers={{
-            addTask: hub.handleAddTask,
+            addCard: hub.handleAddCard,
             addColumn: hub.handleAddColumn,
             clear: hub.handleClearBoard,
             removeColumn: hub.removeColumn,
-            onTaskClick: hub.handleTaskClick,
+            onCardClick: hub.handleCardClick,
           }}
         />
       </section>

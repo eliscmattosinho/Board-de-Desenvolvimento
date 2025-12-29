@@ -9,11 +9,11 @@ import "./ActiveBoard.css"
 export default function ActiveBoard({
     activeBoard,
     columns,
-    orderedTasks,
+    orderedCards,
     commitDrop,
     onPointerUp,
     title,
-    taskCount,
+    cardCount,
     handlers,
 }) {
     return (
@@ -22,14 +22,14 @@ export default function ActiveBoard({
                 <div className="board-title-container">
                     <h3 id="board-title" className="title-thematic">
                         {title}
-                        <span className="task-counter">
-                            ({taskCount})
+                        <span className="card-counter">
+                            ({cardCount})
                         </span>
                     </h3>
 
                     <FloatingMenu
                         columns={columns}
-                        onAddTask={handlers.addTask}
+                        onAddCard={handlers.addCard}
                         onAddColumn={handlers.addColumn}
                     />
                 </div>
@@ -62,9 +62,9 @@ export default function ActiveBoard({
                 <BoardSection
                     id={activeBoard}
                     columns={columns}
-                    tasks={orderedTasks}
-                    onTaskClick={handlers.onTaskClick}
-                    onAddTask={handlers.addTask}
+                    cards={orderedCards}
+                    onCardClick={handlers.onCardClick}
+                    onAddCard={handlers.addCard}
                     onAddColumn={handlers.addColumn}
                     removeColumn={handlers.removeColumn}
                     activeBoard={activeBoard}

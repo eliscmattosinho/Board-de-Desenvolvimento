@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
 
-export default function useTaskForm(task, columns) {
+export default function useCardForm(card, columns) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [columnId, setColumnId] = useState(null);
 
   useEffect(() => {
-    if (!task) return;
+    if (!card) return;
 
-    setTitle(task.title || "");
-    setDescription(task.description || "");
+    setTitle(card.title || "");
+    setDescription(card.description || "");
 
-    if (task.columnId) {
-      setColumnId(task.columnId);
+    if (card.columnId) {
+      setColumnId(card.columnId);
       return;
     }
 
     if (columns?.length) {
       setColumnId(columns[0].id);
     }
-  }, [task, columns]);
+  }, [card, columns]);
 
   return {
     title,

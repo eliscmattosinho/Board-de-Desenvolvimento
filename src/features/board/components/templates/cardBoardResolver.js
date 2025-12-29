@@ -3,10 +3,10 @@ import { getMirrorLocation } from "@board/utils/boardSyncUtils";
 import { normalizeText } from "@utils/normalizeUtils";
 
 /**
- * Decide o board e a coluna de origem de uma task carregada (load)
+ * Decide o board e a coluna de origem de uma card carregada (load)
  *
  * Regras:
- * 1. Compara o status textual da task com o TÍTULO das colunas
+ * 1. Compara o status textual da card com o TÍTULO das colunas
  * 2. Prioridade: Kanban > Scrum
  * 3. Se não houver correspondência, cai no fallback absoluto do Kanban
  *
@@ -15,8 +15,8 @@ import { normalizeText } from "@utils/normalizeUtils";
  * - Não sincroniza estado
  * - Apenas define pertencimento inicial
  */
-export function getTaskColumn(task) {
-  const normalizedStatus = normalizeText(task.status);
+export function getCardColumn(card) {
+  const normalizedStatus = normalizeText(card.status);
 
   const findByTitle = (boardId) =>
     (boardTemplates[boardId] || []).find(

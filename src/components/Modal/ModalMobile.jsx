@@ -10,7 +10,7 @@ export default function ModalMobile({
 }) {
 
     // @TODO mudar comportamento de crud em mobile 
-    // @TODO sobreposição de modal exclude, (op: canceldelete return to task/column id modal?)
+    // @TODO sobreposição de modal exclude, (op: canceldelete return to card/column id modal?)
 
     const {
         sheetRef,

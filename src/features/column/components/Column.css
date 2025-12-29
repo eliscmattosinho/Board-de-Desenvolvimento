@@ -76,7 +76,7 @@
 }
 
 /* DnD area indicator */
-.task-placeholder {
+.card-placeholder {
   height: 0;
   width: 100%;
   margin: 5px;
@@ -86,13 +86,13 @@
   overflow: hidden;
 }
 
-.task-placeholder.active {
+.card-placeholder.active {
   height: auto;
   padding: 5px 0;
 }
 
 /* ADD CARD ELEMENT */
-.add-task {
+.add-card {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -111,11 +111,11 @@
   transition: all 0.5s ease-in-out;
 }
 
-.add-task:hover {
+.add-card:hover {
   background-color: var(--global-green);
 }
 
 /* Plus icon in light/dark mode on a green bg */
-.add-task:hover * {
+.add-card:hover * {
   color: var(--global-white);
 }

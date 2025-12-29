@@ -3,13 +3,13 @@ export function getActiveBoardTitle(boards, activeBoard) {
     return board?.title || activeBoard;
 }
 
-export function groupTasksByColumn({
+export function groupCardsByColumn({
     columns,
-    tasks,
+    cards,
     activeBoard,
 }) {
     return columns.reduce((acc, col) => {
-        acc[col.id] = tasks.filter((t) => {
+        acc[col.id] = cards.filter((t) => {
             if (t.boardId === activeBoard) {
                 return t.columnId === col.id;
             }

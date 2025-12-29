@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { showWarning } from "@utils/toastUtils";
-import useTaskForm from "@card/hooks/useTaskForm.js";
+import useCardForm from "@/features/card/hooks/useCardForm.js";
 import { useModal } from "@context/ModalContext";
-import { useTasksContext } from "@task/context/TaskContext";
+import { useCardsContext } from "@/features/card/context/CardContext";
 
 import Modal from "@components/Modal/Modal";
 import ConfirmDeleteModal from "@components/Modal/DeleteModal/ConfirmDeleteModal";
@@ -13,12 +13,12 @@ import CardActions from "./CardActions";
 import "./CardModal.css";
 
 export default function CardModal({
-    task,
+    card,
     activeBoard,
     columns,
-    moveTask,
+    moveCard,
 }) {
-    const isCreating = Boolean(task?.isNew);
+    const isCreating = Boolean(card?.isNew);
 
     const [editMode, setEditMode] = useState(isCreating);
     const [shouldAnimate, setShouldAnimate] = useState(false);
@@ -32,31 +32,31 @@ export default function CardModal({
         setDescription,
         columnId,
         setColumnId,
-    } = useTaskForm(task, columns);
+    } = useCardForm(card, columns);
 
     const { openModal, closeModal } = useModal();
-    const { saveNewTask, updateTask, deleteTask } = useTasksContext();
+    const { saveNewCard, updateCard, deleteCard } = useCardsContext();
 
     const modalTitle = (
         <>
-            Card <span className="task-id w-600">#{task.id}</span>
+            Card <span className="card-id w-600">#{card.id}</span>
         </>
     );
 
     const getOriginalColumnId = useCallback(
-        () => task?.columnId ?? columns[0]?.id ?? null,
-        [task, columns]
+        () => card?.columnId ?? columns[0]?.id ?? null,
+        [card, columns]
     );
 
     // Detecta alterações locais para habilitar Save
     useEffect(() => {
-        if (!editMode || !task) return;
+        if (!editMode || !card) return;
 
         const originalColumnId = getOriginalColumnId();
 
         const hasChanges =
-            title.trim() !== (task.title || "").trim() ||
-            description.trim() !== (task.description || "").trim() ||
+            title.trim() !== (card.title || "").trim() ||
+            description.trim() !== (card.description || "").trim() ||
             columnId !== originalColumnId;
 
         setDirty(hasChanges);
@@ -65,11 +65,11 @@ export default function CardModal({
         description,
         columnId,
         editMode,
-        task,
+        card,
         getOriginalColumnId,
     ]);
 
-    if (!task) return null;
+    if (!card) return null;
 
     const triggerAnimation = () => {
         setShouldAnimate(true);
@@ -79,13 +79,13 @@ export default function CardModal({
     /**
      * Seleção de coluna:
      * - Atualiza estado local
-     * - Se não estiver em edição, dispara MOVE_TASK
+     * - Se não estiver em edição, dispara MOVE_CARD
      */
     const handleSelect = (nextColumnId) => {
         setColumnId(nextColumnId);
 
         if (!editMode) {
-            moveTask(task.id, {
+            moveCard(card.id, {
                 boardId: activeBoard,
                 columnId: nextColumnId,
             });
@@ -110,16 +110,16 @@ export default function CardModal({
             return;
         }
 
-        if (task.isNew) {
-            saveNewTask({
-                ...task,
+        if (card.isNew) {
+            saveNewCard({
+                ...card,
                 title: trimmedTitle,
                 description: description.trim(),
                 columnId,
                 boardId: activeBoard,
             });
         } else {
-            updateTask(task.id, {
+            updateCard(card.id, {
                 title: trimmedTitle,
                 description: description.trim(),
                 columnId,
@@ -133,8 +133,8 @@ export default function CardModal({
 
     const handleCancel = () => {
         triggerAnimation();
-        setTitle(task.title || "");
-        setDescription(task.description || "");
+        setTitle(card.title || "");
+        setDescription(card.description || "");
         setColumnId(
             isCreating
                 ? columns?.[0]?.id ?? null
@@ -146,9 +146,9 @@ export default function CardModal({
 
     const handleDelete = () => {
         openModal(ConfirmDeleteModal, {
-            type: "task",
+            type: "card",
             onConfirm: () => {
-                deleteTask(task.id, activeBoard);
+                deleteCard(card.id, activeBoard);
                 closeModal();
                 handleClose();
             },
@@ -158,7 +158,7 @@ export default function CardModal({
 
     const handleClose = () => {
         /**
-         * Remove task temporária se:
+         * Remove card temporária se:
          * - está criando
          * - não salvou
          * - não digitou nada
@@ -167,7 +167,7 @@ export default function CardModal({
             isCreating &&
             !(title.trim() || description.trim())
         ) {
-            deleteTask(task.id, activeBoard);
+            deleteCard(card.id, activeBoard);
         }
 
         setEditMode(false);
@@ -184,7 +184,7 @@ export default function CardModal({
             closeTooltip={isCreating ? "O card não será salvo" : "Fechar"}
         >
             <div
-                className={`modal-content create-task-modal card-content-wrapper ${isAnimating ? "is-animating" : ""
+                className={`modal-content create-card-modal card-content-wrapper ${isAnimating ? "is-animating" : ""
                     }`}
             >
                 {isCreating ? (

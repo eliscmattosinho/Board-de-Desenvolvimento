@@ -37,7 +37,7 @@ export function useBoardActions(state, dispatch) {
   const deleteBoard = (id, syncCallback) => {
     dispatch({ type: ACTIONS.DELETE_BOARD, id });
 
-    // sincroniza colunas/tasks externas
+    // sincroniza colunas/cards externas
     if (syncCallback) syncCallback(id);
   };
 

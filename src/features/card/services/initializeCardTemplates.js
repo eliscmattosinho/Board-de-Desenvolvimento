@@ -1,25 +1,25 @@
-import { loadTemplateTasks } from "./loadTemplateTasks";
-import { loadTasksFromStorage, saveTasks } from "./taskPersistence";
-import { getTaskColumn } from "@board/components/templates/taskBoardResolver";
+import { loadTemplateCards } from "./loadTemplateCards";
+import { loadCardsFromStorage, saveCards } from "./cardPersistence";
+import { getCardColumn } from "@board/components/templates/cardBoardResolver";
 import { getMirrorLocation } from "@board/utils/boardSyncUtils";
 
-function signatureForTask(t) {
+function signatureForCard(t) {
   return `template:${t.id}`;
 }
 
-export async function initializeTasks() {
+export async function initializeCards() {
   try {
-    const loaded = await loadTemplateTasks();
+    const loaded = await loadTemplateCards();
     if (!loaded?.length) return [];
 
-    // Tasks já persistidas no grupo "shared"
-    const existing = loadTasksFromStorage({ groupId: "shared" }) || [];
+    // Cards já persistidas no grupo "shared"
+    const existing = loadCardsFromStorage({ groupId: "shared" }) || [];
 
-    const existingSignatures = new Set(existing.map(signatureForTask));
+    const existingSignatures = new Set(existing.map(signatureForCard));
 
     const normalized = loaded.map((t, i) => {
-      // Define onde a task nasce
-      const { boardId, columnId } = getTaskColumn(t);
+      // Define onde a card nasce
+      const { boardId, columnId } = getCardColumn(t);
 
       // Define onde ela se espelha
       const mirror = getMirrorLocation(boardId, columnId);
@@ -38,17 +38,17 @@ export async function initializeTasks() {
 
     // Remove duplicadas com base no templateId
     const filteredNew = normalized.filter(
-      t => !existingSignatures.has(signatureForTask(t))
+      t => !existingSignatures.has(signatureForCard(t))
     );
 
     const merged = [...existing, ...filteredNew];
 
     // Salva explicitamente no groupId "shared"
-    saveTasks(merged, { groupId: "shared" });
+    saveCards(merged, { groupId: "shared" });
 
     return merged;
   } catch (err) {
-    console.error("Erro ao inicializar tasks:", err);
+    console.error("Erro ao inicializar cards:", err);
     return [];
   }
 }

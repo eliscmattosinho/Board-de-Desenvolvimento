@@ -1,11 +1,11 @@
 import { createContext, useContext, useMemo, useCallback } from "react";
 
-import { useTasksContext } from "@task/context/TaskContext";
+import { useCardsContext } from "@/features/card/context/CardContext";
 import { useColumnsContext } from "@column/context/ColumnContext";
 import { useModal } from "@context/ModalContext";
 
 import { useBoardState } from "@board/hooks/useBoardState";
-import { useBoardTasks } from "@board/hooks/useBoardTasks";
+import { useBoardCards } from "@board/hooks/useBoardCards";
 import { useColumnModal } from "@column/hooks/useColumnModal";
 import { useBoardActions } from "./boardActions";
 
@@ -17,9 +17,9 @@ const BoardContext = createContext(null);
 
 export function BoardProvider({ children }) {
   /**
-   * Tasks
+   * Cards
    */
-  const { tasks, addTask, moveTask, clearTasks } = useTasksContext();
+  const { cards, addCard, moveCard, clearCards } = useCardsContext();
 
   /**
    * Columns
@@ -59,24 +59,24 @@ export function BoardProvider({ children }) {
     const result = commitDrop();
     if (!result) return;
 
-    const { taskId, target } = result;
-    moveTask(taskId, {
+    const { cardId, target } = result;
+    moveCard(cardId, {
       boardId: activeBoard,
       ...target,
     });
-  }, [commitDrop, moveTask, activeBoard]);
+  }, [commitDrop, moveCard, activeBoard]);
 
   const {
-    orderedTasks,
-    handleAddTask,
+    orderedCards,
+    handleAddCard,
     handleClearBoard,
-    handleTaskClick,
-    activeBoardTaskCount,
-  } = useBoardTasks({
-    tasks,
-    addTask,
-    moveTask,
-    clearTasks,
+    handleCardClick,
+    activeBoardCardCount,
+  } = useBoardCards({
+    cards,
+    addCard,
+    moveCard,
+    clearCards,
     columns,
     activeBoard,
     openModal,
@@ -100,13 +100,13 @@ export function BoardProvider({ children }) {
   /**
    * Delete board:
    * - remove columns
-   * - clear tasks
+   * - clear cards
    */
   const handleDeleteBoard = (boardId) => {
     deleteBoard(boardId, () => {
       const boardColumns = columns?.[boardId] ?? [];
       boardColumns.forEach((col) => removeColumn(boardId, col.id));
-      clearTasks({ boardId });
+      clearCards({ boardId });
     });
   };
 
@@ -116,14 +116,14 @@ export function BoardProvider({ children }) {
       setActiveBoard,
 
       columns,
-      orderedTasks,
+      orderedCards,
 
       // Pointer-based drop commit (domain-aware)
       commitDrop: handleCommitDrop,
 
-      handleAddTask,
+      handleAddCard,
       handleClearBoard,
-      handleTaskClick,
+      handleCardClick,
 
       handleAddColumn,
       removeColumn,
@@ -134,24 +134,24 @@ export function BoardProvider({ children }) {
       deleteBoard: handleDeleteBoard,
 
       activeBoardTitle,
-      activeBoardTaskCount,
+      activeBoardCardCount,
       openModal,
     }),
     [
       activeBoard,
       columns,
-      orderedTasks,
+      orderedCards,
       handleCommitDrop,
-      handleAddTask,
+      handleAddCard,
       handleClearBoard,
-      handleTaskClick,
+      handleCardClick,
       handleAddColumn,
       removeColumn,
       boards,
       createBoard,
       updateBoard,
       activeBoardTitle,
-      activeBoardTaskCount,
+      activeBoardCardCount,
       openModal,
     ]
   );

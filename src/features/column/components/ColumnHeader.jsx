@@ -4,7 +4,7 @@ import { AiOutlineEdit } from "react-icons/ai";
 import { useScreen } from "@context/ScreenContext";
 
 const ColumnHeader = React.memo(
-  ({ title, tasksLength, textColor, onEdit, onRemove }) => {
+  ({ title, cardsLength, textColor, onEdit, onRemove }) => {
     const [hovered, setHovered] = React.useState(false);
     const { isTouch } = useScreen();
     const containerRef = useRef(null);
@@ -54,7 +54,7 @@ const ColumnHeader = React.memo(
             style={{ color: textColor }}
           >
             {title}
-            <span className="task-counter">({tasksLength})</span>
+            <span className="card-counter">({cardsLength})</span>
           </p>
 
           {onEdit && (

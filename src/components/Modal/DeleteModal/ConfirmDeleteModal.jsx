@@ -7,7 +7,7 @@ export default function ConfirmDeleteModal({
     isOpen,
     onConfirm,
     onCancel,
-    type = "task",
+    type = "card",
 }) {
     if (!isOpen) return null;
 

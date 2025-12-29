@@ -1,7 +1,7 @@
 import {
-  saveTasks,
-  clearTasks as persistenceClearTasks,
-} from "@task/services/taskPersistence";
+  saveCards,
+  clearCards as persistenceClearCards,
+} from "@/features/card/services/cardPersistence";
 
 import {
   getSyncedBoardsMap,
@@ -9,36 +9,36 @@ import {
 } from "@board/utils/boardSyncUtils";
 
 export const ACTIONS = {
-  SET_MIRROR_TASKS: "SET_MIRROR_TASKS",
-  ADD_TASK: "ADD_TASK",
-  MOVE_TASK: "MOVE_TASK",
-  UPDATE_TASK: "UPDATE_TASK",
-  DELETE_TASK: "DELETE_TASK",
-  CLEAR_TASKS: "CLEAR_TASKS",
+  SET_MIRROR_CARDS: "SET_MIRROR_CARDS",
+  ADD_CARD: "ADD_CARD",
+  MOVE_CARD: "MOVE_CARD",
+  UPDATE_CARD: "UPDATE_CARD",
+  DELETE_CARD: "DELETE_CARD",
+  CLEAR_CARDS: "CLEAR_CARDS",
 };
 
 const syncedBoardsMap = getSyncedBoardsMap();
 
 /**
- * Persiste subconjunto de tasks:
+ * Persiste subconjunto de cards:
  * - se existir groupId → salva por grupo
  * - senão → salva por boardId
  */
-function persistSubset(tasks, target, isGroup) {
+function persistSubset(cards, target, isGroup) {
   const subset = isGroup
-    ? tasks.filter(
+    ? cards.filter(
         (t) => (syncedBoardsMap[t.boardId] ?? t.boardId) === target
       )
-    : tasks.filter((t) => t.boardId === target);
+    : cards.filter((t) => t.boardId === target);
 
-  saveTasks(subset, isGroup ? { groupId: target } : { boardId: target });
+  saveCards(subset, isGroup ? { groupId: target } : { boardId: target });
 }
 
 /**
- * Reordena tasks de uma coluna específica
+ * Reordena cards de uma coluna específica
  */
-function normalizeColumnOrder(tasks, boardId, columnId) {
-  const scoped = tasks
+function normalizeColumnOrder(cards, boardId, columnId) {
+  const scoped = cards
     .filter(
       (t) =>
         t.boardId === boardId &&
@@ -46,62 +46,62 @@ function normalizeColumnOrder(tasks, boardId, columnId) {
     )
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-  return tasks.map((t) => {
+  return cards.map((t) => {
     const idx = scoped.findIndex((s) => s.id === t.id);
     return idx === -1 ? t : { ...t, order: idx };
   });
 }
 
-export function taskReducer(state, action) {
+export function cardReducer(state, action) {
   switch (action.type) {
     /** Inicialização (load + merge) */
-    case ACTIONS.SET_MIRROR_TASKS:
+    case ACTIONS.SET_MIRROR_CARDS:
       return {
         ...state,
-        tasks: action.tasks,
+        cards: action.cards,
         nextId: action.nextId,
       };
 
-    /* Adição de task*/
-    case ACTIONS.ADD_TASK: {
-      const task = action.task;
-      const groupId = syncedBoardsMap[task.boardId];
+    /* Adição de card*/
+    case ACTIONS.ADD_CARD: {
+      const card = action.card;
+      const groupId = syncedBoardsMap[card.boardId];
 
       let mirrorColId = null;
 
       // Se o board pertence a um groupId, resolve espelhamento já na criação
-      if (groupId && task.columnId) {
-        const mirror = getMirrorLocation(task.boardId, task.columnId);
+      if (groupId && card.columnId) {
+        const mirror = getMirrorLocation(card.boardId, card.columnId);
         mirrorColId = mirror.columnId ?? null;
       }
 
-      const updated = [...state.tasks, { ...task, mirrorColId }];
+      const updated = [...state.cards, { ...card, mirrorColId }];
 
       const normalized = normalizeColumnOrder(
         updated,
-        task.boardId,
-        task.columnId
+        card.boardId,
+        card.columnId
       );
 
       persistSubset(
         normalized,
-        groupId ?? task.boardId,
+        groupId ?? card.boardId,
         Boolean(groupId)
       );
 
       return {
-        tasks: normalized,
+        cards: normalized,
         nextId: state.nextId + 1,
       };
     }
 
-    /* Move task entre colunas */
-    case ACTIONS.MOVE_TASK: {
-      const { taskId, payload } = action;
-      const { boardId, columnId, position, targetTaskId } = payload;
+    /* Move card entre colunas */
+    case ACTIONS.MOVE_CARD: {
+      const { cardId, payload } = action;
+      const { boardId, columnId, position, targetCardId } = payload;
 
-      const original = state.tasks.find(
-        (t) => String(t.id) === String(taskId)
+      const original = state.cards.find(
+        (t) => String(t.id) === String(cardId)
       );
       if (!original) return state;
 
@@ -116,9 +116,9 @@ export function taskReducer(state, action) {
           )
         : [original.boardId];
 
-      let updated = state.tasks.map((t) => {
+      let updated = state.cards.map((t) => {
         if (!boardsInScope.includes(t.boardId)) return t;
-        if (String(t.id) !== String(taskId)) return t;
+        if (String(t.id) !== String(cardId)) return t;
 
         const nextColumnId =
           t.boardId === resolvedBoardId
@@ -134,20 +134,20 @@ export function taskReducer(state, action) {
         };
       });
 
-      const columnTasks = updated
+      const columnCards = updated
         .filter(
           (t) =>
             t.boardId === resolvedBoardId &&
             (t.columnId === columnId || t.mirrorColId === columnId)
         )
-        .filter((t) => String(t.id) !== String(taskId))
+        .filter((t) => String(t.id) !== String(cardId))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
       let insertIndex = 0;
 
       if (position === "before" || position === "after") {
-        const targetIndex = columnTasks.findIndex(
-          (t) => String(t.id) === String(targetTaskId)
+        const targetIndex = columnCards.findIndex(
+          (t) => String(t.id) === String(targetCardId)
         );
         if (targetIndex !== -1) {
           insertIndex =
@@ -155,14 +155,14 @@ export function taskReducer(state, action) {
         }
       }
 
-      const movedTask = updated.find(
-        (t) => String(t.id) === String(taskId)
+      const movedCard = updated.find(
+        (t) => String(t.id) === String(cardId)
       );
 
-      columnTasks.splice(insertIndex, 0, movedTask);
+      columnCards.splice(insertIndex, 0, movedCard);
 
       updated = updated.map((t) => {
-        const idx = columnTasks.findIndex((c) => c.id === t.id);
+        const idx = columnCards.findIndex((c) => c.id === t.id);
         return idx === -1 ? t : { ...t, order: idx };
       });
 
@@ -172,19 +172,19 @@ export function taskReducer(state, action) {
         isGrouped
       );
 
-      return { ...state, tasks: updated };
+      return { ...state, cards: updated };
     }
 
     /** Atualização semântica */
-    case ACTIONS.UPDATE_TASK: {
-      const updated = state.tasks.map((t) =>
-        String(t.id) === String(action.taskId)
+    case ACTIONS.UPDATE_CARD: {
+      const updated = state.cards.map((t) =>
+        String(t.id) === String(action.cardId)
           ? { ...t, ...action.changes }
           : t
       );
 
       const changed = updated.find(
-        (t) => String(t.id) === String(action.taskId)
+        (t) => String(t.id) === String(action.cardId)
       );
 
       if (changed) {
@@ -196,17 +196,17 @@ export function taskReducer(state, action) {
         );
       }
 
-      return { ...state, tasks: updated };
+      return { ...state, cards: updated };
     }
 
-    /* Remoção de task */
-    case ACTIONS.DELETE_TASK: {
-      const removed = state.tasks.find(
-        (t) => String(t.id) === String(action.taskId)
+    /* Remoção de card */
+    case ACTIONS.DELETE_CARD: {
+      const removed = state.cards.find(
+        (t) => String(t.id) === String(action.cardId)
       );
 
-      const updated = state.tasks.filter(
-        (t) => String(t.id) !== String(action.taskId)
+      const updated = state.cards.filter(
+        (t) => String(t.id) !== String(action.cardId)
       );
 
       if (removed) {
@@ -223,17 +223,17 @@ export function taskReducer(state, action) {
           Boolean(groupId)
         );
 
-        return { ...state, tasks: normalized };
+        return { ...state, cards: normalized };
       }
 
       return state;
     }
 
     /* Limpeza por groupId ou boardId */
-    case ACTIONS.CLEAR_TASKS: {
+    case ACTIONS.CLEAR_CARDS: {
       const { groupId, boardId } = action;
 
-      const filtered = state.tasks.filter((t) => {
+      const filtered = state.cards.filter((t) => {
         const realGroup = syncedBoardsMap[t.boardId];
         if (groupId) return realGroup !== groupId;
         if (boardId) return t.boardId !== boardId;
@@ -241,10 +241,10 @@ export function taskReducer(state, action) {
       });
 
       groupId
-        ? persistenceClearTasks({ groupId })
-        : persistenceClearTasks({ boardId });
+        ? persistenceClearCards({ groupId })
+        : persistenceClearCards({ boardId });
 
-      return { ...state, tasks: filtered };
+      return { ...state, cards: filtered };
     }
 
     default:

@@ -45,9 +45,6 @@
             "@column/*": [
                 "src/features/column/*"
             ],
-            "@task/*": [
-                "src/features/task/*"
-            ],
             "@pages/*": [
                 "src/pages/*"
             ]

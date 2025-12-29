@@ -1,19 +1,19 @@
-let cachedTasks = [];
+let cachedCards = [];
 let loadedOnce = false;
 
 /**
- * Loads template tasks from an external file with caching mechanism.
+ * Loads template cards from an external file with caching mechanism.
  *
- * On first call, fetches tasks from the `assets/tarefas.txt`,
+ * On first call, fetches cards from the `assets/tarefas.txt`,
  * parses them, and caches the result. Subsequent calls return the
- * cached tasks without making additional network requests.
+ * cached cards without making additional network requests.
  *
  * @async
- * @function loadTemplateTasks
+ * @function loadTemplateCards
  * @returns {Promise<Array>}
  */
-export async function loadTemplateTasks() {
-  if (loadedOnce && cachedTasks.length > 0) return cachedTasks;
+export async function loadTemplateCards() {
+  if (loadedOnce && cachedCards.length > 0) return cachedCards;
 
   try {
     const base = import.meta.env.BASE_URL || "/";
@@ -22,29 +22,29 @@ export async function loadTemplateTasks() {
     if (!response.ok) return [];
 
     const text = await response.text();
-    const tasks = parseTasks(text);
+    const cards = parseCards(text);
 
-    cachedTasks = tasks;
+    cachedCards = cards;
     loadedOnce = true;
 
-    return tasks;
+    return cards;
   } catch (error) {
     console.error("Erro ao carregar tarefas:", error);
     return [];
   }
 }
 
-export function getCachedTasks() {
-  return cachedTasks;
+export function getCachedCards() {
+  return cachedCards;
 }
 
-export function resetTasksCache() {
-  cachedTasks = [];
+export function resetCardsCache() {
+  cachedCards = [];
   loadedOnce = false;
 }
 
-function parseTasks(text) {
-  const tasks = [];
+function parseCards(text) {
+  const cards = [];
   const regex =
     /Tarefa\s+(\d+):\s*(.*?)\r?\n- Status:\s*(.*?)\r?\nDescrição:\s*([\s\S]*?)(?=\r?\nTarefa\s+\d+:|$)/g;
 
@@ -53,7 +53,7 @@ function parseTasks(text) {
   while ((match = regex.exec(text)) !== null) {
     const templateId = Number(match[1]);
 
-    tasks.push({
+    cards.push({
       id: templateId,
       title: match[2].trim(),
       status: match[3].trim(),
@@ -61,5 +61,5 @@ function parseTasks(text) {
     });
   }
 
-  return tasks;
+  return cards;
 }

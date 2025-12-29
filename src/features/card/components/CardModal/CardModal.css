@@ -4,8 +4,8 @@
 }
 
 .card-name {
-  font-size: var(--fs-modal-title);
-  font-weight: 600;
+    font-size: var(--fs-modal-title);
+    font-weight: 600;
 }
 
 .description-text {
@@ -38,7 +38,7 @@
     width: 100%;
 }
 
-/* Animação de slide para troca de modo */
+/* Transição slide */
 .slide-enter {
     transform: translateX(100%);
     opacity: 0;

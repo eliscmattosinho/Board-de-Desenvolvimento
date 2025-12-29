@@ -1,24 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function useCardForm(card, columns) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [columnId, setColumnId] = useState(null);
 
+  const initializedRef = useRef(false);
+
   useEffect(() => {
-    if (!card) return;
+    if (!card || initializedRef.current) return;
 
     setTitle(card.title || "");
     setDescription(card.description || "");
+    setColumnId(card.columnId ?? columns?.[0]?.id ?? null);
 
-    if (card.columnId) {
-      setColumnId(card.columnId);
-      return;
-    }
-
-    if (columns?.length) {
-      setColumnId(columns[0].id);
-    }
+    initializedRef.current = true;
   }, [card, columns]);
 
   return {

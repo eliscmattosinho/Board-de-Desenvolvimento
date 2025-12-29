@@ -4,15 +4,15 @@ import AddColumnIndicator from "@column/components/AddColIndicator/AddColumnIndi
 
 function BoardColumns({
     columns,
-    tasksByColumn,
+    cardsByColumn,
     isTouch,
     isModalOpen,
     hoveredIndex,
     onHoverEnter,
     onHoverLeave,
     onAddColumnAt,
-    onTaskClick,
-    onAddTask,
+    onCardClick,
+    onAddCard,
     onEditColumn,
     onRemoveColumn,
 }) {
@@ -20,9 +20,9 @@ function BoardColumns({
         <React.Fragment key={col.id}>
             <Column
                 {...col}
-                tasks={tasksByColumn[col.id] || []}
-                onTaskClick={onTaskClick}
-                onAddTask={onAddTask}
+                cards={cardsByColumn[col.id] || []}
+                onCardClick={onCardClick}
+                onAddCard={onAddCard}
                 onEdit={onEditColumn(index, col)}
                 onRemove={onRemoveColumn(col)}
             />

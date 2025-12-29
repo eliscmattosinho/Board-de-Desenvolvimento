@@ -17,7 +17,6 @@ export default defineConfig(({ command }) => ({
             "@card": path.resolve(__dirname, "./src/features/card"),
             "@board": path.resolve(__dirname, "./src/features/board"),
             "@column": path.resolve(__dirname, "./src/features/column"),
-            "@task": path.resolve(__dirname, "./src/features/task"),
             "@pages": path.resolve(__dirname, "./src/pages"),
             "@styles": path.resolve(__dirname, "./src/styles"),
         },

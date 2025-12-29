@@ -2,7 +2,7 @@ import React from "react";
 import { CiCirclePlus } from "react-icons/ci";
 
 import ColumnHeader from "./ColumnHeader";
-import ColumnTasks from "./ColumnTasks";
+import ColumnCards from "./ColumnCards";
 import useColumn from "@column/hooks/useColumn";
 import { useCardDrag } from "@board/context/CardDragContext";
 
@@ -15,9 +15,9 @@ function Column({
   style,
   color,
   applyTo,
-  tasks,
-  onTaskClick,
-  onAddTask,
+  cards,
+  onCardClick,
+  onAddCard,
   onEdit,
   onRemove,
 }) {
@@ -29,12 +29,12 @@ function Column({
     dragPosition,
     setDragOver,
     clearDragOver,
-    handleAddTaskClick,
+    handleAddCardClick,
     handleEditClick,
     handleRemoveClick,
   } = useColumn({
     id,
-    onAddTask,
+    onAddCard,
     onEdit,
     onRemove,
     style,
@@ -65,37 +65,37 @@ function Column({
     >
       <ColumnHeader
         title={title}
-        tasksLength={tasks.length}
+        cardsLength={cards.length}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
       />
 
       <div className="col-items">
-        <ColumnTasks
-          tasks={tasks}
+        <ColumnCards
+          cards={cards}
           dragOverIndex={dragOverIndex}
           dragPosition={dragPosition}
-          onTaskClick={onTaskClick}
-          onHoverTask={(taskId, position) => {
+          onCardClick={onCardClick}
+          onHoverCard={(cardId, position) => {
             if (!isDraggingCard()) return;
 
-            setDragOver(taskId, position);
+            setDragOver(cardId, position);
             setDropTarget({
               columnId: id,
-              targetTaskId: taskId,
+              targetCardId: cardId,
               position,
             });
           }}
-          onLeaveTask={clearDragOver}
+          onLeaveCard={clearDragOver}
         />
 
-        {tasks.length === 0 && isDraggingCard() && (
-          <div className="task-placeholder active" />
+        {cards.length === 0 && isDraggingCard() && (
+          <div className="card-placeholder active" />
         )}
       </div>
 
-      {onAddTask && (
-        <button className="add-task" onClick={handleAddTaskClick}>
+      {onAddCard && (
+        <button className="add-card" onClick={handleAddCardClick}>
           <CiCirclePlus size={30} />
         </button>
       )}

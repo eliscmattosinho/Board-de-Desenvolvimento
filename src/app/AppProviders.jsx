@@ -4,7 +4,7 @@ import { ThemeProvider } from "@context/ThemeContext";
 import { ModalProvider } from "@context/ModalContext";
 import { ScreenProvider } from "@context/ScreenContext";
 
-import { TaskProvider } from "@task/context/TaskContext";
+import { CardProvider } from "@/features/card/context/CardContext";
 import { ColumnProvider } from "@column/context/ColumnContext";
 import { BoardProvider } from "@board/context/BoardContext";
 
@@ -15,7 +15,7 @@ import { CardDragProvider } from "@board/context/CardDragContext";
 const AppProviders = ({ children }) => {
   return (
     <ThemeProvider>
-      <TaskProvider>
+      <CardProvider>
         <ScreenProvider>
           <ModalProvider>
             <ColumnProvider>
@@ -31,7 +31,7 @@ const AppProviders = ({ children }) => {
             </ColumnProvider>
           </ModalProvider>
         </ScreenProvider>
-      </TaskProvider>
+      </CardProvider>
     </ThemeProvider>
   );
 };

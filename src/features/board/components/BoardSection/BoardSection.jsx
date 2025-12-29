@@ -6,7 +6,7 @@ import { useBoardPan } from "@board/context/BoardPanContext";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
 
-import { useTasksByColumn } from "@board/hooks/useTasksByColumn";
+import { useCardsByColumn } from "@board/hooks/useCardsByColumn";
 import { useColumnHover } from "@board/hooks/useColumnHover";
 import { useDeleteColumn } from "@board/hooks/useDeleteColumn";
 
@@ -17,9 +17,9 @@ import "./BoardSection.css";
 function BoardSection({
   id,
   columns,
-  tasks,
-  onTaskClick,
-  onAddTask,
+  cards,
+  onCardClick,
+  onAddCard,
   onAddColumn,
   removeColumn,
   activeBoard,
@@ -36,9 +36,9 @@ function BoardSection({
   const { hoveredIndex, onEnter, onLeave } = useColumnHover();
   const deleteColumn = useDeleteColumn({ removeColumn, activeBoard });
 
-  const tasksByColumn = useTasksByColumn({
+  const cardsByColumn = useCardsByColumn({
     columns,
-    tasks,
+    cards,
     activeBoard,
   });
 
@@ -92,15 +92,15 @@ function BoardSection({
     >
       <BoardColumns
         columns={columns}
-        tasksByColumn={tasksByColumn}
+        cardsByColumn={cardsByColumn}
         isTouch={isTouch}
         isModalOpen={isModalOpen}
         hoveredIndex={hoveredIndex}
         onHoverEnter={onEnter}
         onHoverLeave={onLeave}
         onAddColumnAt={handleAddColumnAt}
-        onTaskClick={onTaskClick}
-        onAddTask={onAddTask}
+        onCardClick={onCardClick}
+        onAddCard={onAddCard}
         onEditColumn={handleEditColumn}
         onRemoveColumn={handleRemoveColumn}
       />

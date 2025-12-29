@@ -1,9 +1,9 @@
-.task-id {
+.card-id {
     color: var(--global-gray);
     font-size: 14px;
 }
 
-.task-name {
+.card-name {
   font-size: var(--fs-modal-title);
   font-weight: 600;
 }

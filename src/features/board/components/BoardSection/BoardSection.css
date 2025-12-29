@@ -80,7 +80,7 @@
 .board-container,
 .board-col,
 .col-items,
-.task-item {
+.card-item {
   user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;

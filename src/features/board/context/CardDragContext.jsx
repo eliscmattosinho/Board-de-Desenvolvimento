@@ -5,13 +5,13 @@ const CardDragContext = createContext(null);
 export function CardDragProvider({ children }) {
   const dragRef = useRef({
     active: false,
-    task: null,
+    card: null,
     over: null,
   });
 
-  const startDrag = useCallback((task) => {
+  const startDrag = useCallback((card) => {
     dragRef.current.active = true;
-    dragRef.current.task = task;
+    dragRef.current.card = card;
     dragRef.current.over = null;
   }, []);
 
@@ -36,15 +36,15 @@ export function CardDragProvider({ children }) {
    * Commit explícito do drop (usado pelo Board)
    */
   const commitDrop = useCallback(() => {
-    const { task, over } = dragRef.current;
+    const { card, over } = dragRef.current;
 
-    dragRef.current.task = null;
+    dragRef.current.card = null;
     dragRef.current.over = null;
 
-    if (!task || !over) return null;
+    if (!card || !over) return null;
 
     return {
-      taskId: task.id,
+      cardId: card.id,
       target: over,
     };
   }, []);

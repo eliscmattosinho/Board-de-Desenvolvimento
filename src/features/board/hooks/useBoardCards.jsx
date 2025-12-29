@@ -3,13 +3,13 @@ import { showWarning, showCustom, showSuccess } from "@utils/toastUtils";
 import ClearBoardToast from "@components/ToastProvider/toasts/ClearBoardToast";
 import CardModal from "@card/components/CardModal/CardModal";
 import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
-import { getDisplayStatus } from "@board/components/templates/taskBoardResolver";
+import { getDisplayStatus } from "@board/components/templates/cardBoardResolver";
 
-export function useBoardTasks({
-  tasks,
-  addTask,
-  moveTask,
-  clearTasks,
+export function useBoardCards({
+  cards,
+  addCard,
+  moveCard,
+  clearCards,
   columns,
   activeBoard,
   openModal,
@@ -17,8 +17,8 @@ export function useBoardTasks({
   const activeGroupId = syncedBoardsMap[activeBoard] ?? null;
   const isSharedBoard = Boolean(activeGroupId);
 
-  const orderedTasks = useMemo(() => {
-    const visible = tasks.filter((t) => {
+  const orderedCards = useMemo(() => {
+    const visible = cards.filter((t) => {
       if (isSharedBoard) {
         return (syncedBoardsMap[t.boardId] ?? null) === activeGroupId;
       }
@@ -45,39 +45,39 @@ export function useBoardTasks({
         if (a.displayColumnId > b.displayColumnId) return 1;
         return (a.order ?? 0) - (b.order ?? 0);
       });
-  }, [tasks, activeBoard, isSharedBoard, activeGroupId]);
+  }, [cards, activeBoard, isSharedBoard, activeGroupId]);
 
-  const handleAddTask = useCallback(
+  const handleAddCard = useCallback(
     (columnId = null) => {
       const viewColumns = columns?.[activeBoard] ?? [];
       const fallbackColumnId = viewColumns[0]?.id ?? null;
       const chosenColumnId = columnId ?? fallbackColumnId;
 
-      const newTask = addTask(chosenColumnId, {
+      const newCard = addCard(chosenColumnId, {
         boardId: activeBoard,
       });
 
       openModal(CardModal, {
-        task: { ...newTask, isNew: true },
+        card: { ...newCard, isNew: true },
         activeBoard,
         columns: viewColumns,
-        moveTask,
+        moveCard,
       });
     },
-    [addTask, activeBoard, columns, moveTask, openModal]
+    [addCard, activeBoard, columns, moveCard, openModal]
   );
 
   const handleClearBoard = useCallback(() => {
     const groupId = syncedBoardsMap[activeBoard] ?? null;
     const isShared = Boolean(groupId);
 
-    const boardTasks = tasks.filter((t) =>
+    const boardCards = cards.filter((t) =>
       isShared
         ? (syncedBoardsMap[t.boardId] ?? null) === groupId
         : t.boardId === activeBoard
     );
 
-    if (boardTasks.length === 0) {
+    if (boardCards.length === 0) {
       showWarning("Não há tarefas para remover — o board já está vazio!");
       return;
     }
@@ -86,40 +86,40 @@ export function useBoardTasks({
       <ClearBoardToast
         onConfirm={() => {
           isShared
-            ? clearTasks({ groupId })
-            : clearTasks({ boardId: activeBoard });
+            ? clearCards({ groupId })
+            : clearCards({ boardId: activeBoard });
           closeToast();
           showSuccess("Todas as tarefas foram removidas com sucesso!");
         }}
         onCancel={closeToast}
       />
     ));
-  }, [tasks, activeBoard, clearTasks]);
+  }, [cards, activeBoard, clearCards]);
 
-  const handleTaskClick = useCallback(
-    (task) => {
+  const handleCardClick = useCallback(
+    (card) => {
       openModal(CardModal, {
-        task: {
-          ...task,
-          columnId: task.displayColumnId ?? task.columnId ?? null,
+        card: {
+          ...card,
+          columnId: card.displayColumnId ?? card.columnId ?? null,
         },
         activeBoard,
         columns: columns?.[activeBoard] ?? [],
-        moveTask,
+        moveCard,
       });
     },
-    [activeBoard, columns, moveTask, openModal]
+    [activeBoard, columns, moveCard, openModal]
   );
 
-  const activeBoardTaskCount = useMemo(() => {
-    return orderedTasks.length;
-  }, [orderedTasks]);
+  const activeBoardCardCount = useMemo(() => {
+    return orderedCards.length;
+  }, [orderedCards]);
 
   return {
-    orderedTasks,
-    handleAddTask,
+    orderedCards,
+    handleAddCard,
     handleClearBoard,
-    handleTaskClick,
-    activeBoardTaskCount,
+    handleCardClick,
+    activeBoardCardCount,
   };
 }

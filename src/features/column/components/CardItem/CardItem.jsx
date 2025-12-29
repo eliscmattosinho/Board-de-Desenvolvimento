@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useCardDrag } from "@board/context/CardDragContext";
-import "./TaskItem.css";
+import "./CardItem.css";
 
-function TaskItem({
-  task,
+function CardItem({
+  card,
   onClick,
   onPointerMove,
   onPointerLeave,
@@ -43,13 +43,13 @@ function TaskItem({
   return (
     <div
       ref={ref}
-      className={`item task-item ${dragging ? "ghost" : ""}`}
+      className={`item card-item ${dragging ? "ghost" : ""}`}
       onPointerDown={(e) => {
         e.preventDefault();
         e.stopPropagation();
 
         setDragging(true);
-        startDrag(task);
+        startDrag(card);
       }}
       onPointerMove={handlePointerMove}
       onPointerLeave={() => {
@@ -58,15 +58,15 @@ function TaskItem({
       }}
       onClick={() => {
         if (dragging) return;
-        onClick?.(task);
+        onClick?.(card);
       }}
     >
-      <h3 className="item-title">{task.title}</h3>
+      <h3 className="item-title">{card.title}</h3>
       <p className="item-description">
-        {task.description || "Sem descrição."}
+        {card.description || "Sem descrição."}
       </p>
     </div>
   );
 }
 
-export default React.memo(TaskItem);
+export default React.memo(CardItem);

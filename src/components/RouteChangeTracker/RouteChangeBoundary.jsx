@@ -15,14 +15,21 @@ const RouteChangeBoundary = ({ children }) => {
     // apenas renderiza a rota quando approvedLocation === rota permitida
     const shouldRender = location.pathname === approvedLocation.pathname;
 
-    if (loading || !shouldRender) {
-        return <Spinner />;
-    }
-
     return (
-        <div ref={containerRef} key={approvedLocation.pathname}>
-            {children}
-        </div>
+        <>
+            {loading && <Spinner />}
+
+            <div
+                ref={containerRef}
+                key={approvedLocation.pathname}
+                style={{
+                    visibility: loading ? "hidden" : "visible",
+                    position: loading ? "absolute" : "static",
+                }}
+            >
+                {shouldRender && children}
+            </div>
+        </>
     );
 };
 

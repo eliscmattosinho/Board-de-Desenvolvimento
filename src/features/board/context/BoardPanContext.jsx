@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useRef, useCallback } from "react";
-import { useGesture } from "./GestureContext";
+import { useGesture } from "../../../context/GestureContext";
 
 const BoardPanContext = createContext(null);
 

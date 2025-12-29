@@ -1,7 +1,7 @@
 import React from "react";
 import { SiCcleaner } from "react-icons/si";
 
-import BoardSection from "@board/components/BoardSection";
+import BoardSection from "@board/components/BoardSection/BoardSection";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
 
 import "./ActiveBoard.css"
@@ -40,7 +40,7 @@ export default function ActiveBoard({
                     onClick={handlers.clear}
                     data-tooltip="Limpar tarefas"
                 >
-                    <SiCcleaner size={30} />
+                    <SiCcleaner size={25} />
                 </button>
             </header>
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import BoardControls from "@board/components/BoardControls";
+import BoardControls from "@board/components/BoardControls/BoardControls";
 
 import svgDarkBoard from "@assets/images/svg-board.svg";
 import svgLightBoard from "@assets/images/svg-light-board.svg";

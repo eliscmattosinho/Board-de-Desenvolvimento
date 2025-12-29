@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useModal } from "@context/ModalContext";
 import Modal from "@components/Modal/Modal";
-import { showWarning, showSuccess } from "@utils/toastUtils";
+import { showWarning } from "@utils/toastUtils";
 
 export default function BoardForm({ onConfirm }) {
     const [title, setTitle] = useState("");

@@ -1,7 +1,7 @@
 import React from "react";
 import "./Hub.css";
 
-import BoardForm from "@board/components/BoardForm";
+import BoardForm from "@board/components/BoardForm/BoardForm";
 
 import { useHub } from "./hooks/useHub";
 import HubActions from "./components/HubActions/HubActions";

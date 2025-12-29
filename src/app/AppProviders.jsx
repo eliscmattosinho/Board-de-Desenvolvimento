@@ -8,7 +8,7 @@ import { TaskProvider } from "@task/context/TaskContext";
 import { ColumnProvider } from "@column/context/ColumnContext";
 import { BoardProvider } from "@board/context/BoardContext";
 
-import { GestureProvider } from "@board/context/GestureContext";
+import { GestureProvider } from "@/context/GestureContext";
 import { BoardPanProvider } from "@board/context/BoardPanContext";
 import { CardDragProvider } from "@board/context/CardDragContext";
 

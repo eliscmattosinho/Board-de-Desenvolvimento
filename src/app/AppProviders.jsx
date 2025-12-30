@@ -8,10 +8,6 @@ import { CardProvider } from "@/features/card/context/CardContext";
 import { ColumnProvider } from "@column/context/ColumnContext";
 import { BoardProvider } from "@board/context/BoardContext";
 
-import { GestureProvider } from "@/context/GestureContext";
-import { BoardPanProvider } from "@board/context/BoardPanContext";
-import { CardDragProvider } from "@board/context/CardDragContext";
-
 const AppProviders = ({ children }) => {
   return (
     <ThemeProvider>
@@ -19,15 +15,9 @@ const AppProviders = ({ children }) => {
         <ScreenProvider>
           <ModalProvider>
             <ColumnProvider>
-              <GestureProvider>
-                <BoardPanProvider>
-                  <CardDragProvider>
-                    <BoardProvider>
-                      {children}
-                    </BoardProvider>
-                  </CardDragProvider>
-                </BoardPanProvider>
-              </GestureProvider>
+              <BoardProvider>
+                {children}
+              </BoardProvider>
             </ColumnProvider>
           </ModalProvider>
         </ScreenProvider>

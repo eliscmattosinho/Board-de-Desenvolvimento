@@ -4,7 +4,6 @@ import { CiCirclePlus } from "react-icons/ci";
 import ColumnHeader from "./ColumnHeader";
 import ColumnCards from "./ColumnCards";
 import useColumn from "@column/hooks/useColumn";
-import { useCardDrag } from "@board/context/CardDragContext";
 
 import "./Column.css";
 
@@ -21,14 +20,8 @@ function Column({
   onEdit,
   onRemove,
 }) {
-  const { setDropTarget, isDraggingCard } = useCardDrag();
-
   const {
     colStyle,
-    dragOverIndex,
-    dragPosition,
-    setDragOver,
-    clearDragOver,
     handleAddCardClick,
     handleEditClick,
     handleRemoveClick,
@@ -51,17 +44,6 @@ function Column({
         "--col-border": colStyle.border,
         "--col-font": colStyle.color,
       }}
-      onPointerEnter={() => {
-        if (!isDraggingCard()) return;
-
-        setDropTarget({
-          columnId: id,
-          position: "top",
-        });
-      }}
-      onPointerLeave={() => {
-        clearDragOver();
-      }}
     >
       <ColumnHeader
         title={title}
@@ -73,25 +55,8 @@ function Column({
       <div className="col-items">
         <ColumnCards
           cards={cards}
-          dragOverIndex={dragOverIndex}
-          dragPosition={dragPosition}
           onCardClick={onCardClick}
-          onHoverCard={(cardId, position) => {
-            if (!isDraggingCard()) return;
-
-            setDragOver(cardId, position);
-            setDropTarget({
-              columnId: id,
-              targetCardId: cardId,
-              position,
-            });
-          }}
-          onLeaveCard={clearDragOver}
         />
-
-        {cards.length === 0 && isDraggingCard() && (
-          <div className="card-placeholder active" />
-        )}
       </div>
 
       {onAddCard && (

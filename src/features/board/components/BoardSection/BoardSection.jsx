@@ -1,8 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 
-import { useGesture } from "@/context/GestureContext";
-import { useBoardPan } from "@board/context/BoardPanContext";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
 
@@ -29,9 +27,6 @@ function BoardSection({
 
   const { isTouch } = useScreen();
   const { isModalOpen } = useModal();
-
-  const { onPointerDown, onPointerMove, onPointerUp } = useGesture();
-  const { start, onMove, end } = useBoardPan();
 
   const { hoveredIndex, onEnter, onLeave } = useColumnHover();
   const deleteColumn = useDeleteColumn({ removeColumn, activeBoard });
@@ -65,30 +60,6 @@ function BoardSection({
       ref={containerRef}
       id={id}
       className={`board-container ${id}-board ${isActive ? "active" : ""}`}
-      onPointerDown={(e) => {
-        onPointerDown({
-          e,
-          source: "board",
-          meta: { boardId: id },
-        });
-        start(e, containerRef.current);
-      }}
-      onPointerMove={(e) => {
-        onPointerMove(e);
-        onMove(e, containerRef.current);
-      }}
-      onPointerUp={(e) => {
-        end(containerRef.current);
-        onPointerUp(e);
-      }}
-      onPointerCancel={(e) => {
-        end(containerRef.current);
-        onPointerUp(e);
-      }}
-      onLostPointerCapture={(e) => {
-        end(containerRef.current);
-        onPointerUp(e);
-      }}
     >
       <BoardColumns
         columns={columns}

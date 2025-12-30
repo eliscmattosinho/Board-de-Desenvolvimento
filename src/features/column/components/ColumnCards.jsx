@@ -2,50 +2,37 @@ import React, { useMemo } from "react";
 import CardItem from "@card/components/CardItem/CardItem";
 
 const ColumnCards = React.memo(
-  ({
-    cards,
-    dragOverIndex,
-    dragPosition,
-    onCardClick,
-    onHoverCard,
-    onLeaveCard,
-  }) => {
+  ({ cards = [], dropIndicator, onCardClick }) => {
     const renderedCards = useMemo(() => {
-      if (!cards || cards.length === 0) return null;
+      if (cards.length === 0) return null;
 
-      return cards.map((card) => (
-        <React.Fragment key={card.id}>
-          {dragOverIndex === card.id &&
-            dragPosition === "above" && (
-              <div className="card-placeholder active"></div>
+      return cards.map((card) => {
+        const isAbove =
+          dropIndicator?.cardId === card.id &&
+          dropIndicator.position === "above";
+
+        const isBelow =
+          dropIndicator?.cardId === card.id &&
+          dropIndicator.position === "below";
+
+        return (
+          <React.Fragment key={card.id}>
+            {isAbove && (
+              <div className="card-placeholder active" />
             )}
 
-          <CardItem
-            card={card}
-            onClick={onCardClick}
-            onPointerMove={(e, position) =>
-              onHoverCard(card.id, position)
-            }
-            onPointerLeave={onLeaveCard}
-            dragPosition={
-              dragOverIndex === card.id ? dragPosition : null
-            }
-          />
+            <CardItem
+              card={card}
+              onClick={onCardClick}
+            />
 
-          {dragOverIndex === card.id &&
-            dragPosition === "below" && (
-              <div className="card-placeholder active"></div>
+            {isBelow && (
+              <div className="card-placeholder active" />
             )}
-        </React.Fragment>
-      ));
-    }, [
-      cards,
-      dragOverIndex,
-      dragPosition,
-      onCardClick,
-      onHoverCard,
-      onLeaveCard,
-    ]);
+          </React.Fragment>
+        );
+      });
+    }, [cards, dropIndicator, onCardClick]);
 
     return renderedCards;
   }

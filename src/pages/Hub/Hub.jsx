@@ -31,10 +31,8 @@ export default function Hub() {
         <ActiveBoard
           activeBoard={hub.activeBoard}
           columns={hub.columns?.[hub.activeBoard] ?? []}
-
+          
           orderedCards={hub.orderedCards}
-          commitDrop={hub.commitDrop}
-          onPointerUp={hub.onPointerUp}
 
           title={hub.activeBoardTitle ?? "Board"}
           cardCount={hub.activeBoardCardCount ?? 0}

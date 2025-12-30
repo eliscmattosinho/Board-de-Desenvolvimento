@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useCallback } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 import { useCardsContext } from "@/features/card/context/CardContext";
 import { useColumnsContext } from "@column/context/ColumnContext";
@@ -8,8 +8,6 @@ import { useBoardState } from "@board/hooks/useBoardState";
 import { useBoardCards } from "@board/hooks/useBoardCards";
 import { useColumnModal } from "@column/hooks/useColumnModal";
 import { useBoardActions } from "./boardActions";
-
-import { useCardDrag } from "@board/context/CardDragContext";
 
 import { getActiveBoardTitle } from "@board/utils/boardUtils";
 
@@ -46,25 +44,6 @@ export function BoardProvider({ children }) {
     deleteBoard,
     setActiveBoard,
   } = useBoardActions(state, dispatch);
-
-  /**
-   * Pointer-based Drag & Drop
-   */
-  const { commitDrop } = useCardDrag();
-
-  /**
-   * Handler responsável por efetivar o drop
-   */
-  const handleCommitDrop = useCallback(() => {
-    const result = commitDrop();
-    if (!result) return;
-
-    const { cardId, target } = result;
-    moveCard(cardId, {
-      boardId: activeBoard,
-      ...target,
-    });
-  }, [commitDrop, moveCard, activeBoard]);
 
   const {
     orderedCards,
@@ -118,9 +97,6 @@ export function BoardProvider({ children }) {
       columns,
       orderedCards,
 
-      // Pointer-based drop commit (domain-aware)
-      commitDrop: handleCommitDrop,
-
       handleAddCard,
       handleClearBoard,
       handleCardClick,
@@ -141,7 +117,6 @@ export function BoardProvider({ children }) {
       activeBoard,
       columns,
       orderedCards,
-      handleCommitDrop,
       handleAddCard,
       handleClearBoard,
       handleCardClick,

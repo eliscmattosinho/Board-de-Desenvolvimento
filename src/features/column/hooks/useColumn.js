@@ -1,21 +1,8 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useColumnStyle } from "./useColumnStyle";
 
 export default function useColumn({ id, onAddCard, onEdit, onRemove, style, color, applyTo, }) {
   const colStyle = useColumnStyle({ id, style, color, applyTo });
-
-  const [dragOverIndex, setDragOverIndex] = useState(null);
-  const [dragPosition, setDragPosition] = useState(null);
-
-  const setDragOver = useCallback((cardId, position) => {
-    setDragOverIndex(cardId);
-    setDragPosition(position);
-  }, []);
-
-  const clearDragOver = useCallback(() => {
-    setDragOverIndex(null);
-    setDragPosition(null);
-  }, []);
 
   const handleAddCardClick = useCallback(
     () => onAddCard?.(id),
@@ -40,10 +27,6 @@ export default function useColumn({ id, onAddCard, onEdit, onRemove, style, colo
 
   return {
     colStyle,
-    dragOverIndex,
-    dragPosition,
-    setDragOver,
-    clearDragOver,
     handleAddCardClick,
     handleEditClick,
     handleRemoveClick,

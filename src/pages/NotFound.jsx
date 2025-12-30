@@ -1,6 +1,6 @@
 import React from "react";
 import ExceptionPage from "@components/ExceptionPage/ExceptionPage";
-import error from "@assets/images/404.svg";
+import error from "@assets/img/404.svg";
 
 export default function NotFound() {
     return (

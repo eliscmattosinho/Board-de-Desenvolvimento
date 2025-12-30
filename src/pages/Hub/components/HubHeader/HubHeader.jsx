@@ -2,8 +2,8 @@ import React from "react";
 
 import BoardControls from "@board/components/BoardControls/BoardControls";
 
-import svgDarkBoard from "@assets/images/svg-board.svg";
-import svgLightBoard from "@assets/images/svg-light-board.svg";
+import svgDarkBoard from "@assets/img/svg-board.svg";
+import svgLightBoard from "@assets/img/svg-light-board.svg";
 
 import "./HubHeader.css"
 

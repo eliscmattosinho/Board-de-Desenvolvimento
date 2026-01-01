@@ -1,8 +1,7 @@
-import { createContext, useContext, useMemo } from "react";
-
+import { createContext, useContext, useMemo, useCallback } from "react";
 import { useCardsContext } from "@/features/card/context/CardContext";
 import { useColumnsContext } from "@column/context/ColumnContext";
-import { useModal } from "@context/ModalContext";
+import { useModal } from "@/context/ModalContext";
 
 import { useBoardState } from "@board/hooks/useBoardState";
 import { useBoardCards } from "@board/hooks/useBoardCards";
@@ -14,56 +13,75 @@ import { getActiveBoardTitle } from "@board/utils/boardUtils";
 const BoardContext = createContext(null);
 
 export function BoardProvider({ children }) {
-  /**
-   * Cards
-   */
   const { cards, addCard, moveCard, clearCards } = useCardsContext();
 
-  /**
-   * Columns
-   */
   const {
     columns,
     addColumn,
     removeColumn,
     updateColumnInfo,
-    updateColumnStyle,
+    updateColumnStyle
   } = useColumnsContext();
 
   const { openModal } = useModal();
 
-  /**
-   * Boards state
-   */
-  const { state, dispatch, boards, activeBoard } =
-    useBoardState({ initialGroup: "shared", columns });
+  const {
+    state: boardsState,
+    activeBoard,
+    dispatch
+  } = useBoardState({ initialGroup: "shared" });
+
+  const boardsObj = useMemo(() => {
+    return boardsState.boards.reduce((acc, b) => {
+      acc[b.id] = b;
+      return acc;
+    }, {});
+  }, [boardsState.boards]);
 
   const {
     createBoard,
     updateBoard,
     deleteBoard,
-    setActiveBoard,
-  } = useBoardActions(state, dispatch);
+    setActiveBoard
+  } = useBoardActions(boardsState, dispatch);
+
+  /**
+   * RESPONSABILIDADE CENTRAL
+   * Board decide o escopo da limpeza
+   */
+  const handleClearBoardRequest = useCallback(() => {
+    const board = boardsObj[activeBoard];
+    if (!board) return;
+
+    if (board.groupId) {
+      const boardsInGroup = Object.values(boardsObj)
+        .filter((b) => b.groupId === board.groupId)
+        .map((b) => b.id);
+
+      boardsInGroup.forEach((boardId) => {
+        clearCards(boardId);
+      });
+    } else {
+      clearCards(activeBoard);
+    }
+  }, [activeBoard, boardsObj, clearCards]);
 
   const {
     orderedCards,
     handleAddCard,
     handleClearBoard,
     handleCardClick,
-    activeBoardCardCount,
+    activeBoardCardCount
   } = useBoardCards({
     cards,
     addCard,
     moveCard,
-    clearCards,
     columns,
     activeBoard,
     openModal,
+    onClearRequest: handleClearBoardRequest
   });
 
-  /**
-   * Column modal
-   */
   const { handleAddColumn } = useColumnModal({
     columns,
     addColumn,
@@ -71,21 +89,19 @@ export function BoardProvider({ children }) {
     updateColumnStyle,
     openModal,
     activeBoard,
-    boards,
+    boards: boardsObj
   });
 
-  const activeBoardTitle = getActiveBoardTitle(boards, activeBoard);
+  const activeBoardTitle = getActiveBoardTitle(
+    Object.values(boardsObj),
+    activeBoard
+  );
 
-  /**
-   * Delete board:
-   * - remove columns
-   * - clear cards
-   */
   const handleDeleteBoard = (boardId) => {
     deleteBoard(boardId, () => {
       const boardColumns = columns?.[boardId] ?? [];
       boardColumns.forEach((col) => removeColumn(boardId, col.id));
-      clearCards({ boardId });
+      clearCards(boardId);
     });
   };
 
@@ -93,25 +109,20 @@ export function BoardProvider({ children }) {
     () => ({
       activeBoard,
       setActiveBoard,
-
       columns,
       orderedCards,
-
       handleAddCard,
       handleClearBoard,
       handleCardClick,
-
       handleAddColumn,
       removeColumn,
-
-      boards,
+      boards: boardsObj,
       createBoard,
       updateBoard,
       deleteBoard: handleDeleteBoard,
-
       activeBoardTitle,
       activeBoardCardCount,
-      openModal,
+      openModal
     }),
     [
       activeBoard,
@@ -122,12 +133,12 @@ export function BoardProvider({ children }) {
       handleCardClick,
       handleAddColumn,
       removeColumn,
-      boards,
+      boardsObj,
       createBoard,
       updateBoard,
       activeBoardTitle,
       activeBoardCardCount,
-      openModal,
+      openModal
     ]
   );
 
@@ -138,9 +149,6 @@ export function BoardProvider({ children }) {
   );
 }
 
-/**
- * Public hook
- */
 export const useBoardContext = () => {
   const ctx = useContext(BoardContext);
   if (!ctx) {

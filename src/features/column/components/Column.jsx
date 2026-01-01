@@ -14,6 +14,7 @@ function Column({
   style,
   color,
   applyTo,
+  isTemplate,
   cards,
   onCardClick,
   onAddCard,
@@ -33,6 +34,7 @@ function Column({
     style,
     color: color || style?.bg || "#EFEFEF",
     applyTo,
+    isTemplate,
   });
 
   return (

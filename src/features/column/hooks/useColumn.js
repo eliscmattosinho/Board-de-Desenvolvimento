@@ -1,8 +1,22 @@
 import { useCallback } from "react";
 import { useColumnStyle } from "./useColumnStyle";
 
-export default function useColumn({ id, onAddCard, onEdit, onRemove, style, color, applyTo, }) {
-  const colStyle = useColumnStyle({ id, style, color, applyTo });
+export default function useColumn({
+  id,
+  onAddCard,
+  onEdit,
+  onRemove,
+  style,
+  color,
+  applyTo,
+  isTemplate,
+}) {
+  const colStyle = useColumnStyle({
+    style,
+    color,
+    applyTo,
+    isTemplate,
+  });
 
   const handleAddCardClick = useCallback(
     () => onAddCard?.(id),

@@ -1,31 +1,17 @@
 import { normalizeText } from "@utils/normalizeUtils";
 import { boardTemplates } from "./boardTemplates";
 
-/* Boards sincronizados por groupId */
-
-export function getSyncedBoardsMap() {
-  const map = {};
-  Object.entries(boardTemplates).forEach(([boardId, config]) => {
-    if (config.groupId) {
-      map[boardId] = config.groupId;
-    }
-  });
-  return map;
-}
-
-/* Espelhamento de colunas */
-
 const explicitColumnMirrorMap = {
   kanban: {
     "to-do": "backlog",
     "k-in-progress": "s-in-progress",
-    "k-done": "s-done"
+    "k-done": "s-done",
   },
   scrum: {
     backlog: "to-do",
     "s-in-progress": "k-in-progress",
-    "s-done": "k-done"
-  }
+    "s-done": "k-done",
+  },
 };
 
 const columnMirrorCache = {};
@@ -36,7 +22,6 @@ function buildColumnMirror(fromBoard, toBoard) {
 
   const fromCols = boardTemplates[fromBoard]?.columns ?? [];
   const toCols = boardTemplates[toBoard]?.columns ?? [];
-
   const map = {};
 
   fromCols.forEach((col) => {
@@ -45,61 +30,47 @@ function buildColumnMirror(fromBoard, toBoard) {
       map[col.id] = explicit;
       return;
     }
-
-    const byTitle = toCols.find(
-      (c) => normalizeText(c.title) === normalizeText(col.title)
-    );
-    if (byTitle) {
-      map[col.id] = byTitle.id;
-      return;
-    }
-
     const byStatus = toCols.find(
       (c) => normalizeText(c.status) === normalizeText(col.status)
     );
-    if (byStatus) {
-      map[col.id] = byStatus.id;
-    }
+    if (byStatus) map[col.id] = byStatus.id;
   });
 
   columnMirrorCache[key] = map;
   return map;
 }
 
-function getMirrorColumn(boardId, targetBoard, columnId) {
-  return buildColumnMirror(boardId, targetBoard)?.[columnId] ?? null;
-}
-
-/* Projeção de card */
-
 export function projectCard(card, targetBoardId) {
-  if (card.boardId === targetBoardId) {
-    return card.columnId;
-  }
+  if (card.boardId === targetBoardId) return card.columnId;
 
   const sourceGroup = boardTemplates[card.boardId]?.groupId;
   const targetGroup = boardTemplates[targetBoardId]?.groupId;
 
-  if (!sourceGroup || sourceGroup !== targetGroup) {
-    return null;
-  }
+  if (!sourceGroup || sourceGroup !== targetGroup) return null;
 
-  return getMirrorColumn(card.boardId, targetBoardId, card.columnId);
+  return buildColumnMirror(card.boardId, targetBoardId)[card.columnId] || null;
 }
 
-/* Resolução final */
+/**
+ * RESOLVE CARDS DO BOARD
+ * @param {Array} cards - Lista bruta de cards
+ * @param {String} boardId - Board atual
+ * @param {Object} allColumns - Dicionário de colunas vindas do ColumnContext (Estado Vivo)
+ */
+export function resolveBoardCards({ cards, boardId, allColumns }) {
+  // Pega as colunas reais que estão no sistema agora para este board
+  const currentBoardColumns = allColumns[boardId] || [];
 
-export function resolveBoardCards({ cards, boardId }) {
-  const boardConfig = boardTemplates[boardId];
-  if (!boardConfig) return [];
+  if (currentBoardColumns.length === 0) return [];
 
   return cards
     .map((card) => {
       const displayColumnId = projectCard(card, boardId);
       if (!displayColumnId) return null;
 
-      const column = boardConfig.columns.find(
-        (c) => c.id === displayColumnId
+      // Busca na lista dinâmica para evitar o "limbo"
+      const column = currentBoardColumns.find(
+        (c) => String(c.id) === String(displayColumnId)
       );
 
       if (!column) return null;

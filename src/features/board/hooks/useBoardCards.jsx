@@ -9,67 +9,61 @@ export function useBoardCards({
   addCard,
   moveCard,
   columns,
+  allColumns,
   activeBoard,
   openModal,
-  onClearRequest
+  onClearRequest,
 }) {
-  const viewColumns = columns?.[activeBoard] ?? [];
-
   const orderedCards = useMemo(
-    () => resolveBoardCards({ cards, boardId: activeBoard }),
-    [cards, activeBoard]
+    () =>
+      resolveBoardCards({
+        cards,
+        boardId: activeBoard,
+        allColumns, // estado vivo @TODO: bloquear add em templates vinculados?
+      }),
+    [cards, activeBoard, allColumns]
   );
 
   const handleAddCard = useCallback(
     (columnId = null) => {
-      const targetColumnId = columnId || viewColumns[0]?.id;
-      const targetColumn = viewColumns.find(c => c.id === targetColumnId);
-
+      const targetColumn = columnId
+        ? columns.find((c) => c.id === columnId)
+        : columns[0];
       if (!targetColumn) {
-        showWarning("Não há colunas disponíveis para criar um card!");
+        showWarning("Crie uma coluna antes!");
         return;
       }
 
-      // O Board decide o status do novo card baseado na coluna escolhida
-      const newCard = addCard(targetColumnId, {
+      const newCard = addCard(targetColumn.id, {
         boardId: activeBoard,
-        status: targetColumn.status 
+        status: targetColumn.status,
       });
 
-      openModal(CardModal, {
-        card: newCard,
-        activeBoard,
-        columns: viewColumns,
-        moveCard
-      });
+      openModal(CardModal, { card: newCard, activeBoard, columns, moveCard });
     },
-    [addCard, activeBoard, viewColumns, moveCard, openModal]
+    [addCard, activeBoard, columns, openModal, moveCard]
   );
 
   const handleCardClick = useCallback(
     (card) => {
-      // displayColumnId para o Modal saber em qual coluna visual o card está
       openModal(CardModal, {
         card: { ...card, columnId: card.displayColumnId },
         activeBoard,
-        columns: viewColumns,
-        moveCard
+        columns,
+        moveCard,
       });
     },
-    [activeBoard, viewColumns, moveCard, openModal]
+    [activeBoard, columns, moveCard, openModal]
   );
 
   const handleClearBoard = useCallback(() => {
-    if (orderedCards.length === 0) {
-      showWarning("O board já está vazio!");
-      return;
-    }
+    if (orderedCards.length === 0) return showWarning("O board já está vazio!");
     showCustom(({ closeToast }) => (
       <ClearBoardToast
         onConfirm={() => {
           onClearRequest();
           closeToast();
-          showSuccess("Tarefas removidas.");
+          showSuccess("Board limpo com sucesso!");
         }}
         onCancel={closeToast}
       />
@@ -81,6 +75,6 @@ export function useBoardCards({
     activeBoardCardCount: orderedCards.length,
     handleAddCard,
     handleClearBoard,
-    handleCardClick
+    handleCardClick,
   };
 }

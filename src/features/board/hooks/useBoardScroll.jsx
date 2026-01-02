@@ -2,43 +2,65 @@ import { useRef, useEffect } from "react";
 
 export function useBoardScroll(boards, activeBoard) {
   const containerRef = useRef(null);
-  const isDragging = useRef(false);
   const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const scrollLeftStart = useRef(0);
+  const isDragging = useRef(false);
 
-  const handleMouseDown = (e) => {
-    isDragging.current = true;
-    startX.current = e.pageX - containerRef.current.offsetLeft;
-    scrollLeft.current = containerRef.current.scrollLeft;
-  };
-  const handleMouseLeave = () => (isDragging.current = false);
-  const handleMouseUp = () => (isDragging.current = false);
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
-    e.preventDefault();
-    const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = x - startX.current;
-    containerRef.current.scrollLeft = scrollLeft.current - walk;
-  };
-
-  // Scroll para board ativo
   useEffect(() => {
-    const container = containerRef.current;
-    const activeBtn = container.querySelector(".active");
-    if (activeBtn) {
-      const btnLeft = activeBtn.offsetLeft;
-      const btnWidth = activeBtn.offsetWidth;
-      const containerWidth = container.offsetWidth;
-      const scrollPosition = btnLeft - containerWidth / 2 + btnWidth / 2;
-      container.scrollTo({ left: scrollPosition, behavior: "smooth" });
-    }
+    const activeBtn = containerRef.current?.querySelector(".active");
+    activeBtn?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
   }, [activeBoard, boards]);
+
+  const onPointerDown = (e) => {
+    // Apenas botão esquerdo
+    if (e.button !== 0) return;
+    isDragging.current = false;
+    startX.current = e.clientX;
+    scrollLeftStart.current = containerRef.current.scrollLeft;
+  };
+
+  const onPointerMove = (e) => {
+    // Se o usuário soltou o mouse mas o navegador não disparou Up, reseta
+    if (e.buttons === 0) {
+      startX.current = 0;
+      return;
+    }
+
+    if (startX.current === 0) return;
+
+    const x = e.clientX;
+    const walk = x - startX.current;
+
+    if (Math.abs(walk) > 7) {
+      isDragging.current = true;
+      if (containerRef.current) {
+        containerRef.current.scrollLeft = scrollLeftStart.current - walk;
+      }
+    }
+  };
+
+  const onPointerUp = () => {
+    startX.current = 0;
+    setTimeout(() => {
+      isDragging.current = false;
+    }, 50);
+  };
+
+  const handleItemClick = (action) => {
+    if (!isDragging.current) {
+      action();
+    }
+  };
 
   return {
     containerRef,
-    handleMouseDown,
-    handleMouseLeave,
-    handleMouseUp,
-    handleMouseMove,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    handleItemClick,
   };
 }

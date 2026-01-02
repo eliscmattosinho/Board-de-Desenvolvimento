@@ -17,20 +17,23 @@ export function useBoardCards({
 
   const orderedCards = useMemo(
     () => resolveBoardCards({ cards, boardId: activeBoard }),
-    [cards, activeBoard, viewColumns]
+    [cards, activeBoard]
   );
 
   const handleAddCard = useCallback(
     (columnId = null) => {
-      const fallbackColumnId = viewColumns[0]?.id ?? null;
+      const targetColumnId = columnId || viewColumns[0]?.id;
+      const targetColumn = viewColumns.find(c => c.id === targetColumnId);
 
-      if (!columnId && !fallbackColumnId) {
+      if (!targetColumn) {
         showWarning("Não há colunas disponíveis para criar um card!");
         return;
       }
 
-      const newCard = addCard(columnId ?? fallbackColumnId, {
-        boardId: activeBoard
+      // O Board decide o status do novo card baseado na coluna escolhida
+      const newCard = addCard(targetColumnId, {
+        boardId: activeBoard,
+        status: targetColumn.status 
       });
 
       openModal(CardModal, {
@@ -43,26 +46,9 @@ export function useBoardCards({
     [addCard, activeBoard, viewColumns, moveCard, openModal]
   );
 
-  const handleClearBoard = useCallback(() => {
-    if (orderedCards.length === 0) {
-      showWarning("Não há tarefas para remover — o board já está vazio!");
-      return;
-    }
-
-    showCustom(({ closeToast }) => (
-      <ClearBoardToast
-        onConfirm={() => {
-          onClearRequest();
-          closeToast();
-          showSuccess("Tarefas removidas com sucesso.");
-        }}
-        onCancel={closeToast}
-      />
-    ));
-  }, [orderedCards, onClearRequest]);
-
   const handleCardClick = useCallback(
     (card) => {
+      // displayColumnId para o Modal saber em qual coluna visual o card está
       openModal(CardModal, {
         card: { ...card, columnId: card.displayColumnId },
         activeBoard,
@@ -72,6 +58,23 @@ export function useBoardCards({
     },
     [activeBoard, viewColumns, moveCard, openModal]
   );
+
+  const handleClearBoard = useCallback(() => {
+    if (orderedCards.length === 0) {
+      showWarning("O board já está vazio!");
+      return;
+    }
+    showCustom(({ closeToast }) => (
+      <ClearBoardToast
+        onConfirm={() => {
+          onClearRequest();
+          closeToast();
+          showSuccess("Tarefas removidas.");
+        }}
+        onCancel={closeToast}
+      />
+    ));
+  }, [orderedCards, onClearRequest]);
 
   return {
     orderedCards,

@@ -1,4 +1,4 @@
-import { saveCards } from "@/features/card/services/cardPersistence";
+import { saveCards } from "@card/services/cardPersistence";
 
 export const ACTIONS = {
   SET_CARDS: "SET_CARDS",
@@ -10,65 +10,74 @@ export const ACTIONS = {
 };
 
 export function cardReducer(state, action) {
+  let updatedCards;
+
   switch (action.type) {
     case ACTIONS.SET_CARDS:
-      saveCards(action.cards, { groupId: "root" });
+      saveCards(action.cards);
       return { ...state, cards: action.cards, nextId: action.nextId };
 
-    case ACTIONS.ADD_CARD: {
-      const updated = [...state.cards, action.card];
-      saveCards(updated, { groupId: "root" });
-      return { cards: updated, nextId: state.nextId + 1 };
-    }
+    case ACTIONS.ADD_CARD:
+      updatedCards = [...state.cards, action.card];
+      saveCards(updatedCards);
+      return { cards: updatedCards, nextId: state.nextId + 1 };
 
     case ACTIONS.MOVE_CARD: {
-  const { cardId, columnId, order, boardId } = action.payload;
+      const { cardId, columnId, order, boardId, status } = action.payload;
 
-  const updated = state.cards.map(c =>
-    String(c.id) === String(cardId)
-      ? { ...c, boardId, columnId, order, updatedAt: Date.now() }
-      : c
-  );
+      // Atualiza o card alvo
+      const updated = state.cards.map(c => {
+        if (String(c.id) !== String(cardId)) return c;
 
-  // normalize order only for the column
-  const scoped = updated
-    .filter(c => c.boardId === boardId && c.columnId === columnId)
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        return {
+          ...c,
+          // boardId original se for um espelhamento, 
+          // ou atualiza se for um movimento dentro do próprio board
+          boardId: c.boardId === boardId ? c.boardId : boardId,
+          columnId,
+          order,
+          status: status || c.status, // O status é a chave para o espelhamento funcionar
+          updatedAt: Date.now()
+        };
+      });
 
-  const normalized = updated.map(c => {
-    const idx = scoped.findIndex(s => s.id === c.id);
-    return idx === -1 ? c : { ...c, order: idx };
-  });
+      // Normaliza a ordem apenas para os cards que competem na mesma coluna visual
+      const scoped = updated
+        .filter(c => c.columnId === columnId)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-  saveCards(normalized, { groupId: "root" });
-  return { ...state, cards: normalized };
-}
+      const normalized = updated.map(c => {
+        if (c.columnId !== columnId) return c;
+        const idx = scoped.findIndex(s => s.id === c.id);
+        return { ...c, order: idx };
+      });
 
-    case ACTIONS.UPDATE_CARD: {
-      const updated = state.cards.map((c) =>
+      saveCards(normalized);
+      return { ...state, cards: normalized };
+    }
+
+    case ACTIONS.UPDATE_CARD:
+      updatedCards = state.cards.map((c) =>
         String(c.id) === String(action.cardId)
           ? { ...c, ...action.changes }
           : c
       );
-      saveCards(updated, { groupId: "root" });
-      return { ...state, cards: updated };
-    }
+      saveCards(updatedCards);
+      return { ...state, cards: updatedCards };
 
-    case ACTIONS.DELETE_CARD: {
-      const updated = state.cards.filter(
+    case ACTIONS.DELETE_CARD:
+      updatedCards = state.cards.filter(
         (c) => String(c.id) !== String(action.cardId)
       );
-      saveCards(updated, { groupId: "root" });
-      return { ...state, cards: updated };
-    }
+      saveCards(updatedCards);
+      return { ...state, cards: updatedCards };
 
-    case ACTIONS.CLEAR_CARDS: {
-      const filtered = state.cards.filter(
+    case ACTIONS.CLEAR_CARDS:
+      updatedCards = state.cards.filter(
         (c) => c.boardId !== action.boardId
       );
-      saveCards(filtered, { groupId: "root" });
-      return { ...state, cards: filtered };
-    }
+      saveCards(updatedCards);
+      return { ...state, cards: updatedCards };
 
     default:
       return state;

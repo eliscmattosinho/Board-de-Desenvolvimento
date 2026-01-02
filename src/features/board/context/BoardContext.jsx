@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useCallback } from "react";
-import { useCardsContext } from "@/features/card/context/CardContext";
+import { useCardsContext } from "@card/context/CardContext";
 import { useColumnsContext } from "@column/context/ColumnContext";
 import { useModal } from "@/context/ModalContext";
 

@@ -4,7 +4,7 @@ import { ThemeProvider } from "@context/ThemeContext";
 import { ModalProvider } from "@context/ModalContext";
 import { ScreenProvider } from "@context/ScreenContext";
 
-import { CardProvider } from "@/features/card/context/CardContext";
+import { CardProvider } from "@card/context/CardContext";
 import { ColumnProvider } from "@column/context/ColumnContext";
 import { BoardProvider } from "@board/context/BoardContext";
 

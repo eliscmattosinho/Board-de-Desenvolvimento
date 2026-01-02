@@ -11,31 +11,35 @@ import { boardTemplates } from "@board/domain/boardTemplates";
  *
  */
 export function resolveInitialCardLocation(card) {
+  // Se o card não tem status, manda para o padrão
   if (!card?.status) {
     return {
       boardId: "kanban",
-      columnId: boardTemplates.kanban.columns[0]?.id ?? null,
+      columnId: boardTemplates.kanban.columns[0]?.id
     };
   }
 
   const normalizedStatus = normalizeText(card.status);
+
+  // Prioridade de busca: se o status bater com o título de alguma coluna do Kanban ou Scrum
   const boardsPriority = ["kanban", "scrum"];
 
   for (const boardId of boardsPriority) {
-    const match = boardTemplates[boardId].columns.find(
-      (col) => normalizeText(col.title) === normalizedStatus
+    const board = boardTemplates[boardId];
+    // Tenta achar por status ou por título da coluna
+    const match = board.columns.find(
+      (col) => normalizeText(col.status) === normalizedStatus || 
+               normalizeText(col.title) === normalizedStatus
     );
 
     if (match) {
-      return {
-        boardId,
-        columnId: match.id,
-      };
+      return { boardId, columnId: match.id };
     }
   }
 
+  // Fallback
   return {
     boardId: "kanban",
-    columnId: boardTemplates.kanban.columns[0]?.id ?? null,
+    columnId: boardTemplates.kanban.columns[0]?.id
   };
 }

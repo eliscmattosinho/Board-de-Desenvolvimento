@@ -1,10 +1,10 @@
 import { useEffect, useReducer } from "react";
 import { boardReducer, ACTIONS } from "../context/boardReducer";
 import { loadBoards } from "@board/services/boardPersistence";
-import { boardTemplate } from "@board/domain/boardTemplates";
+import { boardTemplates } from "@board/domain/boardTemplates";
 
-function buildInitialGroupBoards(groupId) {
-  return Object.entries(boardTemplate)
+function getTemplateBoardsByGroup(groupId) {
+  return Object.entries(boardTemplates)
     .filter(([_, config]) => config.groupId === groupId)
     .map(([id, config]) => ({
       id,
@@ -13,36 +13,39 @@ function buildInitialGroupBoards(groupId) {
     }));
 }
 
-export function useBoardState({ initialGroup } = {}) {
+export function useBoardState({ initialGroup = "shared" } = {}) {
   const [state, dispatch] = useReducer(boardReducer, {
     boards: [],
     activeBoard: ""
   });
 
-  const group = initialGroup ?? "shared";
-
   useEffect(() => {
-    const storedBoards = loadBoards(group) || [];
+    // Carrega com fallback garantido para Array
+    const storedBoards = loadBoards() || [];
+    const templates = getTemplateBoardsByGroup(initialGroup);
 
-    if (storedBoards.length > 0) {
-      dispatch({
-        type: ACTIONS.INIT_GROUP_BOARDS,
-        boards: storedBoards,
-        activeBoard: storedBoards[0].id,
-        groupId: group
+    const boardMap = new Map();
+
+    // Inserir templates primeiro
+    templates.forEach(b => boardMap.set(b.id, b));
+
+    // Inserir salvos apenas se for um array válido
+    if (Array.isArray(storedBoards)) {
+      storedBoards.forEach(b => {
+        if (b && b.id && !boardMap.has(b.id)) {
+          boardMap.set(b.id, b);
+        }
       });
-      return;
     }
 
-    const templateBoards = buildInitialGroupBoards(group);
+    const finalBoards = Array.from(boardMap.values());
 
     dispatch({
       type: ACTIONS.INIT_GROUP_BOARDS,
-      boards: templateBoards,
-      activeBoard: templateBoards[0]?.id ?? "",
-      groupId: group
+      boards: finalBoards,
+      activeBoard: state.activeBoard || finalBoards[0]?.id || ""
     });
-  }, [group]);
+  }, [initialGroup]);
 
   return {
     state,

@@ -1,7 +1,7 @@
 import { ACTIONS } from "./cardReducer";
 
 export function useCardActions(state, dispatch) {
-  const addCard = (columnId, { boardId }) => {
+  const addCard = (columnId, { boardId, status }) => {
     const columnCards = state.cards.filter(
       (c) => c.boardId === boardId && c.columnId === columnId
     );
@@ -18,7 +18,7 @@ export function useCardActions(state, dispatch) {
       order: nextOrder,
       title: "",
       description: "",
-      status: null,
+      status: status || null, // Recebe a semântica da coluna do Board
       isNew: true,
       isTemplateCard: false,
       createdAt: Date.now(),

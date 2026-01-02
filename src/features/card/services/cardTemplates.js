@@ -1,33 +1,20 @@
-import { resolveInitialCardLocation } from "@/features/board/domain/cardBoardResolver";
-
 let cachedCards = null;
 
-async function loadAndInitializeCards() {
+export async function loadAndInitializeCards() {
   if (cachedCards) return cachedCards;
 
   try {
     const base = import.meta.env.BASE_URL || "/";
-    const text = await (await fetch(`${base}assets/tarefas.txt`)).text();
+    const response = await fetch(`${base}assets/tarefas.txt`);
+    const text = await response.text();
 
-    const templates = parseCards(text).map((t, i) => {
-      const { boardId, columnId } = resolveInitialCardLocation(t);
-
-      return {
-        id: t.id,
-        title: t.title,
-        description: t.description,
-        status: t.status,
-
-        boardId,
-        columnId,
-        order: i,
-
-        isTemplateCard: true,
-
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
-    });
+    const templates = parseCards(text).map((t, i) => ({
+      ...t,
+      isTemplateCard: true,
+      order: i,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    }));
 
     cachedCards = templates;
     return templates;
@@ -57,9 +44,3 @@ function parseCards(text) {
       };
     });
 }
-
-export function resetCardsCache() {
-  cachedCards = null;
-}
-
-export default loadAndInitializeCards;

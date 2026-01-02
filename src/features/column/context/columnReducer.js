@@ -1,3 +1,5 @@
+import { saveColumnsToStorage } from "@column/services/columnPersistence";
+
 export const ACTIONS = {
   ADD_COLUMN: "ADD_COLUMN",
   REMOVE_COLUMN: "REMOVE_COLUMN",
@@ -17,10 +19,15 @@ function cloneAsOverride(col) {
 export function columnReducer(state, action) {
   const { columns } = state;
 
-  const updateColumnArray = (boardId, id, updater) =>
+  const updateAndSave = (nextCols) => {
+    saveColumnsToStorage(nextCols);
+    return { ...state, columns: nextCols };
+  };
+
+  const updateColumnInArray = (boardId, id, updater) =>
     (columns[boardId] || []).map((col) => {
       if (String(col.id) !== String(id)) return col;
-
+      // Se for template, ele "nasce" como uma coluna customizada ao ser editado
       const target = col.isTemplate ? cloneAsOverride(col) : col;
       return updater(target);
     });
@@ -28,14 +35,13 @@ export function columnReducer(state, action) {
   switch (action.type) {
     case ACTIONS.ADD_COLUMN: {
       const { boardId, index = 0, columnData } = action;
-
-      const newColumn = {
-        id: String(columnData.id),
+      const newCol = {
+        id: columnData.id || `col-${Date.now()}`,
         title: columnData.title || "Nova coluna",
+        status: columnData.status || "todo",
         color: columnData.color || "#EFEFEF",
         applyTo: columnData.applyTo || "fundo",
         isTemplate: false,
-        isReadOnly: false,
         style: {
           bg:
             columnData.applyTo === "fundo"
@@ -49,71 +55,52 @@ export function columnReducer(state, action) {
         },
       };
 
-      const list = [...(columns[boardId] || [])];
-      list.splice(index, 0, newColumn);
-
-      return {
-        ...state,
-        columns: {
-          ...columns,
-          [boardId]: list,
-        },
-      };
+      const newList = [...(columns[boardId] || [])];
+      newList.splice(index, 0, newCol);
+      return updateAndSave({ ...columns, [boardId]: newList });
     }
 
     case ACTIONS.UPDATE_COLUMN_INFO: {
       const { boardId, id, newData } = action;
-
-      return {
-        ...state,
-        columns: {
-          ...columns,
-          [boardId]: updateColumnArray(boardId, id, (col) => ({
-            ...col,
-            title: newData.title ?? col.title,
-          })),
-        },
-      };
+      return updateAndSave({
+        ...columns,
+        [boardId]: updateColumnInArray(boardId, id, (col) => ({
+          ...col,
+          title: newData.title ?? col.title,
+          status: newData.status ?? col.status,
+        })),
+      });
     }
 
     case ACTIONS.UPDATE_COLUMN_STYLE: {
       const { boardId, id, newData } = action;
-
-      return {
-        ...state,
-        columns: {
-          ...columns,
-          [boardId]: updateColumnArray(boardId, id, (col) => {
-            const color = newData.color ?? col.color;
-            const applyTo = newData.applyTo ?? col.applyTo;
-
-            return {
-              ...col,
-              color,
-              applyTo,
-              style: {
-                bg: applyTo === "fundo" ? color : "transparent",
-                border: applyTo === "borda" ? color : "transparent",
-                color: col.style?.color ?? "#212121",
-              },
-            };
-          }),
-        },
-      };
+      return updateAndSave({
+        ...columns,
+        [boardId]: updateColumnInArray(boardId, id, (col) => {
+          const color = newData.color ?? col.color;
+          const applyTo = newData.applyTo ?? col.applyTo;
+          return {
+            ...col,
+            color,
+            applyTo,
+            style: {
+              bg: applyTo === "fundo" ? color : "transparent",
+              border: applyTo === "borda" ? color : "transparent",
+              color: col.style?.color ?? "#212121",
+            },
+          };
+        }),
+      });
     }
 
     case ACTIONS.REMOVE_COLUMN: {
       const { boardId, id } = action;
-
-      return {
-        ...state,
-        columns: {
-          ...columns,
-          [boardId]: (columns[boardId] || []).filter(
-            (col) => String(col.id) !== String(id)
-          ),
-        },
-      };
+      return updateAndSave({
+        ...columns,
+        [boardId]: (columns[boardId] || []).filter(
+          (c) => String(c.id) !== String(id)
+        ),
+      });
     }
 
     default:

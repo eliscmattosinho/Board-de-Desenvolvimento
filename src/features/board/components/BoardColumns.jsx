@@ -23,8 +23,8 @@ function BoardColumns({
         cards={cardsByColumn[col.id] || []}
         onCardClick={onCardClick}
         onAddCard={onAddCard}
-        onEdit={onEditColumn(index, col)}
-        onRemove={onRemoveColumn(col)}
+        onEdit={() => onEditColumn(index, col)}
+        onRemove={() => onRemoveColumn(col)}
       />
 
       {!isTouch && index < columns.length - 1 && (

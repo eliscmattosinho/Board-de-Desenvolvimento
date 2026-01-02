@@ -1,13 +1,19 @@
 import { useNavigate } from "react-router-dom";
-
 import { useBoardContext } from "@board/context/BoardContext";
+import { useTheme } from "@context/ThemeContext";
 
 export function useHub() {
   const navigate = useNavigate();
-  const board = useBoardContext();
+  const { theme } = useTheme();
+  const { activeBoard, setActiveBoard, createBoard, boards } =
+    useBoardContext();
 
   return {
     navigate,
-    ...board,
+    theme,
+    activeBoard,
+    setActiveBoard,
+    createBoard,
+    boards,
   };
 }

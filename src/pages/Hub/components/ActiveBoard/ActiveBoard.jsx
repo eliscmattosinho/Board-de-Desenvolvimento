@@ -1,20 +1,29 @@
 import React from "react";
 import { SiCcleaner } from "react-icons/si";
 import { useBoardContext } from "@board/context/BoardContext";
+import { useBoardUI } from "@board/hooks/useBoardUI";
+import { useColumnModal } from "@column/hooks/useColumnModal";
 import BoardSection from "@board/components/BoardSection/BoardSection";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
-
 import "./ActiveBoard.css";
 
 export default function ActiveBoard() {
   const {
+    activeBoard,
     activeBoardColumns,
     activeBoardTitle,
     activeBoardCardCount,
-    handleAddCard,
-    handleAddColumn,
-    handleClearBoard,
+    handleAddCard: createCardData,
   } = useBoardContext();
+
+  const { handleOpenCardModal, handleClearBoard } = useBoardUI();
+  const { handleAddColumn } = useColumnModal({ activeBoard });
+
+  // Conecta a criação do dado com a abertura do modal
+  const onAddCardAction = () => {
+    const newCard = createCardData();
+    if (newCard) handleOpenCardModal(newCard);
+  };
 
   return (
     <article className="hub-active-board">
@@ -27,12 +36,13 @@ export default function ActiveBoard() {
 
           <FloatingMenu
             columns={activeBoardColumns}
-            onAddCard={handleAddCard}
+            onAddCard={onAddCardAction}
             onAddColumn={handleAddColumn}
           />
         </div>
 
         <button
+          type="button"
           id="board-cleaner"
           className="board-icon clean-icon"
           onClick={handleClearBoard}

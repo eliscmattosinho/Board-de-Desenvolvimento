@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 import StatusDropdown from "@components/StatusDropdown/StatusDropdown";
 
-export default function CardContent({
+export default function CardForm({
     form,
     columns,
     onSelect,
@@ -29,8 +29,8 @@ export default function CardContent({
             >
                 <div
                     ref={contentRef}
-                    className={`modal-content ${readOnly ? "card-view" : "card-edit"
-                        } ${isCreating ? "card-create" : ""}`}
+                    className={`modal-content ${readOnly ? "card-view" : "card-edit"} ${isCreating ? "card-create" : ""
+                        }`}
                 >
                     {!readOnly ? (
                         <div className="modal-field title-block">

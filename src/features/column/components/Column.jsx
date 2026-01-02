@@ -21,21 +21,17 @@ function Column({
   onEdit,
   onRemove,
 }) {
-  const {
-    colStyle,
-    handleAddCardClick,
-    handleEditClick,
-    handleRemoveClick,
-  } = useColumn({
-    id,
-    onAddCard,
-    onEdit,
-    onRemove,
-    style,
-    color: color || style?.bg || "#EFEFEF",
-    applyTo,
-    isTemplate,
-  });
+  const { colStyle, handleAddCardClick, handleEditClick, handleRemoveClick } =
+    useColumn({
+      id,
+      onAddCard,
+      onEdit,
+      onRemove,
+      style,
+      color: color || style?.bg || "#EFEFEF",
+      applyTo,
+      isTemplate,
+    });
 
   return (
     <div
@@ -50,19 +46,22 @@ function Column({
       <ColumnHeader
         title={title}
         cardsLength={cards.length}
+        textColor={colStyle.color}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
       />
 
       <div className="col-items">
-        <ColumnCards
-          cards={cards}
-          onCardClick={onCardClick}
-        />
+        <ColumnCards cards={cards} onCardClick={onCardClick} />
       </div>
 
       {onAddCard && (
-        <button className="add-card" onClick={handleAddCardClick}>
+        <button
+          type="button"
+          className="add-card"
+          onClick={handleAddCardClick}
+          aria-label="Adicionar novo card"
+        >
           <CiCirclePlus size={30} />
         </button>
       )}

@@ -1,35 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { IoTrashOutline } from "react-icons/io5";
 import { AiOutlineEdit } from "react-icons/ai";
 import { useScreen } from "@context/ScreenContext";
+import { useColHeader } from "@column/hooks/useColHeader";
 
 const ColumnHeader = React.memo(
   ({ title, cardsLength, textColor, onEdit, onRemove }) => {
-    const [hovered, setHovered] = React.useState(false);
     const { isTouch } = useScreen();
-    const containerRef = useRef(null);
-
-    useEffect(() => {
-      if (!isTouch || !hovered) return;
-
-      const handleClickOutside = (e) => {
-        if (containerRef.current && !containerRef.current.contains(e.target)) {
-          setHovered(false);
-        }
-      };
-
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
-    }, [hovered, isTouch]);
+    const { hovered, hoverProps } = useColHeader(isTouch);
 
     return (
-      <div
-        ref={containerRef}
-        className="col-title-container"
-        onMouseEnter={() => !isTouch && setHovered(true)}
-        onMouseLeave={() => !isTouch && setHovered(false)}
-        onClick={() => isTouch && setHovered((prev) => !prev)}
-      >
+      <div className="col-title-container" {...hoverProps}>
         <div className="col-title-content">
           {onRemove && (
             <button

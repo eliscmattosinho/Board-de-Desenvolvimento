@@ -1,21 +1,16 @@
 import { useCallback } from "react";
 import ColumnModal from "@column/components/ColumnModal/ColumnModal";
+import { useColumnsContext } from "@column/context/ColumnContext";
+import { useModal } from "@/context/ModalContext";
 
 /**
- * Hook para abrir modal de coluna e gerenciar a persistência de dados iniciais
+ * Hook autônomo para gerenciar a abertura e o salvamento de colunas.
  */
-export function useColumnModal({
-    addColumn,
-    updateColumnInfo,
-    updateColumnStyle,
-    openModal,
-    activeBoard,
-}) {
-    /**
-     * Abre o modal de criação ou edição de coluna
-     * @param {number} index - Posição da coluna (para criação)
-     * @param {Object} column - Dados da coluna (para edição)
-     */
+export function useColumnModal({ activeBoard }) {
+    const { addColumn, updateColumnInfo, updateColumnStyle } =
+        useColumnsContext();
+    const { openModal } = useModal();
+
     const handleAddColumn = useCallback(
         (index, column) => {
             openModal(ColumnModal, {
@@ -37,9 +32,7 @@ export function useColumnModal({
                         // CRIAÇÃO: Adiciona campos vitais para o domínio de Card
                         const newColumnPayload = {
                             ...data,
-                            // Garante um ID único para evitar duplicação no storage
                             id: `col-${Date.now()}`,
-                            // Garante um status para que o CardContext saiba criar cards aqui
                             status: data.status || "todo",
                         };
 

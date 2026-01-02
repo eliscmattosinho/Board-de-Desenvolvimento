@@ -3,15 +3,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Pega o tema armazenado ou default para "light"
+  // Pega o tema armazenado no localStorage ou default para "light"
   const [theme, setTheme] = useState(() => {
-    return sessionStorage.getItem("theme") || "light";
+    return localStorage.getItem("theme") || "light";
   });
 
-  // Atualiza a classe no html e salva na sessionStorage
+  // Atualiza a classe no html e salva na localStorage
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    sessionStorage.setItem("theme", theme);
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {

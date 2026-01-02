@@ -5,31 +5,28 @@ import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
 import { useBoardContext } from "@board/context/BoardContext";
 
+import { useBoardUI } from "@board/hooks/useBoardUI";
+import { useColumnModal } from "@column/hooks/useColumnModal";
 import { useCardsByColumn } from "@board/hooks/useCardsByColumn";
 import { useColumnHover } from "@board/hooks/useColumnHover";
-import { useDeleteColumn } from "@board/hooks/useDeleteColumn";
-
 import BoardColumns from "@board/components/BoardColumns";
 import "./BoardSection.css";
 
 function BoardSection() {
-  const { 
-    activeBoard, 
-    activeBoardColumns, 
-    orderedCards, 
-    handleCardClick,
-    handleAddCard,
-    handleAddColumn,
-    removeColumn 
+  const {
+    activeBoard,
+    activeBoardColumns,
+    orderedCards,
+    handleAddCard: createCardData,
   } = useBoardContext();
 
   const containerRef = useRef(null);
+
+  const { handleOpenCardModal, handleDeleteColumn } = useBoardUI();
+  const { handleAddColumn } = useColumnModal({ activeBoard });
   const { isTouch } = useScreen();
   const { isModalOpen } = useModal();
-
   const { hoveredIndex, onEnter, onLeave } = useColumnHover();
-
-  const deleteColumn = useDeleteColumn(); 
 
   const cardsByColumn = useCardsByColumn({
     columns: activeBoardColumns,
@@ -37,8 +34,23 @@ function BoardSection() {
     activeBoard,
   });
 
+  const onAddCard = useCallback(
+    (columnId) => {
+      const newCard = createCardData(columnId);
+      if (newCard) handleOpenCardModal(newCard);
+    },
+    [createCardData, handleOpenCardModal]
+  );
+
+  const onCardClick = useCallback(
+    (card) => {
+      handleOpenCardModal({ ...card, columnId: card.displayColumnId });
+    },
+    [handleOpenCardModal]
+  );
+
   const handleEditColumn = useCallback(
-    (index, col) => () => handleAddColumn(index, col),
+    (index, col) => handleAddColumn(index, col),
     [handleAddColumn]
   );
 
@@ -64,10 +76,10 @@ function BoardSection() {
         onHoverEnter={onEnter}
         onHoverLeave={onLeave}
         onAddColumnAt={handleAddColumnAt}
-        onCardClick={handleCardClick}
-        onAddCard={handleAddCard}
+        onCardClick={onCardClick}
+        onAddCard={onAddCard}
         onEditColumn={handleEditColumn}
-        onRemoveColumn={(col) => () => deleteColumn(col)}
+        onRemoveColumn={handleDeleteColumn}
       />
 
       <div className="col-add-last">

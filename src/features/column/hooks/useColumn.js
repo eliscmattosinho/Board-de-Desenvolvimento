@@ -25,7 +25,9 @@ export default function useColumn({
 
   const handleEditClick = useCallback(
     (e) => {
-      e.stopPropagation();
+      if (e && typeof e.stopPropagation === "function") {
+        e.stopPropagation();
+      }
       onEdit?.();
     },
     [onEdit]
@@ -33,7 +35,9 @@ export default function useColumn({
 
   const handleRemoveClick = useCallback(
     (e) => {
-      e.stopPropagation();
+      if (e && typeof e.stopPropagation === "function") {
+        e.stopPropagation();
+      }
       onRemove?.();
     },
     [onRemove]

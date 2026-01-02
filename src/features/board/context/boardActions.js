@@ -1,5 +1,7 @@
 import { ACTIONS } from "./boardReducer";
 import { normalizeText } from "@/utils/normalizeUtils";
+import { useCardsContext } from "@card/context/CardContext";
+import { useColumnsContext } from "@column/context/ColumnContext";
 
 function normalizeId(value) {
   return normalizeText(value)
@@ -8,10 +10,23 @@ function normalizeId(value) {
 }
 
 export function useBoardActions(state, dispatch) {
+  const { clearCards } = useCardsContext();
+  const { columns: allColumns, removeColumn } = useColumnsContext();
+
   const validateTitle = (title) => {
     if (!title || !title.trim()) return "Título não pode ser vazio.";
     if (title.length < 3) return "Título deve ter ao menos 3 caracteres.";
     return null;
+  };
+
+  const getBoardsToClear = (activeBoardId) => {
+    const boards = state.boards || [];
+    const board = boards.find((b) => b.id === activeBoardId);
+    if (!board) return [];
+    if (board.groupId) {
+      return boards.filter((b) => b.groupId === board.groupId).map((b) => b.id);
+    }
+    return [activeBoardId];
   };
 
   const createBoard = (title) => {
@@ -34,9 +49,13 @@ export function useBoardActions(state, dispatch) {
     dispatch({ type: ACTIONS.UPDATE_BOARD, id, updates });
   };
 
-  const deleteBoard = (id, syncCallback) => {
+  const deleteBoard = (id) => {
     dispatch({ type: ACTIONS.DELETE_BOARD, id });
-    if (syncCallback) syncCallback(id);
+
+    clearCards(id);
+
+    const boardColumns = allColumns[id] || [];
+    boardColumns.forEach((col) => removeColumn(id, col.id));
   };
 
   const setActiveBoard = (boardId) => {
@@ -49,5 +68,6 @@ export function useBoardActions(state, dispatch) {
     updateBoard,
     deleteBoard,
     setActiveBoard,
+    getBoardsToClear,
   };
 }

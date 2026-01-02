@@ -1,6 +1,8 @@
 import React from "react";
 import { useBottomSheet } from "@hooks/useBottomSheet";
 
+import "./Modal.mobile.css";
+
 export default function ModalMobile({
     title,
     children,
@@ -8,8 +10,7 @@ export default function ModalMobile({
     showHeader = true,
     isOpen = true,
 }) {
-
-    // @TODO mudar comportamento de crud em mobile 
+    // @TODO mudar comportamento de crud em mobile
     // @TODO sobreposição de modal exclude, (op: canceldelete return to card/column id modal?)
 
     const {

@@ -1,21 +1,19 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 export default function useCardForm(card, columns) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [columnId, setColumnId] = useState(null);
 
-  const initializedRef = useRef(false);
-
   useEffect(() => {
-    if (!card || initializedRef.current) return;
+    if (!card) return;
 
     setTitle(card.title || "");
     setDescription(card.description || "");
     setColumnId(card.columnId ?? columns?.[0]?.id ?? null);
 
-    initializedRef.current = true;
-  }, [card, columns]);
+    // O formulário reseta sempre que o card.id mudar
+  }, [card?.id, columns]);
 
   return {
     title,

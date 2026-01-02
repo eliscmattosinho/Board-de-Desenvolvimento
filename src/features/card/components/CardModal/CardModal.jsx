@@ -2,14 +2,13 @@ import React from "react";
 import { useModal } from "@context/ModalContext";
 import { useCardsContext } from "@card/context/CardContext";
 import useCardForm from "@card/hooks/useCardForm";
-
 import Modal from "@components/Modal/Modal";
-import CardContent from "@card/components/CardModal/CardContent";
+import CardForm from "@card/components/CardModal/CardForm";
 import CardActions from "./CardActions";
 
 import { useCardModalState } from "@card/hooks/useCardModalState";
 import { useCardDirtyCheck } from "@card/hooks/useCardDirtyCheck";
-import { useCardModalActions } from "@card/hooks/useCardModalActions";
+import { useCardModalActions } from "@/features/card/hooks/useCardModalActions";
 
 import "./CardModal.css";
 
@@ -55,7 +54,7 @@ export default function CardModal({ card, activeBoard, columns, moveCard }) {
                 className={`modal-content card-content-wrapper ${state.isAnimating ? "is-animating" : ""
                     }`}
             >
-                <CardContent
+                <CardForm
                     form={form}
                     columns={columns}
                     onSelect={actions.handleSelect}

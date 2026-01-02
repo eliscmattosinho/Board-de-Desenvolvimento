@@ -1,18 +1,18 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import useColumnForm from "@column/hooks/useColumnForm";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
-import { showWarning } from "@utils/toastUtils";
-
 import Modal from "@components/Modal/Modal";
 import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";
 import ColorPickerPanelMobile from "../ColorPickerPanel/ColorPickerMobile/ColorPickerPanelMobile";
-
 import "./ColumnModal.css";
 
 export default function ColumnModal({ columnData, mode = "create", onSave }) {
     const { closeModal } = useModal();
     const { isMobile } = useScreen();
+    const inputRef = useRef(null);
+    const baselineRef = useRef(null);
+    const [showPicker, setShowPicker] = useState(false);
 
     const {
         title,
@@ -26,46 +26,44 @@ export default function ColumnModal({ columnData, mode = "create", onSave }) {
         isInitialized,
     } = useColumnForm(columnData);
 
-    const [showPicker, setShowPicker] = useState(false);
-    const inputRef = useRef(null);
-
-    /**
-     * Baseline do form
-     * Só é capturado após a inicialização completa
-     */
-    const baselineRef = useRef(null);
-
+    // Captura o baseline para comparação
     useEffect(() => {
         if (isInitialized && !baselineRef.current) {
             baselineRef.current = {
-                title,
-                color,
-                description,
-                applyTo,
+                title: title.trim(),
+                color: color,
+                description: description.trim(),
+                applyTo: applyTo,
             };
         }
     }, [isInitialized, title, color, description, applyTo]);
 
-    const isDirty =
-        isInitialized &&
-        baselineRef.current &&
-        (title !== baselineRef.current.title ||
+    // Verifica se houve alteração real
+    const isDirty = useMemo(() => {
+        if (!isInitialized || !baselineRef.current) return false;
+        return (
+            title.trim() !== baselineRef.current.title ||
             color !== baselineRef.current.color ||
-            description !== baselineRef.current.description ||
-            applyTo !== baselineRef.current.applyTo);
+            description.trim() !== baselineRef.current.description ||
+            applyTo !== baselineRef.current.applyTo
+        );
+    }, [isInitialized, title, color, description, applyTo]);
 
-    const canSave =
-        isInitialized && title.trim().length > 0 && (mode === "create" || isDirty);
+    // Define se o formulário é válido para salvar
+    const canSave = useMemo(() => {
+        const hasValidTitle = title.trim().length > 0;
+        if (mode === "create") return hasValidTitle;
+        return hasValidTitle && isDirty;
+    }, [title, mode, isDirty]);
 
     const handleSave = () => {
         if (!canSave) return;
-
-        if (!title.trim()) {
-            showWarning("O título não pode ficar vazio.");
-            return;
-        }
-
-        onSave?.({ title, color, applyTo, description });
+        onSave?.({
+            title: title.trim(),
+            color,
+            applyTo,
+            description: description.trim(),
+        });
         closeModal();
     };
 

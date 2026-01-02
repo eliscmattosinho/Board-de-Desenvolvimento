@@ -11,20 +11,25 @@ export function useCardModalActions({
     cards,
     moveCard,
 }) {
-    const { title, setTitle, description, setDescription, columnId, setColumnId } = form;
-    const { isCreating, editMode, setEditMode, triggerAnimation, resetAnimation } = state;
+    const {
+        title,
+        setTitle,
+        description,
+        setDescription,
+        columnId,
+        setColumnId,
+    } = form;
+    const { isCreating, editMode, setEditMode, resetAnimation } = state;
 
     const handleSelect = (nextColumnId) => {
         setColumnId(nextColumnId);
-
+        // Se não estiver em editMode, move o card instantaneamente no board
         if (!editMode) {
             moveCard(card.id, { boardId: activeBoard, columnId: nextColumnId });
         }
     };
 
-    const handleEdit = () => {
-        setEditMode(true); // animação será disparada pelo CSSTransition
-    };
+    const handleEdit = () => setEditMode(true);
 
     const handleSave = () => {
         if (!title.trim()) return showWarning("O título não pode ficar vazio.");
@@ -47,6 +52,7 @@ export function useCardModalActions({
     };
 
     const handleCancel = () => {
+        // Reset manual dos campos para o estado original do card
         setTitle(card.title || "");
         setDescription(card.description || "");
         setColumnId(card.columnId ?? columns?.[0]?.id ?? null);
@@ -65,6 +71,7 @@ export function useCardModalActions({
     };
 
     const handleClose = () => {
+        // Se fechou um card novo sem conteúdo, remove o "fantasma"
         if (isCreating && !(title.trim() || description.trim())) {
             cards.deleteCard(card.id, activeBoard);
         }

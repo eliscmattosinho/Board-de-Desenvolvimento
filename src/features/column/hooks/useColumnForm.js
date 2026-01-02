@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { getContrastColor } from "@column/utils/colorUtils";
+import { getContrastColor } from "@utils/colorUtils";
 
 export default function useColumnForm(columnData) {
     const [title, setTitle] = useState("");
@@ -19,6 +19,7 @@ export default function useColumnForm(columnData) {
             return;
         }
 
+        // Inicialização segura dos dados recebidos
         setTitle(columnData.title || "");
         setDescription(columnData.description || "");
 
@@ -34,18 +35,13 @@ export default function useColumnForm(columnData) {
             } else if (border && border !== "transparent") {
                 setColor(border);
                 setApplyTo("borda");
-            } else {
-                setColor("#EFEFEF");
-                setApplyTo("fundo");
             }
-        } else {
-            setColor("#EFEFEF");
-            setApplyTo("fundo");
         }
 
         setIsInitialized(true);
     }, [columnData]);
 
+    // Estilo em tempo real para o preview
     const style = useMemo(() => {
         const textColor = applyTo === "borda" ? color : getContrastColor(color);
 

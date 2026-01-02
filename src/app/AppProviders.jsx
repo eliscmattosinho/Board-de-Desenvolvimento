@@ -11,17 +11,17 @@ import { BoardProvider } from "@board/context/BoardContext";
 const AppProviders = ({ children }) => {
   return (
     <ThemeProvider>
-      <CardProvider>
-        <ScreenProvider>
-          <ModalProvider>
-            <ColumnProvider>
-              <BoardProvider>
+      <ScreenProvider>
+        <CardProvider>
+          <ColumnProvider>
+            <BoardProvider>
+              <ModalProvider>
                 {children}
-              </BoardProvider>
-            </ColumnProvider>
-          </ModalProvider>
-        </ScreenProvider>
-      </CardProvider>
+              </ModalProvider>
+            </BoardProvider>
+          </ColumnProvider>
+        </CardProvider>
+      </ScreenProvider>
     </ThemeProvider>
   );
 };

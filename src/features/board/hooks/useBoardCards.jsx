@@ -2,124 +2,79 @@ import { useMemo, useCallback } from "react";
 import { showWarning, showCustom, showSuccess } from "@utils/toastUtils";
 import ClearBoardToast from "@components/ToastProvider/toasts/ClearBoardToast";
 import CardModal from "@card/components/CardModal/CardModal";
-import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
-import { getDisplayStatus } from "@board/components/templates/cardBoardResolver";
+import { resolveBoardCards } from "@board/domain/boardProjection";
 
 export function useBoardCards({
   cards,
   addCard,
   moveCard,
-  clearCards,
   columns,
+  allColumns,
   activeBoard,
   openModal,
+  onClearRequest,
 }) {
-  const activeGroupId = syncedBoardsMap[activeBoard] ?? null;
-  const isSharedBoard = Boolean(activeGroupId);
-
-  const orderedCards = useMemo(() => {
-    const visible = cards.filter((t) => {
-      if (isSharedBoard) {
-        return (syncedBoardsMap[t.boardId] ?? null) === activeGroupId;
-      }
-      return t.boardId === activeBoard;
-    });
-
-    return visible
-      .map((t) => {
-        const displayColumnId =
-          !isSharedBoard
-            ? t.columnId
-            : t.boardId === activeBoard
-              ? t.columnId
-              : t.mirrorColId;
-
-        return {
-          ...t,
-          displayColumnId,
-          displayStatus: getDisplayStatus(displayColumnId, activeBoard),
-        };
-      })
-      .sort((a, b) => {
-        if (a.displayColumnId < b.displayColumnId) return -1;
-        if (a.displayColumnId > b.displayColumnId) return 1;
-        return (a.order ?? 0) - (b.order ?? 0);
-      });
-  }, [cards, activeBoard, isSharedBoard, activeGroupId]);
+  const orderedCards = useMemo(
+    () =>
+      resolveBoardCards({
+        cards,
+        boardId: activeBoard,
+        allColumns, // estado vivo @TODO: bloquear add em templates vinculados?
+      }),
+    [cards, activeBoard, allColumns]
+  );
 
   const handleAddCard = useCallback(
     (columnId = null) => {
-      const viewColumns = columns?.[activeBoard] ?? [];
-      const fallbackColumnId = viewColumns[0]?.id ?? null;
-      const chosenColumnId = columnId ?? fallbackColumnId;
+      const targetColumn = columnId
+        ? columns.find((c) => c.id === columnId)
+        : columns[0];
+      if (!targetColumn) {
+        showWarning("Crie uma coluna antes!");
+        return;
+      }
 
-      const newCard = addCard(chosenColumnId, {
+      const newCard = addCard(targetColumn.id, {
         boardId: activeBoard,
+        status: targetColumn.status,
       });
 
-      openModal(CardModal, {
-        card: { ...newCard, isNew: true },
-        activeBoard,
-        columns: viewColumns,
-        moveCard,
-      });
+      openModal(CardModal, { card: newCard, activeBoard, columns, moveCard });
     },
-    [addCard, activeBoard, columns, moveCard, openModal]
+    [addCard, activeBoard, columns, openModal, moveCard]
   );
-
-  const handleClearBoard = useCallback(() => {
-    const groupId = syncedBoardsMap[activeBoard] ?? null;
-    const isShared = Boolean(groupId);
-
-    const boardCards = cards.filter((t) =>
-      isShared
-        ? (syncedBoardsMap[t.boardId] ?? null) === groupId
-        : t.boardId === activeBoard
-    );
-
-    if (boardCards.length === 0) {
-      showWarning("Não há tarefas para remover — o board já está vazio!");
-      return;
-    }
-
-    showCustom(({ closeToast }) => (
-      <ClearBoardToast
-        onConfirm={() => {
-          isShared
-            ? clearCards({ groupId })
-            : clearCards({ boardId: activeBoard });
-          closeToast();
-          showSuccess("Todas as tarefas foram removidas com sucesso!");
-        }}
-        onCancel={closeToast}
-      />
-    ));
-  }, [cards, activeBoard, clearCards]);
 
   const handleCardClick = useCallback(
     (card) => {
       openModal(CardModal, {
-        card: {
-          ...card,
-          columnId: card.displayColumnId ?? card.columnId ?? null,
-        },
+        card: { ...card, columnId: card.displayColumnId },
         activeBoard,
-        columns: columns?.[activeBoard] ?? [],
+        columns,
         moveCard,
       });
     },
     [activeBoard, columns, moveCard, openModal]
   );
 
-  const activeBoardCardCount = useMemo(() => {
-    return orderedCards.length;
-  }, [orderedCards]);
+  const handleClearBoard = useCallback(() => {
+    if (orderedCards.length === 0) return showWarning("O board já está vazio!");
+    showCustom(({ closeToast }) => (
+      <ClearBoardToast
+        onConfirm={() => {
+          onClearRequest();
+          closeToast();
+          showSuccess("Board limpo com sucesso!");
+        }}
+        onCancel={closeToast}
+      />
+    ));
+  }, [orderedCards, onClearRequest]);
 
   return {
     orderedCards,
+    activeBoardCardCount: orderedCards.length,
     handleAddCard,
     handleClearBoard,
     handleCardClick,
-    activeBoardCardCount,
   };
 }

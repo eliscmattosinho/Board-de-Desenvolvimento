@@ -28,6 +28,8 @@ export default function BoardForm({ onConfirm }) {
             <div className="modal-content">
                 <input
                     type="text"
+                    id="boardTitle"
+                    name="boardTitle"
                     placeholder="Título do board"
                     value={title}
                     className="input-entry"

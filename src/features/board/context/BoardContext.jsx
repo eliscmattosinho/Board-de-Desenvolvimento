@@ -1,70 +1,58 @@
 import { createContext, useContext, useMemo, useCallback } from "react";
-
-import { useCardsContext } from "@/features/card/context/CardContext";
+import { useCardsContext } from "@card/context/CardContext";
 import { useColumnsContext } from "@column/context/ColumnContext";
-import { useModal } from "@context/ModalContext";
-
+import { useModal } from "@/context/ModalContext";
 import { useBoardState } from "@board/hooks/useBoardState";
 import { useBoardCards } from "@board/hooks/useBoardCards";
 import { useColumnModal } from "@column/hooks/useColumnModal";
 import { useBoardActions } from "./boardActions";
-
-import { useCardDrag } from "@board/context/CardDragContext";
-
 import { getActiveBoardTitle } from "@board/utils/boardUtils";
 
 const BoardContext = createContext(null);
 
 export function BoardProvider({ children }) {
-  /**
-   * Cards
-   */
   const { cards, addCard, moveCard, clearCards } = useCardsContext();
-
-  /**
-   * Columns
-   */
+  const { openModal } = useModal();
   const {
-    columns,
+    columns: allColumns,
     addColumn,
     removeColumn,
     updateColumnInfo,
     updateColumnStyle,
   } = useColumnsContext();
 
-  const { openModal } = useModal();
-
-  /**
-   * Boards state
-   */
-  const { state, dispatch, boards, activeBoard } =
-    useBoardState({ initialGroup: "shared", columns });
-
   const {
-    createBoard,
-    updateBoard,
-    deleteBoard,
-    setActiveBoard,
-  } = useBoardActions(state, dispatch);
+    state: boardsState,
+    activeBoard,
+    dispatch,
+  } = useBoardState({ initialGroup: "shared" });
 
-  /**
-   * Pointer-based Drag & Drop
-   */
-  const { commitDrop } = useCardDrag();
+  const boardsObj = useMemo(() => {
+    return (boardsState.boards || []).reduce((acc, b) => {
+      acc[b.id] = b;
+      return acc;
+    }, {});
+  }, [boardsState.boards]);
 
-  /**
-   * Handler responsável por efetivar o drop
-   */
-  const handleCommitDrop = useCallback(() => {
-    const result = commitDrop();
-    if (!result) return;
+  const { createBoard, updateBoard, deleteBoard, setActiveBoard } =
+    useBoardActions(boardsState, dispatch);
 
-    const { cardId, target } = result;
-    moveCard(cardId, {
-      boardId: activeBoard,
-      ...target,
-    });
-  }, [commitDrop, moveCard, activeBoard]);
+  const activeBoardColumns = useMemo(
+    () => allColumns[activeBoard] || [],
+    [allColumns, activeBoard]
+  );
+
+  const handleClearBoardRequest = useCallback(() => {
+    const board = boardsObj[activeBoard];
+    if (!board) return;
+    if (board.groupId) {
+      Object.values(boardsObj)
+        .filter((b) => b.groupId === board.groupId)
+        .forEach((b) => clearCards(b.id));
+    } else {
+      clearCards(activeBoard);
+    }
+  }, [activeBoard, boardsObj, clearCards]);
 
   const {
     orderedCards,
@@ -76,81 +64,72 @@ export function BoardProvider({ children }) {
     cards,
     addCard,
     moveCard,
-    clearCards,
-    columns,
+    columns: activeBoardColumns,
+    allColumns, // TODAS para a lógica de projeção
     activeBoard,
     openModal,
+    onClearRequest: handleClearBoardRequest,
   });
 
-  /**
-   * Column modal
-   */
   const { handleAddColumn } = useColumnModal({
-    columns,
     addColumn,
     updateColumnInfo,
     updateColumnStyle,
     openModal,
     activeBoard,
-    boards,
+    boards: boardsObj,
   });
 
-  const activeBoardTitle = getActiveBoardTitle(boards, activeBoard);
-
-  /**
-   * Delete board:
-   * - remove columns
-   * - clear cards
-   */
-  const handleDeleteBoard = (boardId) => {
-    deleteBoard(boardId, () => {
-      const boardColumns = columns?.[boardId] ?? [];
-      boardColumns.forEach((col) => removeColumn(boardId, col.id));
-      clearCards({ boardId });
-    });
-  };
+  const handleDeleteBoard = useCallback(
+    (boardId) => {
+      deleteBoard(boardId, () => {
+        clearCards(boardId);
+        (allColumns[boardId] || []).forEach((col) =>
+          removeColumn(boardId, col.id)
+        );
+      });
+    },
+    [deleteBoard, clearCards, allColumns, removeColumn]
+  );
 
   const contextValue = useMemo(
     () => ({
       activeBoard,
       setActiveBoard,
-
-      columns,
+      columns: allColumns,
+      activeBoardColumns,
       orderedCards,
-
-      // Pointer-based drop commit (domain-aware)
-      commitDrop: handleCommitDrop,
-
       handleAddCard,
       handleClearBoard,
       handleCardClick,
-
       handleAddColumn,
       removeColumn,
-
-      boards,
+      boards: boardsObj,
       createBoard,
       updateBoard,
       deleteBoard: handleDeleteBoard,
-
-      activeBoardTitle,
+      activeBoardTitle: getActiveBoardTitle(
+        Object.values(boardsObj),
+        activeBoard
+      ),
       activeBoardCardCount,
       openModal,
     }),
     [
       activeBoard,
-      columns,
+      setActiveBoard,
+      allColumns,
+      activeBoardColumns,
       orderedCards,
-      handleCommitDrop,
       handleAddCard,
       handleClearBoard,
       handleCardClick,
       handleAddColumn,
       removeColumn,
-      boards,
+      boardsObj,
       createBoard,
       updateBoard,
-      activeBoardTitle,
+      handleDeleteBoard,
       activeBoardCardCount,
       openModal,
     ]
@@ -163,13 +142,4 @@ export function BoardProvider({ children }) {
   );
 }
 
-/**
- * Public hook
- */
-export const useBoardContext = () => {
-  const ctx = useContext(BoardContext);
-  if (!ctx) {
-    throw new Error("useBoardContext must be used inside BoardProvider");
-  }
-  return ctx;
-};
+export const useBoardContext = () => useContext(BoardContext);

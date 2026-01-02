@@ -13,17 +13,13 @@ const ColumnHeader = React.memo(
       if (!isTouch || !hovered) return;
 
       const handleClickOutside = (e) => {
-        if (
-          containerRef.current &&
-          !containerRef.current.contains(e.target)
-        ) {
+        if (containerRef.current && !containerRef.current.contains(e.target)) {
           setHovered(false);
         }
       };
 
       document.addEventListener("click", handleClickOutside);
-      return () =>
-        document.removeEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }, [hovered, isTouch]);
 
     return (
@@ -37,9 +33,8 @@ const ColumnHeader = React.memo(
         <div className="col-title-content">
           {onRemove && (
             <button
-              className={`board-icon col-icon-left trash-icon ${
-                hovered ? "visible" : ""
-              }`}
+              className={`board-icon col-icon-left trash-icon ${hovered ? "visible" : ""
+                }`}
               onClick={onRemove}
               data-tooltip="Excluir coluna"
             >
@@ -48,9 +43,7 @@ const ColumnHeader = React.memo(
           )}
 
           <p
-            className={`col-title-board ${
-              hovered ? "shrink" : ""
-            }`}
+            className={`col-title-board ${hovered ? "shrink" : ""}`}
             style={{ color: textColor }}
           >
             {title}
@@ -59,9 +52,8 @@ const ColumnHeader = React.memo(
 
           {onEdit && (
             <button
-              className={`board-icon col-icon-right edit-icon ${
-                hovered ? "visible" : ""
-              }`}
+              className={`board-icon col-icon-right edit-icon ${hovered ? "visible" : ""
+                }`}
               onClick={onEdit}
               data-tooltip="Editar coluna"
             >

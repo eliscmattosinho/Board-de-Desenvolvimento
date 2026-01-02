@@ -1,97 +1,62 @@
 import React, { useCallback, useRef } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 
-import { useGesture } from "@/context/GestureContext";
-import { useBoardPan } from "@board/context/BoardPanContext";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
+import { useBoardContext } from "@board/context/BoardContext";
 
 import { useCardsByColumn } from "@board/hooks/useCardsByColumn";
 import { useColumnHover } from "@board/hooks/useColumnHover";
 import { useDeleteColumn } from "@board/hooks/useDeleteColumn";
 
 import BoardColumns from "@board/components/BoardColumns";
-
 import "./BoardSection.css";
 
-function BoardSection({
-  id,
-  columns,
-  cards,
-  onCardClick,
-  onAddCard,
-  onAddColumn,
-  removeColumn,
-  activeBoard,
-  isActive,
-}) {
-  const containerRef = useRef(null);
+function BoardSection() {
+  const { 
+    activeBoard, 
+    activeBoardColumns, 
+    orderedCards, 
+    handleCardClick,
+    handleAddCard,
+    handleAddColumn,
+    removeColumn 
+  } = useBoardContext();
 
+  const containerRef = useRef(null);
   const { isTouch } = useScreen();
   const { isModalOpen } = useModal();
 
-  const { onPointerDown, onPointerMove, onPointerUp } = useGesture();
-  const { start, onMove, end } = useBoardPan();
-
   const { hoveredIndex, onEnter, onLeave } = useColumnHover();
-  const deleteColumn = useDeleteColumn({ removeColumn, activeBoard });
+
+  const deleteColumn = useDeleteColumn(); 
 
   const cardsByColumn = useCardsByColumn({
-    columns,
-    cards,
+    columns: activeBoardColumns,
+    cards: orderedCards,
     activeBoard,
   });
 
   const handleEditColumn = useCallback(
-    (index, col) => () => onAddColumn(index, col),
-    [onAddColumn]
-  );
-
-  const handleRemoveColumn = useCallback(
-    (col) => () => deleteColumn(col),
-    [deleteColumn]
+    (index, col) => () => handleAddColumn(index, col),
+    [handleAddColumn]
   );
 
   const handleAddColumnAt = useCallback(
     (index, e) => {
       e?.stopPropagation();
-      onAddColumn(index);
+      handleAddColumn(index);
     },
-    [onAddColumn]
+    [handleAddColumn]
   );
 
   return (
     <div
       ref={containerRef}
-      id={id}
-      className={`board-container ${id}-board ${isActive ? "active" : ""}`}
-      onPointerDown={(e) => {
-        onPointerDown({
-          e,
-          source: "board",
-          meta: { boardId: id },
-        });
-        start(e, containerRef.current);
-      }}
-      onPointerMove={(e) => {
-        onPointerMove(e);
-        onMove(e, containerRef.current);
-      }}
-      onPointerUp={(e) => {
-        end(containerRef.current);
-        onPointerUp(e);
-      }}
-      onPointerCancel={(e) => {
-        end(containerRef.current);
-        onPointerUp(e);
-      }}
-      onLostPointerCapture={(e) => {
-        end(containerRef.current);
-        onPointerUp(e);
-      }}
+      className={`board-container ${activeBoard}-board active`}
     >
       <BoardColumns
-        columns={columns}
+        columns={activeBoardColumns}
         cardsByColumn={cardsByColumn}
         isTouch={isTouch}
         isModalOpen={isModalOpen}
@@ -99,16 +64,16 @@ function BoardSection({
         onHoverEnter={onEnter}
         onHoverLeave={onLeave}
         onAddColumnAt={handleAddColumnAt}
-        onCardClick={onCardClick}
-        onAddCard={onAddCard}
+        onCardClick={handleCardClick}
+        onAddCard={handleAddCard}
         onEditColumn={handleEditColumn}
-        onRemoveColumn={handleRemoveColumn}
+        onRemoveColumn={(col) => () => deleteColumn(col)}
       />
 
       <div className="col-add-last">
         <button
           className="add-col"
-          onClick={() => onAddColumn(columns.length)}
+          onClick={() => handleAddColumn(activeBoardColumns.length)}
         >
           <CiCirclePlus className="plus-icon" size={30} />
         </button>

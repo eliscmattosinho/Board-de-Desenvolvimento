@@ -1,76 +1,50 @@
 import React from "react";
 import { SiCcleaner } from "react-icons/si";
-
+import { useBoardContext } from "@board/context/BoardContext";
 import BoardSection from "@board/components/BoardSection/BoardSection";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
 
-import "./ActiveBoard.css"
+import "./ActiveBoard.css";
 
-export default function ActiveBoard({
-    activeBoard,
-    columns,
-    orderedCards,
-    commitDrop,
-    onPointerUp,
-    title,
-    cardCount,
-    handlers,
-}) {
-    return (
-        <article className="hub-active-board">
-            <header className="board-header">
-                <div className="board-title-container">
-                    <h3 id="board-title" className="title-thematic">
-                        {title}
-                        <span className="card-counter">
-                            ({cardCount})
-                        </span>
-                    </h3>
+export default function ActiveBoard() {
+  const {
+    activeBoardColumns,
+    activeBoardTitle,
+    activeBoardCardCount,
+    handleAddCard,
+    handleAddColumn,
+    handleClearBoard,
+  } = useBoardContext();
 
-                    <FloatingMenu
-                        columns={columns}
-                        onAddCard={handlers.addCard}
-                        onAddColumn={handlers.addColumn}
-                    />
-                </div>
+  return (
+    <article className="hub-active-board">
+      <header className="board-header">
+        <div className="board-title-container">
+          <h3 id="board-title" className="title-thematic">
+            {activeBoardTitle ?? "Board"}
+            <span className="card-counter">({activeBoardCardCount ?? 0})</span>
+          </h3>
 
-                <button
-                    id="board-cleaner"
-                    className="board-icon clean-icon"
-                    onClick={handlers.clear}
-                    data-tooltip="Limpar tarefas"
-                >
-                    <SiCcleaner size={25} />
-                </button>
-            </header>
+          <FloatingMenu
+            columns={activeBoardColumns}
+            onAddCard={handleAddCard}
+            onAddColumn={handleAddColumn}
+          />
+        </div>
 
-            <div
-                className="board-content"
-                onPointerUp={(e) => {
-                    commitDrop();
-                    onPointerUp(e);
-                }}
-                onPointerCancel={(e) => {
-                    commitDrop();
-                    onPointerUp(e);
-                }}
-                onLostPointerCapture={(e) => {
-                    commitDrop();
-                    onPointerUp(e);
-                }}
-            >
-                <BoardSection
-                    id={activeBoard}
-                    columns={columns}
-                    cards={orderedCards}
-                    onCardClick={handlers.onCardClick}
-                    onAddCard={handlers.addCard}
-                    onAddColumn={handlers.addColumn}
-                    removeColumn={handlers.removeColumn}
-                    activeBoard={activeBoard}
-                    isActive
-                />
-            </div>
-        </article>
-    );
+        <button
+          id="board-cleaner"
+          className="board-icon clean-icon"
+          onClick={handleClearBoard}
+          data-tooltip="Limpar tarefas"
+        >
+          <SiCcleaner size={25} />
+        </button>
+      </header>
+
+      <div className="board-content">
+        <BoardSection />
+      </div>
+    </article>
+  );
 }

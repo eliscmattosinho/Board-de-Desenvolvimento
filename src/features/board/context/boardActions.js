@@ -1,10 +1,8 @@
 import { ACTIONS } from "./boardReducer";
+import { normalizeText } from "@/utils/normalizeUtils";
 
-// colocar em tils geral
-function normalizeId(title) {
-  return title
-    .trim()
-    .toLowerCase()
+function normalizeId(value) {
+  return normalizeText(value)
     .replace(/[^\w\s-]/g, "")
     .replace(/\s+/g, "-");
 }
@@ -21,8 +19,10 @@ export function useBoardActions(state, dispatch) {
     if (error) return { error };
 
     const id = normalizeId(title);
-    if (state.boards.some((b) => b.id === id))
+
+    if (state.boards.some((b) => b.id === id)) {
       return { error: "Já existe um board com esse nome." };
+    }
 
     const newBoard = { id, title, groupId: null };
     dispatch({ type: ACTIONS.CREATE_BOARD, board: newBoard });
@@ -36,8 +36,6 @@ export function useBoardActions(state, dispatch) {
 
   const deleteBoard = (id, syncCallback) => {
     dispatch({ type: ACTIONS.DELETE_BOARD, id });
-
-    // sincroniza colunas/cards externas
     if (syncCallback) syncCallback(id);
   };
 
@@ -50,6 +48,6 @@ export function useBoardActions(state, dispatch) {
     createBoard,
     updateBoard,
     deleteBoard,
-    setActiveBoard
+    setActiveBoard,
   };
 }

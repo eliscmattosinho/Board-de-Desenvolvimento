@@ -1,104 +1,66 @@
-import React, { createContext, useContext, useReducer, useEffect } from "react";
-
-import { loadCardsFromStorage } from "@/features/card/services/cardPersistence";
-import { initializeCards } from "@/features/card/services/initializeCardTemplates";
+import React, { createContext, useContext, useReducer, useEffect, useMemo } from "react";
+import { loadCardFromStorage } from "@card/services/cardPersistence";
+import { loadAndInitializeCards } from "@card/services/cardTemplates";
 import { cardReducer, ACTIONS } from "./cardReducer";
 import { useCardActions } from "./cardActions";
-import { syncedBoardsMap } from "@board/utils/boardSyncUtils";
+import { resolveInitialCardLocation } from "@board/domain/cardBoardResolver";
 
 const CardContext = createContext(null);
 
-export const CardProvider = ({ children, boardId = "kanban" }) => {
-  if (!boardId) {
-    throw new Error("CardProvider requires boardId");
-  }
-
-  /**
-   * Define escopo de persistência
-   * Boards sincronizados compartilham groupId
-   */
-  const groupId = syncedBoardsMap[boardId] ?? null;
-  const loadOpts = groupId ? { groupId } : { boardId };
-
-  /**
-   * Estado inicial vindo do storage
-   */
-  const saved = loadCardsFromStorage(loadOpts) || [];
-
-  const initialNextId =
-    saved.length > 0 ? Math.max(...saved.map((t) => Number(t.id))) + 1 : 1;
+export const CardProvider = ({ children }) => {
+  // Memoizamos o carregamento inicial para evitar loops
+  const saved = useMemo(() => loadCardFromStorage(), []);
 
   const [state, dispatch] = useReducer(cardReducer, {
     cards: saved,
-    nextId: initialNextId,
+    nextId: saved.length > 0 ? Math.max(...saved.map(c => Number(c.id))) + 1 : 1
   });
 
-  /**
-   * Inicialização de templates
-   * Executa apenas uma vez por boardId
-   */
   useEffect(() => {
-    let mounted = true;
+    // Só busca templates se o storage estiver vazio
+    if (state.cards.length === 0 && saved.length === 0) {
+      (async () => {
+        try {
+          const rawTemplates = await loadAndInitializeCards();
 
-    async function bootstrap() {
-      const initialized = await initializeCards();
-      if (!mounted) return;
+          // Aplica a localização inicial (Board + Column) antes de salvar no estado
+          const localizedCards = rawTemplates.map(card => {
+            const location = resolveInitialCardLocation(card);
+            return {
+              ...card,
+              boardId: location.boardId,
+              columnId: location.columnId
+            };
+          });
 
-      /**
-       * Sempre prioriza o que já está persistido.
-       * Templates só entram se storage estiver vazio.
-       */
-      const persisted = loadCardsFromStorage(loadOpts) || [];
-
-      const source =
-        persisted.length > 0
-          ? persisted
-          : initialized.map((t, i) => ({
-              ...t,
-              id: String(t.id ?? i + 1),
-              order: t.order ?? i,
-            }));
-
-      const maxId = source.reduce((max, t) => Math.max(max, Number(t.id)), 0);
-
-      dispatch({
-        type: ACTIONS.SET_MIRROR_CARDS,
-        cards: source,
-        nextId: maxId + 1,
-      });
+          dispatch({
+            type: ACTIONS.SET_CARDS,
+            cards: localizedCards,
+            nextId: localizedCards.length + 1
+          });
+        } catch (error) {
+          console.error("Erro na inicialização do CardProvider:", error);
+        }
+      })();
     }
+  }, []);
 
-    bootstrap();
-
-    return () => {
-      mounted = false;
-    };
-  }, [boardId, groupId]);
-
-  /**
-   * Actions desacopladas da lógica estrutural
-   */
   const actions = useCardActions(state, dispatch);
 
+  const contextValue = useMemo(() => ({
+    cards: state.cards,
+    ...actions
+  }), [state.cards, actions]);
+
   return (
-    <CardContext.Provider
-      value={{
-        cards: state.cards,
-        ...actions,
-      }}
-    >
+    <CardContext.Provider value={contextValue}>
       {children}
     </CardContext.Provider>
   );
 };
 
-/**
- * Hook público
- */
 export const useCardsContext = () => {
   const ctx = useContext(CardContext);
-  if (!ctx) {
-    throw new Error("useCardsContext must be used within CardProvider");
-  }
+  if (!ctx) throw new Error("useCardsContext must be used within CardProvider");
   return ctx;
 };

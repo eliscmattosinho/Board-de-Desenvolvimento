@@ -1,17 +1,15 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import ColumnModal from "@column/components/ColumnModal/ColumnModal";
 
 /**
- * Hook para abrir modal de coluna e retornar o título do board ativo
+ * Hook para abrir modal de coluna e gerenciar a persistência de dados iniciais
  */
 export function useColumnModal({
-    columns,
     addColumn,
     updateColumnInfo,
     updateColumnStyle,
     openModal,
     activeBoard,
-    boards,
 }) {
     /**
      * Abre o modal de criação ou edição de coluna
@@ -25,9 +23,10 @@ export function useColumnModal({
                 columnData: column || {},
                 onSave: (data) => {
                     if (column) {
-                        // Atualiza informações e estilo separadamente
+                        // EDIÇÃO: Atualiza informações e estilo
                         updateColumnInfo(activeBoard, column.id, {
                             title: data.title,
+                            status: data.status || column.status, // Garante que o status não se perca
                             description: data.description,
                         });
                         updateColumnStyle(activeBoard, column.id, {
@@ -35,8 +34,16 @@ export function useColumnModal({
                             applyTo: data.applyTo,
                         });
                     } else {
-                        // Criação de nova coluna
-                        addColumn(activeBoard, index, data);
+                        // CRIAÇÃO: Adiciona campos vitais para o domínio de Card
+                        const newColumnPayload = {
+                            ...data,
+                            // Garante um ID único para evitar duplicação no storage
+                            id: `col-${Date.now()}`,
+                            // Garante um status para que o CardContext saiba criar cards aqui
+                            status: data.status || "todo",
+                        };
+
+                        addColumn(activeBoard, index, newColumnPayload);
                     }
                 },
             });

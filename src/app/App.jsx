@@ -8,6 +8,10 @@ import RouteChangeBoundary from "@components/RouteChangeTracker/RouteChangeBound
 import ToastProvider from "@components/ToastProvider/ToastProvider";
 import TooltipPortal from "@components/TooltipPortal/TooltipPortal";
 
+import { resetStorageOnReload } from "@utils/storageUtils";
+
+resetStorageOnReload();
+
 function App() {
   return (
     <AppProviders>

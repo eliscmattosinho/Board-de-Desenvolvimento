@@ -28,22 +28,7 @@ export default function Hub() {
           setActiveBoard={hub.setActiveBoard}
         />
 
-        <ActiveBoard
-          activeBoard={hub.activeBoard}
-          columns={hub.columns?.[hub.activeBoard] ?? []}
-          
-          orderedCards={hub.orderedCards}
-
-          title={hub.activeBoardTitle ?? "Board"}
-          cardCount={hub.activeBoardCardCount ?? 0}
-          handlers={{
-            addCard: hub.handleAddCard,
-            addColumn: hub.handleAddColumn,
-            clear: hub.handleClearBoard,
-            removeColumn: hub.removeColumn,
-            onCardClick: hub.handleCardClick,
-          }}
-        />
+        <ActiveBoard />
       </section>
     </main>
   );

@@ -64,8 +64,8 @@ export function BoardProvider({ children }) {
     cards,
     addCard,
     moveCard,
-    columns: activeBoardColumns, // Colunas do board atual para a UI
-    allColumns, // TODAS as colunas para a lógica de projeção
+    columns: activeBoardColumns,
+    allColumns, // TODAS para a lógica de projeção
     activeBoard,
     openModal,
     onClearRequest: handleClearBoardRequest,

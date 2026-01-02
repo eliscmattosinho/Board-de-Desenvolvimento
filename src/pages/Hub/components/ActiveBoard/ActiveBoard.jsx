@@ -1,39 +1,41 @@
 import React from "react";
 import { SiCcleaner } from "react-icons/si";
-
+import { useBoardContext } from "@board/context/BoardContext";
 import BoardSection from "@board/components/BoardSection/BoardSection";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
 
 import "./ActiveBoard.css";
 
-export default function ActiveBoard({
-  activeBoard,
-  columns,
-  orderedCards,
-  title,
-  cardCount,
-  handlers,
-}) {
+export default function ActiveBoard() {
+  const {
+    activeBoardColumns,
+    activeBoardTitle,
+    activeBoardCardCount,
+    handleAddCard,
+    handleAddColumn,
+    handleClearBoard,
+  } = useBoardContext();
+
   return (
     <article className="hub-active-board">
       <header className="board-header">
         <div className="board-title-container">
           <h3 id="board-title" className="title-thematic">
-            {title}
-            <span className="card-counter">({cardCount})</span>
+            {activeBoardTitle ?? "Board"}
+            <span className="card-counter">({activeBoardCardCount ?? 0})</span>
           </h3>
 
           <FloatingMenu
-            columns={columns}
-            onAddCard={handlers.addCard}
-            onAddColumn={handlers.addColumn}
+            columns={activeBoardColumns}
+            onAddCard={handleAddCard}
+            onAddColumn={handleAddColumn}
           />
         </div>
 
         <button
           id="board-cleaner"
           className="board-icon clean-icon"
-          onClick={handlers.clear}
+          onClick={handleClearBoard}
           data-tooltip="Limpar tarefas"
         >
           <SiCcleaner size={25} />
@@ -41,17 +43,7 @@ export default function ActiveBoard({
       </header>
 
       <div className="board-content">
-        <BoardSection
-          id={activeBoard}
-          columns={columns}
-          cards={orderedCards}
-          onCardClick={handlers.onCardClick}
-          onAddCard={handlers.addCard}
-          onAddColumn={handlers.addColumn}
-          removeColumn={handlers.removeColumn}
-          activeBoard={activeBoard}
-          isActive
-        />
+        <BoardSection />
       </div>
     </article>
   );

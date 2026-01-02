@@ -1,3 +1,4 @@
+/* Container principal */
 .hub-boards-wrapper {
     position: relative;
     display: flex;
@@ -6,28 +7,19 @@
     overflow: hidden;
 }
 
-/* Container dos botões */
+/* Área de scroll/drag */
 .hub-boards {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
+    padding: 0.5rem;
+    min-height: 70px;
+    flex: 1;
+    touch-action: pan-x;
+
     overflow-x: auto;
     cursor: grab;
     user-select: none;
-    flex: 1;
-    padding: 0.5rem;
-
-    min-height: 70px;
-    align-items: center;
-}
-
-/* Drag */
-.hub-boards:active {
-    cursor: grabbing;
-}
-
-.hub-boards {
-    flex-shrink: 0;
-    overflow: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -36,67 +28,65 @@
     display: none;
 }
 
-.hub-boards .btn-board {
-    flex-shrink: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 150px;
+.hub-boards:active {
+    cursor: grabbing;
 }
 
+.hub-boards .btn-board {
+    cursor: inherit;
+}
+
+/* Botão base */
 .btn-board {
     position: relative;
     background: transparent;
     margin: 5px;
     font-weight: 600;
-}
-
-[class*="btn-view-"] {
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    transition: all 0.3s ease-in-out;
     border: 1px solid var(--global-gray);
     color: var(--global-gray);
 }
 
+.btn-board:hover {
+    box-shadow: var(--item-shadow);
+}
+
+/* Estilos específicos (Kanban/Scrum) */
 .btn-board.btn-view-kanban,
 .btn-board.btn-view-scrum {
     border: 1px solid var(--global-green);
     border-radius: 40px;
 }
 
-/* Border gambs btn-board activated */
+/* Pseudo-elemento para borda ativa (gambs) */
 .btn-board::after {
     content: "";
     position: absolute;
     inset: -1px;
-    border: 2px solid var(--global-gray);
     border-radius: inherit;
     opacity: 0;
     transform: scale(0.95);
     pointer-events: none;
-    transition: all 0.3s ease-in-out;
+    transition: inherit;
+    border: 2px solid var(--global-gray);
 }
 
 .btn-board.btn-view-kanban::after,
 .btn-board.btn-view-scrum::after {
-    border: 2px solid var(--btn-active);
-}
-
-.btn-board.btn-view-kanban.active,
-.btn-board.btn-view-scrum.active {
     border-color: var(--btn-active);
 }
 
+/* Estado ativo global */
 .btn-board.active {
     border: 2px solid var(--hover-gray);
     color: var(--hover-gray);
     box-shadow: var(--item-shadow);
     font-weight: 700;
-    transition: all 0.3s ease-in-out;
-}
-
-.dark .btn-board.active:not(.btn-view-kanban):not(.btn-view-scrum) {
-    background-color: var(--hover-gray);
-    color: var(--global-white);
-    border-color: var(--global-white);
 }
 
 .btn-board.active::after {
@@ -104,60 +94,15 @@
     transform: scale(1);
 }
 
-.btn-board:hover {
-    box-shadow: var(--item-shadow);
+/* Ajustes específicos para Ativos */
+.btn-board.btn-view-kanban.active,
+.btn-board.btn-view-scrum.active {
+    border-color: var(--btn-active);
 }
 
-/* Overlay do search — absoluto */
-.search-overlay {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-
-    background-color: rgba(45, 164, 74, 0.302);
-    backdrop-filter: blur(6px);
-    border-radius: 6px;
-
-    z-index: 10;
-    transition: width 0.3s ease, opacity 0.3s ease;
-}
-
-/* Input inicia escondido */
-.search-input {
-    width: 0;
-    opacity: 0;
-    padding: 0;
-    border: none;
-    border-radius: 4px;
-    transition: all 0.3s ease-in-out;
-    background: var(--bg-color);
-    color: var(--text-color);
-}
-
-/* Input abre deslizando */
-.search-overlay.open .search-input {
-    width: 150px;
-    opacity: 1;
-    padding: 0.25rem 0.5rem;
-}
-
-/* Placeholder quando não tem boards */
-.no-boards-placeholder {
-    color: var(--global-gray);
-    font-size: var(--fs-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    min-width: 200px;
-}
-
-.hub-boards-wrapper.modal-open .search-overlay {
-  z-index: 0;
-  pointer-events: none;
+/* Dark Mode - Board Independente Ativo */
+.dark .btn-board.active:not(.btn-view-kanban):not(.btn-view-scrum) {
+    background-color: var(--hover-gray);
+    color: var(--global-white);
+    border-color: var(--global-white);
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 export function useBoardSearch() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -8,28 +8,34 @@ export function useBoardSearch() {
   const iconRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Limpa search quando fecha
-  useEffect(() => {
-    if (!searchOpen) setSearchTerm("");
-  }, [searchOpen]);
+  // Quando um item é clicado
+  const handleSelect = useCallback((callback) => {
+    setSearchTerm("");
+    setSearchOpen(false);
+    if (callback) callback();
+  }, []);
 
-  // Focus input
+  // Focus automático no input ao abrir
   useEffect(() => {
     if (searchOpen && inputRef.current) {
       inputRef.current.focus();
-      inputRef.current.select();
     }
   }, [searchOpen]);
 
-  // Fecha search clicando fora
+  // Fecha busca ao clicar fora
   useEffect(() => {
     function handleClickOutside(e) {
       const clickedInsideSearch = searchRef.current?.contains(e.target);
       const clickedIcon = iconRef.current?.contains(e.target);
-      if (!clickedInsideSearch && !clickedIcon) setSearchOpen(false);
+
+      if (!clickedInsideSearch && !clickedIcon) {
+        setSearchOpen(false);
+      }
     }
 
-    if (searchOpen) document.addEventListener("mousedown", handleClickOutside);
+    if (searchOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [searchOpen]);
 
@@ -41,5 +47,6 @@ export function useBoardSearch() {
     searchRef,
     iconRef,
     inputRef,
+    handleSelect,
   };
 }

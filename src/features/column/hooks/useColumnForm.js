@@ -8,35 +8,41 @@ export default function useColumnForm(columnData) {
     const [applyTo, setApplyTo] = useState("fundo");
 
     const [isInitialized, setIsInitialized] = useState(false);
+    const [initialValues, setInitialValues] = useState(null);
 
     useEffect(() => {
-        if (!columnData) {
-            setTitle("");
-            setDescription("");
-            setColor("#EFEFEF");
-            setApplyTo("fundo");
-            setIsInitialized(true);
-            return;
-        }
+        // Lógica de extração idêntica para baseline e estado atual
+        let finalColor = "#EFEFEF";
+        let finalApplyTo = "fundo";
+        const finalTitle = columnData?.title || "";
+        const finalDescription = columnData?.description || "";
 
-        // Inicialização segura dos dados recebidos
-        setTitle(columnData.title || "");
-        setDescription(columnData.description || "");
-
-        if (columnData.color) {
-            setColor(columnData.color);
-            setApplyTo(columnData.applyTo || "fundo");
-        } else if (columnData.style) {
+        if (columnData?.color) {
+            finalColor = columnData.color;
+            finalApplyTo = columnData.applyTo || "fundo";
+        } else if (columnData?.style) {
             const { bg, border } = columnData.style;
-
             if (bg && bg !== "transparent") {
-                setColor(bg);
-                setApplyTo("fundo");
+                finalColor = bg;
+                finalApplyTo = "fundo";
             } else if (border && border !== "transparent") {
-                setColor(border);
-                setApplyTo("borda");
+                finalColor = border;
+                finalApplyTo = "borda";
             }
         }
+
+        setTitle(finalTitle);
+        setDescription(finalDescription);
+        setColor(finalColor);
+        setApplyTo(finalApplyTo);
+
+        // o initialValues nasce idêntico ao estado
+        setInitialValues({
+            title: finalTitle,
+            color: finalColor.toUpperCase(),
+            description: finalDescription,
+            applyTo: finalApplyTo,
+        });
 
         setIsInitialized(true);
     }, [columnData]);
@@ -61,5 +67,6 @@ export default function useColumnForm(columnData) {
         setApplyTo,
         style,
         isInitialized,
+        initialValues,
     };
 }

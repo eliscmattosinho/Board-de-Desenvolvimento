@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import useColumnForm from "@column/hooks/useColumnForm";
 import { useModal } from "@context/ModalContext";
 import { useScreen } from "@context/ScreenContext";
+import { useDirtyCheck } from "@hooks/useDirtyCheck";
 import Modal from "@components/Modal/Modal";
 import ColorPickerPanel from "../ColorPickerPanel/ColorPickerPanel";
 import ColorPickerPanelMobile from "../ColorPickerPanel/ColorPickerMobile/ColorPickerPanelMobile";
@@ -11,58 +12,40 @@ export default function ColumnModal({ columnData, mode = "create", onSave }) {
     const { closeModal } = useModal();
     const { isMobile } = useScreen();
     const inputRef = useRef(null);
-    const baselineRef = useRef(null);
     const [showPicker, setShowPicker] = useState(false);
 
-    const {
-        title,
-        setTitle,
-        color,
-        setColor,
-        description,
-        setDescription,
-        applyTo,
-        setApplyTo,
-        isInitialized,
-    } = useColumnForm(columnData);
+    const form = useColumnForm(columnData);
 
-    // Captura o baseline para comparação
-    useEffect(() => {
-        if (isInitialized && !baselineRef.current) {
-            baselineRef.current = {
-                title: title.trim(),
-                color: color,
-                description: description.trim(),
-                applyTo: applyTo,
-            };
-        }
-    }, [isInitialized, title, color, description, applyTo]);
+    const isDirty = useDirtyCheck(
+        form.initialValues,
+        {
+            title: form.title,
+            color: form.color.toUpperCase(),
+            description: form.description,
+            applyTo: form.applyTo,
+        },
+        form.isInitialized
+    );
 
-    // Verifica se houve alteração real
-    const isDirty = useMemo(() => {
-        if (!isInitialized || !baselineRef.current) return false;
-        return (
-            title.trim() !== baselineRef.current.title ||
-            color !== baselineRef.current.color ||
-            description.trim() !== baselineRef.current.description ||
-            applyTo !== baselineRef.current.applyTo
-        );
-    }, [isInitialized, title, color, description, applyTo]);
-
-    // Define se o formulário é válido para salvar
+    // VALIDAÇÃO:
+    // O título não pode ser apenas espaços.
+    // Se for edição, tem que estar 'dirty'. Se for criação, basta ter título.
     const canSave = useMemo(() => {
-        const hasValidTitle = title.trim().length > 0;
+        const hasValidTitle = form.title.trim().length > 0;
+
         if (mode === "create") return hasValidTitle;
-        return hasValidTitle && isDirty;
-    }, [title, mode, isDirty]);
+        return isDirty && hasValidTitle;
+    }, [form.title, mode, isDirty]);
 
     const handleSave = () => {
         if (!canSave) return;
+
+        // Enviamos os dados já limpos
         onSave?.({
-            title: title.trim(),
-            color,
-            applyTo,
-            description: description.trim(),
+            title: form.title.trim(),
+            color: form.color.toUpperCase(),
+            applyTo: form.applyTo,
+            description: form.description.trim(),
         });
         closeModal();
     };
@@ -83,8 +66,8 @@ export default function ColumnModal({ columnData, mode = "create", onSave }) {
                         id="column-title"
                         className="input-entry"
                         placeholder="Título da coluna"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        value={form.title}
+                        onChange={(e) => form.setTitle(e.target.value)}
                     />
                 </div>
 
@@ -97,15 +80,15 @@ export default function ColumnModal({ columnData, mode = "create", onSave }) {
                     <div className="color-input-wrapper">
                         <span
                             className="color-preview"
-                            style={{ backgroundColor: color }}
+                            style={{ backgroundColor: form.color }}
                             onClick={() => setShowPicker((prev) => !prev)}
                         />
                         <input
                             ref={inputRef}
                             id="column-color"
                             className="input-entry input-color"
-                            value={color.toUpperCase()}
-                            onChange={(e) => setColor(e.target.value)}
+                            value={form.color.toUpperCase()}
+                            onChange={(e) => form.setColor(e.target.value)}
                             placeholder="#000000 ou rgba(255,0,0,1)"
                         />
                     </div>
@@ -113,18 +96,18 @@ export default function ColumnModal({ columnData, mode = "create", onSave }) {
                     {showPicker &&
                         (isMobile ? (
                             <ColorPickerPanelMobile
-                                color={color}
-                                setColor={setColor}
-                                applyTo={applyTo}
-                                setApplyTo={setApplyTo}
+                                color={form.color}
+                                setColor={form.setColor}
+                                applyTo={form.applyTo}
+                                setApplyTo={form.setApplyTo}
                                 onClose={() => setShowPicker(false)}
                             />
                         ) : (
                             <ColorPickerPanel
-                                color={color}
-                                setColor={setColor}
-                                applyTo={applyTo}
-                                setApplyTo={setApplyTo}
+                                color={form.color}
+                                setColor={form.setColor}
+                                applyTo={form.applyTo}
+                                setApplyTo={form.setApplyTo}
                                 onClose={() => setShowPicker(false)}
                                 anchorRef={inputRef}
                             />
@@ -144,8 +127,8 @@ export default function ColumnModal({ columnData, mode = "create", onSave }) {
                         className="input-entry textarea-description"
                         placeholder="Descrição (opcional)"
                         rows={4}
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        value={form.description}
+                        onChange={(e) => form.setDescription(e.target.value)}
                     />
                 </div>
 

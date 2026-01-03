@@ -4,15 +4,28 @@ export default function useCardForm(card, columns) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [columnId, setColumnId] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [initialValues, setInitialValues] = useState(null);
 
   useEffect(() => {
     if (!card) return;
 
-    setTitle(card.title || "");
-    setDescription(card.description || "");
-    setColumnId(card.columnId ?? columns?.[0]?.id ?? null);
+    const defaultCol = card.columnId ?? columns?.[0]?.id ?? null;
+    const initTitle = card.title || "";
+    const initDesc = card.description || "";
 
-    // O formulário reseta sempre que o card.id mudar
+    setTitle(initTitle);
+    setDescription(initDesc);
+    setColumnId(defaultCol);
+
+    // Define o baseline exato da inicialização
+    setInitialValues({
+      title: initTitle,
+      description: initDesc,
+      columnId: defaultCol,
+    });
+
+    setIsInitialized(true);
   }, [card?.id, columns]);
 
   return {
@@ -22,5 +35,7 @@ export default function useCardForm(card, columns) {
     setDescription,
     columnId,
     setColumnId,
+    isInitialized,
+    initialValues,
   };
 }

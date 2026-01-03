@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useModal } from "@context/ModalContext";
 import { useCardsContext } from "@card/context/CardContext";
+import { useDirtyCheck } from "@hooks/useDirtyCheck";
 import useCardForm from "@card/hooks/useCardForm";
 import Modal from "@components/Modal/Modal";
 import CardForm from "@card/components/CardModal/CardForm";
 import CardActions from "./CardActions";
 
 import { useCardModalState } from "@card/hooks/useCardModalState";
-import { useCardDirtyCheck } from "@card/hooks/useCardDirtyCheck";
-import { useCardModalActions } from "@/features/card/hooks/useCardModalActions";
-
+import { useCardModalActions } from "@card/hooks/useCardModalActions";
 import "./CardModal.css";
 
 export default function CardModal({ card, activeBoard, columns, moveCard }) {
@@ -17,15 +16,23 @@ export default function CardModal({ card, activeBoard, columns, moveCard }) {
 
     const modal = useModal();
     const cards = useCardsContext();
-    const form = useCardForm(card, columns);
     const state = useCardModalState(card);
+    const form = useCardForm(card, columns);
 
-    const dirty = useCardDirtyCheck({
-        card,
-        columns,
-        editMode: state.editMode,
-        ...form,
-    });
+    const dirty = useDirtyCheck(
+        form.initialValues,
+        {
+            title: form.title,
+            description: form.description,
+            columnId: form.columnId,
+        },
+        form.isInitialized && (state.editMode || state.isCreating)
+    );
+
+    const canSave = useMemo(() => {
+        const hasContent = form.title.trim().length > 0;
+        return dirty && hasContent;
+    }, [dirty, form.title]);
 
     const actions = useCardModalActions({
         card,
@@ -36,7 +43,7 @@ export default function CardModal({ card, activeBoard, columns, moveCard }) {
         modal,
         cards,
         moveCard,
-        dirty,
+        dirty: canSave,
     });
 
     return (
@@ -68,7 +75,7 @@ export default function CardModal({ card, activeBoard, columns, moveCard }) {
             <CardActions
                 editMode={state.editMode || state.isCreating}
                 isCreating={state.isCreating}
-                dirty={dirty}
+                dirty={canSave}
                 onSave={actions.handleSave}
                 onCancel={actions.handleCancel}
                 onEdit={actions.handleEdit}

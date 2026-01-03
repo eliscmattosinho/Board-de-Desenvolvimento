@@ -26,9 +26,9 @@ export default function CardActions({
                 <>
                     <button
                         type="button"
-                        className={`modal-btn btn-save ${dirty || isCreating ? "active" : "disabled"}`}
+                        className={`modal-btn btn-save ${dirty ? "active" : "disabled"}`}
                         onClick={onSave}
-                        disabled={!dirty && !isCreating}
+                        disabled={!dirty}
                         data-tooltip="Salvar alterações"
                     >
                         Salvar

@@ -5,10 +5,7 @@ export function useDirtyCheck(base, current, isActive = true) {
         if (!isActive || !base || !current) return false;
 
         return Object.keys(base).some((key) => {
-            const baseVal = base[key];
-            const currentVal = current[key];
-
-            return baseVal !== currentVal;
+            return base[key] !== current[key];
         });
     }, [base, current, isActive]);
 }

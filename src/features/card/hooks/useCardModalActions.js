@@ -10,6 +10,7 @@ export function useCardModalActions({
     modal,
     cards,
     moveCard,
+    dirty,
 }) {
     const {
         title,
@@ -23,7 +24,7 @@ export function useCardModalActions({
 
     const handleSelect = (nextColumnId) => {
         setColumnId(nextColumnId);
-        // Se não estiver em editMode, move o card instantaneamente no board
+        // Se não estiver em editMode, move o card instantaneamente
         if (!editMode) {
             moveCard(card.id, { boardId: activeBoard, columnId: nextColumnId });
         }
@@ -32,8 +33,10 @@ export function useCardModalActions({
     const handleEdit = () => setEditMode(true);
 
     const handleSave = () => {
+        // Validação de segurança extra no clique
         if (!title.trim()) return showWarning("O título não pode ficar vazio.");
         if (!columnId) return showWarning("Escolha uma coluna.");
+        if (!dirty) return;
 
         const payload = {
             title: title.trim(),

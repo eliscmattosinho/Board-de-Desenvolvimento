@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useModal } from "@context/ModalContext";
 import { useCardsContext } from "@card/context/CardContext";
 import { useDirtyCheck } from "@hooks/useDirtyCheck";
@@ -16,22 +16,23 @@ export default function CardModal({ card, activeBoard, columns, moveCard }) {
 
     const modal = useModal();
     const cards = useCardsContext();
-    const form = useCardForm(card, columns);
     const state = useCardModalState(card);
+    const form = useCardForm(card, columns);
 
     const dirty = useDirtyCheck(
-        {
-            title: card.title || "",
-            description: card.description || "",
-            columnId: card.columnId ?? columns?.[0]?.id,
-        },
+        form.initialValues,
         {
             title: form.title,
             description: form.description,
             columnId: form.columnId,
         },
-        state.editMode || state.isCreating
+        form.isInitialized && (state.editMode || state.isCreating)
     );
+
+    const canSave = useMemo(() => {
+        const hasContent = form.title.trim().length > 0;
+        return dirty && hasContent;
+    }, [dirty, form.title]);
 
     const actions = useCardModalActions({
         card,
@@ -42,7 +43,7 @@ export default function CardModal({ card, activeBoard, columns, moveCard }) {
         modal,
         cards,
         moveCard,
-        dirty,
+        dirty: canSave,
     });
 
     return (
@@ -74,7 +75,7 @@ export default function CardModal({ card, activeBoard, columns, moveCard }) {
             <CardActions
                 editMode={state.editMode || state.isCreating}
                 isCreating={state.isCreating}
-                dirty={dirty}
+                dirty={canSave}
                 onSave={actions.handleSave}
                 onCancel={actions.handleCancel}
                 onEdit={actions.handleEdit}

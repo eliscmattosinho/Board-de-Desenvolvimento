@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Building from "@/pages/building/Building";
 import Hub from "@pages/hub/Hub";
-import NotFound from "@pages/NotFound";
+import NotFound from "@pages/exceptions/NotFound";
 
 import { BoardProvider } from "@board/context/BoardContext";
 

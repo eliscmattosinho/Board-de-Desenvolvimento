@@ -1,27 +1,14 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { SiCcleaner } from "react-icons/si";
 import { useBoardContext } from "@board/context/BoardContext";
 import { useBoardUI } from "@board/hooks/useBoardUI";
-import { useColumnModal } from "@column/hooks/useColumnModal";
 import BoardSection from "@board/components/BoardSection/BoardSection";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
 
 export default function ActiveBoard() {
-  const {
-    activeBoard,
-    activeBoardColumns,
-    activeBoardTitle,
-    activeBoardCardCount,
-    handleAddCard: createCardData,
-  } = useBoardContext();
-
-  const { handleOpenCardModal, handleClearBoard } = useBoardUI();
-  const { handleAddColumn } = useColumnModal({ activeBoard });
-
-  const onAddCardAction = useCallback(() => {
-    const newCard = createCardData();
-    if (newCard) handleOpenCardModal(newCard);
-  }, [createCardData, handleOpenCardModal]);
+  const { activeBoard, activeBoardTitle, activeBoardCardCount } =
+    useBoardContext();
+  const { handleClearBoard, canClear } = useBoardUI();
 
   if (!activeBoard) return null;
 
@@ -33,17 +20,12 @@ export default function ActiveBoard() {
             {activeBoardTitle ?? "Board"}
             <span className="card-counter">({activeBoardCardCount ?? 0})</span>
           </h3>
-
-          <FloatingMenu
-            columns={activeBoardColumns}
-            onAddCard={onAddCardAction}
-            onAddColumn={handleAddColumn}
-          />
+          <FloatingMenu />
         </div>
 
         <button
           type="button"
-          className="board-icon clean-icon"
+          className={`board-icon clean-icon ${!canClear ? "is-empty" : ""}`}
           onClick={handleClearBoard}
           data-tooltip="Limpar tarefas"
           aria-label="Limpar tarefas"

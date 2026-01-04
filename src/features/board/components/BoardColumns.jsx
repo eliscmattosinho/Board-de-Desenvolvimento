@@ -1,41 +1,46 @@
 import React from "react";
 import Column from "@column/components/Column";
 import AddColumnIndicator from "@column/components/AddColIndicator/AddColumnIndicator";
+import { useBoardLogic } from "@board/hooks/useBoardLogic";
 
-function BoardColumns({
-  columns,
-  cardsByColumn,
-  isTouch,
-  isModalOpen,
-  hoveredIndex,
-  onHoverEnter,
-  onHoverLeave,
-  onAddColumnAt,
-  onCardClick,
-  onAddCard,
-  onEditColumn,
-  onRemoveColumn,
-}) {
-  return columns.map((col, index) => (
+function BoardColumns() {
+  const {
+    activeBoardColumns,
+    cardsByColumn,
+    isTouch,
+    isModalOpen,
+    hoveredIndex,
+    onEnter,
+    onLeave,
+    handleAddColumnAt,
+    onCardClick,
+    onAddCard,
+    handleEditColumn,
+    handleDeleteColumn,
+  } = useBoardLogic();
+
+  if (!activeBoardColumns) return null;
+
+  return activeBoardColumns.map((col, index) => (
     <React.Fragment key={col.id}>
       <Column
         {...col}
         cards={cardsByColumn[col.id] || []}
         onCardClick={onCardClick}
         onAddCard={onAddCard}
-        onEdit={() => onEditColumn(index, col)}
-        onRemove={() => onRemoveColumn(col)}
+        onEdit={() => handleEditColumn(index, col)}
+        onRemove={() => handleDeleteColumn(col)}
       />
 
-      {!isTouch && index < columns.length - 1 && (
+      {!isTouch && index < activeBoardColumns.length - 1 && (
         <div
           className="add-column-zone"
-          onMouseEnter={() => onHoverEnter(index)}
-          onMouseLeave={onHoverLeave}
+          onMouseEnter={() => onEnter(index)}
+          onMouseLeave={onLeave}
         >
           {hoveredIndex === index && (
             <AddColumnIndicator
-              onClick={(e) => onAddColumnAt(index + 1, e)}
+              onClick={(e) => handleAddColumnAt(index + 1, e)}
               isBlocked={isModalOpen}
             />
           )}

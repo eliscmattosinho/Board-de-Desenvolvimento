@@ -1,17 +1,30 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    useMemo,
+} from "react";
 
 const ScreenContext = createContext();
 
 /**
  * Provider que expõe informações sobre a tela.
- * Detecta touch, mobile, tablet e desktop.
+ * Detecta touch, mobile, tablet e desktop de forma reativa.
  */
 export function ScreenProvider({ children }) {
-    const [screen, setScreen] = useState(getScreenInfo());
+    const [screen, setScreen] = useState(() => getScreenInfo());
 
     function getScreenInfo() {
         const width = window.innerWidth;
-        const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+        // pointer: coarse detecta telas onde o apontador principal é impreciso (dedos/touch)
+        // pointer: fine detecta mouses/trackpads
+        const touchMediaQuery = window.matchMedia("(pointer: coarse)").matches;
+        const isTouch =
+            touchMediaQuery ||
+            "ontouchstart" in window ||
+            navigator.maxTouchPoints > 0;
 
         return {
             width,
@@ -23,13 +36,41 @@ export function ScreenProvider({ children }) {
     }
 
     useEffect(() => {
-        const handleResize = () => setScreen(getScreenInfo());
+        let timeoutId = null;
+
+        const handleResize = () => {
+            // Debounce de 150ms para evitar excesso de processamento
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                setScreen(getScreenInfo());
+            }, 150);
+        };
+
         window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+
+        // Listener adicional para mudanças de orientação
+        window.addEventListener("orientationchange", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+            window.removeEventListener("orientationchange", handleResize);
+            clearTimeout(timeoutId);
+        };
     }, []);
 
+    const contextValue = useMemo(
+        () => screen,
+        [
+            screen.width,
+            screen.isTouch,
+            screen.isMobile,
+            screen.isTablet,
+            screen.isDesktop,
+        ]
+    );
+
     return (
-        <ScreenContext.Provider value={screen}>
+        <ScreenContext.Provider value={contextValue}>
             {children}
         </ScreenContext.Provider>
     );
@@ -37,7 +78,6 @@ export function ScreenProvider({ children }) {
 
 /**
  * Hook para consumir o contexto de tela.
- * @returns {{ width: number, isTouch: boolean, isMobile: boolean, isTablet: boolean, isDesktop: boolean }}
  */
 export function useScreen() {
     const context = useContext(ScreenContext);

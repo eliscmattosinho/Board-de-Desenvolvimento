@@ -1,74 +1,81 @@
 .add-col-container {
   position: absolute;
-  top: 50%;
+  top: 0;
+  bottom: 0;
   left: 50%;
-  transform: translate(-50%, -50%);
-  height: 100%;
+  transform: translateX(-50%);
   width: 40px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-
   z-index: 999;
-  pointer-events: auto;
   opacity: 0;
-
-  animation: fadeInZoom 0.3s ease-in-out forwards;
+  animation: fadeInIndicator 0.3s ease-in-out forwards;
 }
 
-/* linhas */
+.add-col-container.blocked {
+  pointer-events: none;
+  opacity: 0;
+  display: none;
+}
+
+.add-col-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  outline: none;
+}
+
+.plus-icon {
+  color: var(--global-green);
+  transition: transform 0.3s ease-in-out;
+  position: relative;
+  pointer-events: auto;
+}
+
+.plus-icon:hover {
+  transform: scale(1.1);
+}
+
 .col-line {
   position: absolute;
-  width: 1.2px;
-  border-radius: 40px;
-  top: 0;
-  bottom: 0;
+  width: 2px;
   background-color: var(--global-green);
-  opacity: 0.7;
+  opacity: 0.4;
+  pointer-events: none;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .dark .col-line {
   background-color: var(--global-white);
+  opacity: 0.3;
 }
 
-.col-line:first-child {
-  left: 50%;
+.line-top {
   top: 0;
-  bottom: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 25px;
+  bottom: calc(50% + 24px);
 }
 
-.col-line:last-child {
-  left: 50%;
-  top: 50%;
+.line-bottom {
+  top: calc(50% + 24px);
   bottom: 0;
-  transform: translateX(-50%);
-  margin-top: 25px;
 }
 
-/* ícone */
-.add-col-container>svg {
-  position: relative;
-  transition: all 0.3s ease-in-out;
-}
-
-/* Remover de cima do modal */
-.add-col-container.blocked {
-  pointer-events: none;
-  opacity: 0;
-}
-
-@keyframes fadeInZoom {
-  0% {
+@keyframes fadeInIndicator {
+  from {
     opacity: 0;
-    transform: translate(-50%, -50%);
   }
 
-  100% {
+  to {
     opacity: 1;
-    transform: translate(-50%, -50%);
   }
 }

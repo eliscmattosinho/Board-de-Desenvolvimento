@@ -4,29 +4,22 @@ import { CiCirclePlus } from "react-icons/ci";
 import ColumnHeader from "./ColumnHeader";
 import ColumnCards from "./ColumnCards";
 import useColumn from "@column/hooks/useColumn";
+import { useBoardLogic } from "@board/hooks/useBoardLogic";
 
 import "./Column.css";
 
-function Column({
-  id,
-  title,
-  className,
-  style,
-  color,
-  applyTo,
-  isTemplate,
-  cards,
-  onCardClick,
-  onAddCard,
-  onEdit,
-  onRemove,
-}) {
+function Column({ columnData, index }) {
+  const { onAddCard, handleEditColumn, handleDeleteColumn } = useBoardLogic();
+  const { id, title, style, color, applyTo, isTemplate, className } = columnData;
+
   const { colStyle, handleAddCardClick, handleEditClick, handleRemoveClick } =
     useColumn({
       id,
+      index,
+      columnData,
       onAddCard,
-      onEdit,
-      onRemove,
+      onEdit: handleEditColumn,
+      onRemove: handleDeleteColumn,
       style,
       color: color || style?.bg || "#EFEFEF",
       applyTo,
@@ -44,15 +37,15 @@ function Column({
       }}
     >
       <ColumnHeader
+        id={id}
         title={title}
-        cardsLength={cards.length}
         textColor={colStyle.color}
         onEdit={handleEditClick}
         onRemove={handleRemoveClick}
       />
 
       <div className="col-items">
-        <ColumnCards cards={cards} onCardClick={onCardClick} />
+        <ColumnCards columnId={id} />
       </div>
 
       {onAddCard && (
@@ -60,7 +53,7 @@ function Column({
           type="button"
           className="add-card"
           onClick={handleAddCardClick}
-          aria-label="Adicionar novo card"
+          aria-label={`Adicionar novo card em ${title}`}
         >
           <CiCirclePlus size={30} />
         </button>

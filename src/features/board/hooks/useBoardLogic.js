@@ -4,14 +4,13 @@ import { useScreen } from "@context/ScreenContext";
 import { useBoardContext } from "@board/context/BoardContext";
 import { useBoardUI } from "@board/hooks/useBoardUI";
 import { useColumnModal } from "@column/hooks/useColumnModal";
-import { useCardsByColumn } from "@board/hooks/useCardsByColumn";
 import { useColumnHover } from "@board/hooks/useColumnHover";
 
 export function useBoardLogic() {
     const {
         activeBoard,
         activeBoardColumns,
-        orderedCards,
+        cardsByColumn,
         handleAddCard: createCardData,
     } = useBoardContext();
 
@@ -20,12 +19,6 @@ export function useBoardLogic() {
     const { isTouch } = useScreen();
     const { isModalOpen } = useModal();
     const { hoveredIndex, onEnter, onLeave } = useColumnHover();
-
-    const cardsByColumn = useCardsByColumn({
-        columns: activeBoardColumns,
-        cards: orderedCards,
-        activeBoard,
-    });
 
     const onAddCard = useCallback(
         (columnId) => {

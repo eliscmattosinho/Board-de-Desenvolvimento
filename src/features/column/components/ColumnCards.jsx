@@ -1,41 +1,19 @@
 import React, { useMemo } from "react";
 import CardItem from "@card/components/CardItem/CardItem";
+import { useBoardLogic } from "@board/hooks/useBoardLogic";
 
-const ColumnCards = React.memo(
-  ({ cards = [], dropIndicator, onCardClick }) => {
-    const renderedCards = useMemo(() => {
-      if (cards.length === 0) return null;
+const ColumnCards = React.memo(({ columnId }) => {
+  const { cardsByColumn } = useBoardLogic();
 
-      return cards.map((card) => {
-        const isAbove =
-          dropIndicator?.cardId === card.id &&
-          dropIndicator.position === "above";
+  const cards = cardsByColumn[columnId] || [];
 
-        const isBelow =
-          dropIndicator?.cardId === card.id &&
-          dropIndicator.position === "below";
+  const renderedCards = useMemo(() => {
+    if (cards.length === 0) return null;
 
-        return (
-          <React.Fragment key={card.id}>
-            {isAbove && (
-              <div className="card-placeholder active" />
-            )}
+    return cards.map((card) => <CardItem key={card.id} card={card} />);
+  }, [cards]);
 
-            <CardItem
-              card={card}
-              onClick={onCardClick}
-            />
-
-            {isBelow && (
-              <div className="card-placeholder active" />
-            )}
-          </React.Fragment>
-        );
-      });
-    }, [cards, dropIndicator, onCardClick]);
-
-    return renderedCards;
-  }
-);
+  return renderedCards;
+});
 
 export default ColumnCards;

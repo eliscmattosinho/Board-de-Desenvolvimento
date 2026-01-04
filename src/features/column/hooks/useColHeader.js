@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 export function useColHeader(isTouch) {
     const [hovered, setHovered] = useState(false);
@@ -17,12 +17,15 @@ export function useColHeader(isTouch) {
         return () => document.removeEventListener("click", handleClickOutside);
     }, [hovered, isTouch]);
 
-    const hoverProps = {
-        ref: containerRef,
-        onMouseEnter: () => !isTouch && setHovered(true),
-        onMouseLeave: () => !isTouch && setHovered(false),
-        onClick: () => isTouch && setHovered((prev) => !prev),
-    };
+    const hoverProps = useMemo(
+        () => ({
+            ref: containerRef,
+            onMouseEnter: () => !isTouch && setHovered(true),
+            onMouseLeave: () => !isTouch && setHovered(false),
+            onClick: () => isTouch && setHovered((prev) => !prev),
+        }),
+        [isTouch]
+    );
 
     return { hovered, hoverProps };
 }

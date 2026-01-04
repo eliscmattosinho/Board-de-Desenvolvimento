@@ -1,21 +1,22 @@
 import React from "react";
 import "./Hub.css";
 
-import BoardForm from "@board/components/BoardForm/BoardForm";
 import { useModal } from "@context/ModalContext";
 import { useHub } from "./hooks/useHub";
-import HubActions from "./components/HubActions/HubActions";
-import HubHeader from "./components/HubHeader/HubHeader";
-import ActiveBoard from "./components/ActiveBoard/ActiveBoard";
+
+import HubActions from "./components/HubActions";
+import BoardForm from "@board/components/BoardForm/BoardForm";
+import HubHeader from "./components/HubHeader";
+import ActiveBoard from "./components/ActiveBoard";
 
 export default function Hub() {
-  const hub = useHub();
+  const { navigate, createBoard } = useHub();
   const { openModal } = useModal();
 
   const openNewBoardModal = () =>
     openModal(BoardForm, {
       onConfirm: (boardData) => {
-        hub.createBoard(boardData);
+        createBoard(boardData);
       },
     });
 
@@ -23,15 +24,11 @@ export default function Hub() {
     <main id="hub-container">
       <section className="hub-content">
         <HubActions
-          onBack={() => hub.navigate("/")}
+          onBack={() => navigate("/")}
           onNewBoard={openNewBoardModal}
         />
 
-        <HubHeader
-          theme={hub.theme}
-          activeBoard={hub.activeBoard}
-          setActiveBoard={hub.setActiveBoard}
-        />
+        <HubHeader />
 
         <ActiveBoard />
       </section>

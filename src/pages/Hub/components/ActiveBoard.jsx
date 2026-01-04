@@ -5,7 +5,6 @@ import { useBoardUI } from "@board/hooks/useBoardUI";
 import { useColumnModal } from "@column/hooks/useColumnModal";
 import BoardSection from "@board/components/BoardSection/BoardSection";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
-import "./ActiveBoard.css";
 
 export default function ActiveBoard() {
   const {

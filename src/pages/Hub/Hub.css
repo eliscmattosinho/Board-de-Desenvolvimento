@@ -79,16 +79,6 @@
     margin-left: 5px;
 }
 
-/* Board icons */
-#board-cleaner {
-    color: var(--global-green);
-    transition: transform 0.3s ease-in-out;
-}
-
-.board-cleaner:hover {
-    transform: scale(1.1);
-}
-
 /* ForBug: Caso mais de um apareça */
 .board-content {
     display: flex;

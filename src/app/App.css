@@ -211,6 +211,10 @@ a {
   color: var(--global-red);
 }
 
+.board-icon.clean-icon {
+  color: var(--global-green);
+}
+
 .modal-btn {
   font-weight: 600;
 }
@@ -343,6 +347,7 @@ a {
 
 /* Mobile touch */
 @media (hover: none) and (pointer: coarse) {
+
   /* pulse apenas para touch */
   button:active {
     animation: pulse 0.45s forwards;

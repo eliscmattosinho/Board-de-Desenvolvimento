@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { SiCcleaner } from "react-icons/si";
 import { useBoardContext } from "@board/context/BoardContext";
 import { useBoardUI } from "@board/hooks/useBoardUI";
@@ -18,17 +18,18 @@ export default function ActiveBoard() {
   const { handleOpenCardModal, handleClearBoard } = useBoardUI();
   const { handleAddColumn } = useColumnModal({ activeBoard });
 
-  // Conecta a criação do dado com a abertura do modal
-  const onAddCardAction = () => {
+  const onAddCardAction = useCallback(() => {
     const newCard = createCardData();
     if (newCard) handleOpenCardModal(newCard);
-  };
+  }, [createCardData, handleOpenCardModal]);
+
+  if (!activeBoard) return null;
 
   return (
     <article className="hub-active-board">
       <header className="board-header">
         <div className="board-title-container">
-          <h3 id="board-title" className="title-thematic">
+          <h3 className="title-thematic">
             {activeBoardTitle ?? "Board"}
             <span className="card-counter">({activeBoardCardCount ?? 0})</span>
           </h3>
@@ -42,10 +43,10 @@ export default function ActiveBoard() {
 
         <button
           type="button"
-          id="board-cleaner"
           className="board-icon clean-icon"
           onClick={handleClearBoard}
           data-tooltip="Limpar tarefas"
+          aria-label="Limpar tarefas"
         >
           <SiCcleaner size={25} />
         </button>

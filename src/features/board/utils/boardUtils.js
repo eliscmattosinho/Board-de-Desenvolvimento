@@ -28,11 +28,17 @@ export function groupCardsByColumn({
     allColumns,
   });
 
-  // Agrupa os cards projetados em suas respectivas colunas
-  return columns.reduce((acc, col) => {
-    acc[col.id] = projectedCards.filter(
-      (card) => String(card.displayColumnId) === String(col.id)
-    );
+  const grouped = columns.reduce((acc, col) => {
+    acc[col.id] = [];
     return acc;
   }, {});
+
+  projectedCards.forEach((card) => {
+    const colId = String(card.displayColumnId);
+    if (grouped[colId]) {
+      grouped[colId].push(card);
+    }
+  });
+
+  return grouped;
 }

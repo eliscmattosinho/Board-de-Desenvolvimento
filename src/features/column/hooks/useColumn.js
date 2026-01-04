@@ -3,6 +3,8 @@ import { useColumnStyle } from "./useColumnStyle";
 
 export default function useColumn({
   id,
+  index,
+  columnData,
   onAddCard,
   onEdit,
   onRemove,
@@ -25,22 +27,18 @@ export default function useColumn({
 
   const handleEditClick = useCallback(
     (e) => {
-      if (e && typeof e.stopPropagation === "function") {
-        e.stopPropagation();
-      }
-      onEdit?.();
+      e?.stopPropagation();
+      onEdit?.(index, columnData);
     },
-    [onEdit]
+    [index, columnData, onEdit]
   );
 
   const handleRemoveClick = useCallback(
     (e) => {
-      if (e && typeof e.stopPropagation === "function") {
-        e.stopPropagation();
-      }
-      onRemove?.();
+      e?.stopPropagation();
+      onRemove?.(columnData);
     },
-    [onRemove]
+    [columnData, onRemove]
   );
 
   return {

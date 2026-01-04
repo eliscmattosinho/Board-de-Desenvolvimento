@@ -4,6 +4,7 @@ import { useBoardCards } from "@board/hooks/useBoardCards";
 import { useBoardActions } from "./boardActions";
 import { getActiveBoardTitle } from "@board/utils/boardUtils";
 import { useColumnsContext } from "@column/context/ColumnContext";
+import { useCardsByColumn } from "@board/hooks/useCardsByColumn";
 
 const BoardContext = createContext(null);
 
@@ -43,11 +44,18 @@ export function BoardProvider({ children }) {
     columns: activeBoardColumns,
   });
 
+  const cardsByColumn = useCardsByColumn({
+    columns: activeBoardColumns,
+    cards: orderedCards,
+    activeBoard,
+  });
+
   const contextValue = useMemo(
     () => ({
       activeBoard,
       setActiveBoard,
       activeBoardColumns,
+      cardsByColumn,
       orderedCards,
       handleAddCard,
       getBoardsToClear,
@@ -65,6 +73,7 @@ export function BoardProvider({ children }) {
       activeBoard,
       setActiveBoard,
       activeBoardColumns,
+      cardsByColumn,
       orderedCards,
       handleAddCard,
       getBoardsToClear,

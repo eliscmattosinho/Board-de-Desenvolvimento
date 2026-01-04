@@ -2,35 +2,18 @@ import React from "react";
 import Column from "@column/components/Column";
 import AddColumnIndicator from "@column/components/AddColIndicator/AddColumnIndicator";
 import { useBoardLogic } from "@board/hooks/useBoardLogic";
+import { useScreen } from "@context/ScreenContext";
 
 function BoardColumns() {
-  const {
-    activeBoardColumns,
-    cardsByColumn,
-    isTouch,
-    isModalOpen,
-    hoveredIndex,
-    onEnter,
-    onLeave,
-    handleAddColumnAt,
-    onCardClick,
-    onAddCard,
-    handleEditColumn,
-    handleDeleteColumn,
-  } = useBoardLogic();
+  const { activeBoardColumns, hoveredIndex, onEnter, onLeave } =
+    useBoardLogic();
+  const { isTouch } = useScreen();
 
   if (!activeBoardColumns) return null;
 
   return activeBoardColumns.map((col, index) => (
     <React.Fragment key={col.id}>
-      <Column
-        {...col}
-        cards={cardsByColumn[col.id] || []}
-        onCardClick={onCardClick}
-        onAddCard={onAddCard}
-        onEdit={() => handleEditColumn(index, col)}
-        onRemove={() => handleDeleteColumn(col)}
-      />
+      <Column columnData={col} index={index} />
 
       {!isTouch && index < activeBoardColumns.length - 1 && (
         <div
@@ -38,12 +21,7 @@ function BoardColumns() {
           onMouseEnter={() => onEnter(index)}
           onMouseLeave={onLeave}
         >
-          {hoveredIndex === index && (
-            <AddColumnIndicator
-              onClick={(e) => handleAddColumnAt(index + 1, e)}
-              isBlocked={isModalOpen}
-            />
-          )}
+          {hoveredIndex === index && <AddColumnIndicator indexAt={index} />}
         </div>
       )}
     </React.Fragment>

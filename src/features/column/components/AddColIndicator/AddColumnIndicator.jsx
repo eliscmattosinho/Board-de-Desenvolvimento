@@ -1,33 +1,33 @@
 import React, { useCallback } from "react";
 import { CiCirclePlus } from "react-icons/ci";
+import { useBoardLogic } from "@board/hooks/useBoardLogic";
 import "./AddColumnIndicator.css";
 
-function AddColumnIndicator({ onClick, isBlocked }) {
+function AddColumnIndicator({ indexAt }) {
+  const { handleAddColumnAt, isModalOpen } = useBoardLogic();
+
   const handleClick = useCallback(
     (e) => {
-      e.stopPropagation();
-      if (!isBlocked && onClick) {
-        onClick(e);
-      }
+      // indexAt + 1 porque o indicador está "entre" colunas
+      handleAddColumnAt(indexAt + 1, e);
     },
-    [onClick, isBlocked]
+    [indexAt, handleAddColumnAt]
   );
 
   return (
-    <div className={`add-col-container ${isBlocked ? "blocked" : ""}`}>
+    <div className={`add-col-container ${isModalOpen ? "blocked" : ""}`}>
       <span className="col-line line-top"></span>
 
       <button
         className="add-col-button"
         onClick={handleClick}
-        disabled={isBlocked}
-        aria-label="Adicionar coluna"
+        disabled={isModalOpen}
         type="button"
       >
         <CiCirclePlus
           className="plus-icon"
           size={30}
-          data-tooltip={isBlocked ? "Ação bloqueada" : "Adicionar coluna"}
+          data-tooltip={isModalOpen ? "Bloqueado" : "Adicionar coluna"}
         />
       </button>
 

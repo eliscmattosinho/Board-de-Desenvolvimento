@@ -1,32 +1,25 @@
 /**
- * Verifica se a página sofreu um reload e limpa apenas os dados de estado,
- * preservando preferências globais como o Tema (Dark/Light).
+ * Verifica se a página sofreu um reload e limpa os dados de estado,
+ * preservando preferências globais essenciais.
  */
 export const resetStorageOnReload = () => {
-  if (
-    typeof window !== "undefined" &&
-    window.performance &&
-    window.performance.getEntriesByType("navigation").length > 0
-  ) {
-    const navigationType =
-      window.performance.getEntriesByType("navigation")[0].type;
+    if (typeof window === "undefined") return;
 
-    if (navigationType === "reload") {
-      console.warn(
-        "♻️ Recarregamento detectado: Resetando dados de navegação."
-      );
+    const [navigation] = window.performance.getEntriesByType("navigation");
 
-      // Resetar TUDO exceto o tema:
-      const currentTheme = localStorage.getItem("theme");
+    if (navigation?.type === "reload") {
+        console.warn("♻️ Reload detectado: Filtrando dados do Storage.");
 
-      // Limpa os storages
-      sessionStorage.clear();
-      localStorage.clear();
+        const WHITELIST = ["theme"];
 
-      // Restaura o tema logo em seguida para o usuário não perceber
-      if (currentTheme) {
-        localStorage.setItem("theme", currentTheme);
-      }
+        sessionStorage.clear();
+
+        const keys = Object.keys(localStorage);
+
+        keys.forEach((key) => {
+            if (!WHITELIST.includes(key)) {
+                localStorage.removeItem(key);
+            }
+        });
     }
-  }
 };

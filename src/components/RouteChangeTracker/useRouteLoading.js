@@ -1,41 +1,28 @@
-import { useEffect, useState } from "react";
+import {
+    useEffect,
+    useState,
+    useCallback,
+    useRef,
+    useLayoutEffect,
+} from "react";
 import { useLocation } from "react-router-dom";
 
-// Hook opcional para interceptar fetches
 const pendingFetches = new Set();
-export const useFetchInterceptor = () => {
-    useEffect(() => {
-        const original = window.fetch;
+let isIntercepting = false;
 
-        window.fetch = (...args) => {
-            const p = original(...args);
-            pendingFetches.add(p);
-            p.finally(() => pendingFetches.delete(p));
-            return p;
-        };
-
-        return () => {
-            window.fetch = original;
-        };
-    }, []);
-};
-
-// espera imagens dentro de um container
-const waitForImages = async (container) => {
-    if (!container) return;
-    const images = Array.from(container.querySelectorAll("img"));
-    if (images.length === 0) return;
-
-    await Promise.all(
-        images.map(
-            (img) =>
-                new Promise((resolve) => {
-                    if (img.complete) return resolve();
-                    img.addEventListener("load", resolve, { once: true });
-                    img.addEventListener("error", resolve, { once: true });
-                })
-        )
-    );
+const startIntercepting = () => {
+    if (isIntercepting) return;
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+        const promise = originalFetch(...args);
+        pendingFetches.add(promise);
+        try {
+            return await promise;
+        } finally {
+            pendingFetches.delete(promise);
+        }
+    };
+    isIntercepting = true;
 };
 
 export function useRouteLoading({
@@ -45,49 +32,75 @@ export function useRouteLoading({
     waitFetches = true,
 } = {}) {
     const location = useLocation();
-    const [approvedLocation, setApprovedLocation] = useState(location);
     const [loading, setLoading] = useState(true);
+    const lastPathname = useRef(location.pathname);
+    const isInitialRender = useRef(true);
 
-    useFetchInterceptor();
-
-    // loading inicial
     useEffect(() => {
-        const t = setTimeout(() => setLoading(false), minSpinnerTime);
-        return () => clearTimeout(t);
-    }, [minSpinnerTime]);
+        if (waitFetches) startIntercepting();
+    }, [waitFetches]);
 
-    // loading quando rota muda
+    // Detecta mudança de rota antes
+    useLayoutEffect(() => {
+        if (location.pathname !== lastPathname.current) {
+            setLoading(true);
+        }
+    }, [location.pathname]);
+
+    const waitForResources = useCallback(async () => {
+        const promises = [];
+
+        // 1. Fetches
+        if (waitFetches && pendingFetches.size > 0) {
+            await Promise.allSettled(Array.from(pendingFetches));
+            await new Promise((res) => requestAnimationFrame(res));
+        }
+
+        // 2. Imagens
+        if (waitImages && containerRef?.current) {
+            const images = Array.from(containerRef.current.querySelectorAll("img"));
+            const imgPromises = images.map((img) =>
+                img.complete
+                    ? Promise.resolve()
+                    : new Promise((res) => {
+                        img.onload = res;
+                        img.onerror = res;
+                    })
+            );
+            promises.push(...imgPromises);
+        }
+
+        await Promise.race([
+            Promise.allSettled(promises),
+            new Promise((res) => setTimeout(res, 5000)),
+        ]);
+    }, [containerRef, waitImages, waitFetches]);
+
     useEffect(() => {
-        if (location.pathname === approvedLocation.pathname) return;
+        if (!loading && !isInitialRender.current) return;
 
-        let active = true;
-        setLoading(true);
+        let isMounted = true;
+        const startTime = Date.now();
 
-        const start = Date.now();
-
-        (async () => {
-            if (waitImages && containerRef?.current) {
-                await waitForImages(containerRef.current);
-            }
-
-            if (waitFetches) {
-                await Promise.all([...pendingFetches]);
-            }
-
-            const elapsed = Date.now() - start;
+        const processTransition = async () => {
+            await waitForResources();
+            const elapsed = Date.now() - startTime;
             const remaining = Math.max(minSpinnerTime - elapsed, 0);
 
             setTimeout(() => {
-                if (!active) return;
-                setApprovedLocation(location);
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                    lastPathname.current = location.pathname;
+                    isInitialRender.current = false;
+                }
             }, remaining);
-        })();
-
-        return () => {
-            active = false;
         };
-    }, [location, approvedLocation, minSpinnerTime, containerRef, waitImages, waitFetches]);
 
-    return { loading, approvedLocation };
+        processTransition();
+        return () => {
+            isMounted = false;
+        };
+    }, [loading, location.pathname, minSpinnerTime, waitForResources]);
+
+    return { loading };
 }

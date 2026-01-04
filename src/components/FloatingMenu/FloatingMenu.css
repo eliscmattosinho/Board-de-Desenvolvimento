@@ -1,109 +1,119 @@
 .floating-menu-container {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
 }
 
-/* Add col icon */
 .menu-trigger {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
     background: none;
     border: none;
-    padding: 5px;
-
-    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+    padding: 6px;
+    transition: transform 0.2s;
 }
 
 .menu-trigger:hover {
     transform: scale(1.1);
 }
 
+.menu-trigger:active {
+    transform: scale(0.9);
+}
+
 .floating-menu {
     position: absolute;
-    top: 110%;
-    left: -10%;
-    margin-top: 10px;
+    z-index: 100;
+    padding: 6px;
+    margin: 0;
 
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    background-color: var(--bg-component);
-    border-radius: 4px;
-    padding: 8px;
-    box-shadow: var(--item-shadow);
-    z-index: 100;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 5px;
 
-    animation: fadeIn 0.2s ease-in-out;
+    list-style: none;
+    background: var(--global-green);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+
+    /* Mobile: abaixo e centralizado */
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    animation: fadeIn 0.2s ease-out;
 }
 
+/* Triângulo indicador unificado */
 .floating-menu::before {
     content: "";
     position: absolute;
-    top: -6%;
-    right: 75%;
     width: 12px;
     height: 12px;
-    background-color: var(--bg-component);
-    transform: translateX(-50%) rotate(45deg);
+    background: inherit;
+    transform: rotate(45deg);
     z-index: -1;
+    top: -6px;
+    left: calc(50% - 6px);
 }
 
-/* FloatingMenu in light theme */
-.menu-item {
-    background-color: var(--bg-component);
-    color: var(--global-white);
-    border: 1px solid var(--global-white);
-    border-radius: 4px;
-    padding: 8px 12px;
-    text-align: center;
-
+ul li {
     width: 100%;
-    min-width: max-content;
-    white-space: nowrap;
+}
 
-    transition: all 0.3s ease-in-out;
+.menu-item {
+    background: transparent;
+    border: 1px solid var(--global-white);
+    border-radius: 6px;
+    color: var(--global-white);
+    padding: 10px 14px;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
 .menu-item:hover {
-    background: var(--hover-component);
+    background: var(--global-white);
     color: var(--global-green);
-}
-
-/* FloatingMenu in dark theme */
-.dark .menu-item {
-    border: 1px solid var(--global-black);
-    color: var(--global-black);
-}
-
-.dark .menu-item:hover {
-    background: var(--global-black);
-    color: var(--global-white);
+    padding-left: 18px;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-5px);
+        transform: translate(-50%, -10px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, 0);
     }
 }
 
+/* Desktop: posicionamento lateral */
 @media (min-width: 768px) {
     .floating-menu {
-        top: -100%;
-        left: 100%;
-        margin-left: 10px;
+        top: 50%;
+        left: calc(100% + 15px);
+        transform: translateY(-50%);
     }
 
     .floating-menu::before {
-        top: 40%;
+        top: calc(50% - 6px);
         left: -6px;
-        transform: rotate(45deg);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translate(10px, -50%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translate(0, -50%);
+        }
     }
 }

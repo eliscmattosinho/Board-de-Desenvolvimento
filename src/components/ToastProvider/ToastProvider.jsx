@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ToastProvider.css";
@@ -19,9 +19,10 @@ const ToastProvider = () => {
       pauseOnHover
       closeButton={false}
       transition={Slide}
-      theme={theme === "dark" ? "dark" : "light"}
+      limit={3}
+      theme={theme}
     />
   );
 };
 
-export default ToastProvider;
+export default memo(ToastProvider);

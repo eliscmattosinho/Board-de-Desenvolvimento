@@ -1,11 +1,11 @@
-import React from "react";
+import React, { memo } from "react";
 import { SiCcleaner } from "react-icons/si";
 import { useBoardContext } from "@board/context/BoardContext";
 import { useBoardUI } from "@board/hooks/useBoardUI";
 import BoardSection from "@board/components/BoardSection/BoardSection";
 import FloatingMenu from "@components/FloatingMenu/FloatingMenu";
 
-export default function ActiveBoard() {
+const ActiveBoard = memo(() => {
   const { activeBoard, activeBoardTitle, activeBoardCardCount } =
     useBoardContext();
   const { handleClearBoard, canClear } = useBoardUI();
@@ -39,4 +39,6 @@ export default function ActiveBoard() {
       </div>
     </article>
   );
-}
+});
+
+export default ActiveBoard;

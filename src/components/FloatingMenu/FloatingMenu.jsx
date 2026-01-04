@@ -1,12 +1,12 @@
-import React from "react";
+import React, { memo } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import { useFloatingMenu } from "@board/hooks/useFloatingMenu";
 import "./FloatingMenu.css";
 
-function FloatingMenu() {
+const FloatingMenu = memo(() => {
     const {
         open,
-        setOpen,
+        toggleMenu,
         menuRef,
         handleMouseEnter,
         handleMouseLeave,
@@ -16,38 +16,47 @@ function FloatingMenu() {
 
     return (
         <div
-            className="floating-menu-container"
+            className={`floating-menu-container ${open ? "is-active" : ""}`}
             ref={menuRef}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
             <button
-                className="menu-trigger"
-                onClick={() => setOpen((prev) => !prev)}
-                aria-label="Abrir menu de ações"
+                className="menu-trigger board-icon"
+                onClick={toggleMenu}
+                aria-expanded={open}
+                aria-haspopup="true"
+                aria-label="Ações rápidas"
             >
-                <CiCirclePlus
-                    size={24}
-                    className="add-component board-icon plus-icon"
-                />
+                <CiCirclePlus size={24} className="plus-icon" />
             </button>
 
             {open && (
-                <div
-                    className="floating-menu"
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                >
-                    <button className="menu-item" onClick={handleAddCardClick}>
-                        Adicionar tarefa
-                    </button>
-                    <button className="menu-item" onClick={handleAddColumnClick}>
-                        Adicionar coluna
-                    </button>
-                </div>
+                <ul className="floating-menu" role="menu">
+                    <li role="none">
+                        <button
+                            type="button"
+                            className="menu-item"
+                            onClick={handleAddCardClick}
+                            role="menuitem"
+                        >
+                            Adicionar tarefa
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button
+                            type="button"
+                            className="menu-item"
+                            onClick={handleAddColumnClick}
+                            role="menuitem"
+                        >
+                            Adicionar coluna
+                        </button>
+                    </li>
+                </ul>
             )}
         </div>
     );
-}
+});
 
 export default FloatingMenu;

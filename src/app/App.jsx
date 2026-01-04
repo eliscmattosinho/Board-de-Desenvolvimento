@@ -13,9 +13,11 @@ import { resetStorageOnReload } from "@utils/storageUtils";
 resetStorageOnReload();
 
 function App() {
+  const baseName = import.meta.env.DEV ? "/" : "/development-hub";
+
   return (
     <AppProviders>
-      <Router basename={import.meta.env.DEV ? "/" : "/development-hub"}>
+      <Router basename={baseName}>
         <RouteChangeBoundary>
           <div className="App">
             <AppRoutes />

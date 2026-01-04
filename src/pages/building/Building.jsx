@@ -41,7 +41,7 @@ function Building() {
             </button>
             <a
               className="sub-link"
-              href="https://eliscmattosinho.github.io/Skeelo-Skoob-Epics/"
+              href="https://eliscmattosinho.github.io/lp-skeelo-skoob-epics/"
               target="_blank"
               rel="noopener noreferrer"
             >

@@ -14,15 +14,16 @@
     padding-right: 5px;
 }
 
-/* Prevent textarea from exceeding parent width */
 .textarea-description {
     box-sizing: border-box;
     max-width: 100%;
+    overflow-y: auto;
+    touch-action: pan-y;
     width: 100%;
-    resize: vertical;
+    min-height: 100px;
+    max-height: 150px;
+    resize: none;
 }
-
-/* @TODO: textarea-description slider-thumb */
 
 .card-content-wrapper {
     position: relative;

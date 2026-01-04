@@ -1,7 +1,10 @@
 export function normalizeText(value) {
-  return String(value || "")
+  if (value === null || value === undefined) return "";
+
+  return String(value)
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "");
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[^\w\s]/gi, "");
 }

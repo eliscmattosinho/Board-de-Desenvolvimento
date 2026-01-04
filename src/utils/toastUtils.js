@@ -1,33 +1,51 @@
-import { toast, Slide } from "react-toastify";
+import { toast } from "react-toastify";
 
-const defaultOptions = {
-    position: "bottom-right",
-    autoClose: 3000,
-    closeButton: false,
-    pauseOnHover: true,
-    draggable: true,
-    transition: Slide,
-};
+const defaultOptions = {};
+
+/**
+ * Função utilitária para tratar opções e IDs
+ */
+const getOptions = (options) => ({
+    ...defaultOptions,
+    ...options,
+});
 
 export const showSuccess = (message, options = {}) =>
-    toast.success(message, { ...defaultOptions, ...options });
+    toast.success(message, getOptions(options));
 
 export const showWarning = (message, options = {}) =>
-    toast.warning(message, { ...defaultOptions, ...options });
+    toast.warning(message, getOptions(options));
 
 export const showError = (message, options = {}) =>
-    toast.error(message, { ...defaultOptions, ...options });
+    toast.error(message, getOptions(options));
 
 export const showInfo = (message, options = {}) =>
-    toast.info(message, { ...defaultOptions, ...options });
+    toast.info(message, getOptions(options));
+
+export const showPromise = (
+    promise,
+    { pending, success, error },
+    options = {}
+) => {
+    return toast.promise(
+        promise,
+        {
+            pending,
+            success,
+            error,
+        },
+        getOptions(options)
+    );
+};
 
 export const showCustom = (component, options = {}) => {
-    return toast.info(component, {
-        ...defaultOptions,
-        autoClose: false,
-        closeOnClick: false,
-        draggable: false,
-        pauseOnHover: false,
-        ...options,
+    return toast(component, {
+        ...getOptions(options),
+        autoClose: options.autoClose ?? false,
+        closeOnClick: options.closeOnClick ?? false,
     });
 };
+
+export const dismissAll = () => toast.dismiss();
+
+export const dismissToast = (id) => toast.dismiss(id);

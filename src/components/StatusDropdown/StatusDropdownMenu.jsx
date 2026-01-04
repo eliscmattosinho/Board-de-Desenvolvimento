@@ -1,7 +1,8 @@
+import React from "react";
 import { createPortal } from "react-dom";
 
 export function StatusDropdownMenu({ columns, coords, menuRef, onSelect }) {
-  if (!coords) return null;
+  if (!coords || !columns) return null;
 
   return createPortal(
     <div
@@ -12,29 +13,35 @@ export function StatusDropdownMenu({ columns, coords, menuRef, onSelect }) {
         top: coords.top,
         left: coords.left,
         minWidth: coords.width,
-        maxWidth: 150,
-        minHeight: coords.height,
+        maxWidth: 200,
         zIndex: 2000,
       }}
-      role="menu"
+      role="listbox"
     >
       {columns.map((col) => {
-        const styleVars = col.style || col.styleVars || {};
+        const s = col.style || col.styleVars || {};
+
         return (
           <div
             key={col.id}
             className="dropdown-option w-600"
-            role="menuitem"
+            role="option"
+            aria-selected={false}
             tabIndex={0}
             onClick={() => onSelect(col.id)}
-            onKeyDown={(e) => e.key === "Enter" && onSelect(col.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect(col.id);
+              }
+            }}
             style={{
-              "--col-bg": styleVars.bg,
-              "--col-border": styleVars.border,
+              "--col-bg": s.bg || "transparent",
+              "--col-border": s.border || "transparent",
             }}
           >
             <span className="col-circle" />
-            {col.title}
+            <span className="option-label">{col.title}</span>
           </div>
         );
       })}

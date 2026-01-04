@@ -3,6 +3,8 @@ import { useBoardContext } from "@board/context/BoardContext";
 import { useBoardUI } from "@board/hooks/useBoardUI";
 import { useColumnModal } from "@column/hooks/useColumnModal";
 import { showWarning } from "@utils/toastUtils";
+import { useScreen } from "@context/ScreenContext";
+import { useDismiss } from "@hooks/useDismiss";
 
 export function useFloatingMenu() {
     const {
@@ -13,66 +15,69 @@ export function useFloatingMenu() {
 
     const { handleOpenCardModal } = useBoardUI();
     const { handleAddColumn } = useColumnModal({ activeBoard });
+    const { isTouch } = useScreen();
 
     const [open, setOpen] = useState(false);
-    const [isTouch, setIsTouch] = useState(false);
     const menuRef = useRef(null);
     const closeTimeoutRef = useRef(null);
 
-    useEffect(() => {
-        const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-        setIsTouch(touch);
+    const closeMenu = useCallback(() => {
+        if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+        setOpen(false);
     }, []);
+
+    const toggleMenu = useCallback(() => setOpen((prev) => !prev), []);
+
+    useDismiss({
+        open,
+        onClose: closeMenu,
+        refs: [menuRef],
+    });
 
     const handleMouseEnter = useCallback(() => {
         if (!isTouch) {
-            clearTimeout(closeTimeoutRef.current);
+            if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
             setOpen(true);
         }
     }, [isTouch]);
 
     const handleMouseLeave = useCallback(() => {
         if (!isTouch) {
-            closeTimeoutRef.current = setTimeout(() => setOpen(false), 300);
+            closeTimeoutRef.current = setTimeout(closeMenu, 300);
         }
-    }, [isTouch]);
+    }, [isTouch, closeMenu]);
 
     const handleAddCardClick = useCallback(() => {
-        if (!columns || columns.length === 0) {
-            showWarning(
-                "Ops! Não tenho para onde ir, crie algumas colunas primeiro."
-            );
-            setOpen(false);
+        if (!columns?.length) {
+            showWarning("Crie algumas colunas primeiro!", {
+                toastId: "no-cols-float",
+            });
+            closeMenu();
             return;
         }
+
         const newCard = createCardData();
-        if (newCard) handleOpenCardModal(newCard);
-        setOpen(false);
-    }, [columns, createCardData, handleOpenCardModal]);
+        if (newCard) {
+            handleOpenCardModal(newCard);
+            closeMenu();
+        }
+    }, [columns, createCardData, handleOpenCardModal, closeMenu]);
 
     const handleAddColumnClick = useCallback(() => {
         handleAddColumn(columns?.length || 0);
-        setOpen(false);
-    }, [handleAddColumn, columns]);
+        closeMenu();
+    }, [handleAddColumn, columns, closeMenu]);
 
     useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (menuRef.current && !menuRef.current.contains(e.target)) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-            clearTimeout(closeTimeoutRef.current);
+            if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
         };
     }, []);
 
-    // Evitar re-renders desnecessários no componente
     return useMemo(
         () => ({
             open,
-            setOpen,
+            toggleMenu,
             menuRef,
             handleMouseEnter,
             handleMouseLeave,
@@ -81,6 +86,7 @@ export function useFloatingMenu() {
         }),
         [
             open,
+            toggleMenu,
             handleMouseEnter,
             handleMouseLeave,
             handleAddCardClick,

@@ -1,11 +1,15 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useCallback } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import { useDismiss } from "@hooks/useDismiss";
 import { useDropdownPosition } from "@hooks/useDropdownPosition";
 import { StatusDropdownMenu } from "./StatusDropdownMenu";
 import "./StatusDropdown.css";
 
-export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
+export default function StatusDropdown({
+  columns = [],
+  currentColumnId,
+  onSelect,
+}) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
@@ -23,25 +27,34 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
     return columns?.find((col) => col.id === currentColumnId) ?? null;
   }, [columns, currentColumnId]);
 
-  const style = currentCol?.style ?? {
-    bg: "transparent",
-    border: "transparent",
+  const circleStyle = {
+    "--col-bg": currentCol?.style?.bg || "transparent",
+    "--col-border": currentCol?.style?.border || "transparent",
   };
+
+  const handleSelect = useCallback(
+    (id) => {
+      onSelect?.(id);
+      setOpen(false);
+    },
+    [onSelect]
+  );
+
+  const toggleDropdown = () => setOpen((prev) => !prev);
 
   return (
     <>
       <div className="custom-dropdown w-600" ref={triggerRef}>
         <div
           className={`dropdown-selected ${open ? "open" : ""}`}
-          onClick={() => setOpen((o) => !o)}
+          onClick={toggleDropdown}
+          role="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && toggleDropdown()}
         >
-          <span
-            className="col-circle"
-            style={{
-              "--col-bg": style.bg,
-              "--col-border": style.border,
-            }}
-          />
+          <span className="col-circle" style={circleStyle} />
           <span className="status-value">
             {currentCol ? currentCol.title : "Selecione um status"}
           </span>
@@ -57,10 +70,7 @@ export default function StatusDropdown({ columns, currentColumnId, onSelect }) {
           columns={columns}
           coords={coords}
           menuRef={menuRef}
-          onSelect={(id) => {
-            onSelect(id);
-            setOpen(false);
-          }}
+          onSelect={handleSelect}
         />
       )}
     </>

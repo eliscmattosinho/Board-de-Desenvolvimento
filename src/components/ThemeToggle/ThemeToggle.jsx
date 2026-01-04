@@ -6,12 +6,20 @@ export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className={`theme-toggle-wrapper ${theme}`} onClick={toggleTheme}>
+    <button
+      className={`theme-toggle-wrapper ${theme}`}
+      onClick={toggleTheme}
+      type="button"
+      aria-label={`Mudar para modo ${theme === "dark" ? "claro" : "escuro"}`}
+      title={`Tema atual: ${theme}`}
+    >
       <div className="toggle-track">
         <div className="toggle-thumb">
-          <span className="toggle-label">{theme === "dark" ? "🌙" : "☀️"}</span>
+          <span className="toggle-label" aria-hidden="true">
+            {theme === "dark" ? "🌙" : "☀️"}
+          </span>
         </div>
       </div>
-    </div>
+    </button>
   );
 }

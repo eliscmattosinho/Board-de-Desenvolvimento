@@ -1,23 +1,19 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 
-/**
- * Hook para gerenciar o scroll horizontal via arraste (drag-to-scroll)
- * e auto-centralização do item ativo.
- * * @param {Array} boards - Lista de boards para disparar o scroll quando mudar.
- * @param {string} activeBoard - ID do board ativo.
- * @param {string} activeClassName - Classe CSS usada para identificar o item ativo (default: .active).
- */
 export function useBoardScroll(
   boards,
   activeBoard,
   activeClassName = ".active"
 ) {
   const containerRef = useRef(null);
+  const [isDraggingActive, setIsDraggingActive] = useState(false);
+
+  const isDown = useRef(false);
   const startX = useRef(0);
   const scrollLeftStart = useRef(0);
-  const isDragging = useRef(false);
+  const dragDistance = useRef(0);
 
-  // Efeito para centralizar o board selecionado automaticamente
+  // Centraliza o item ativo automaticamente
   useEffect(() => {
     const activeBtn = containerRef.current?.querySelector(activeClassName);
     if (activeBtn) {
@@ -29,62 +25,56 @@ export function useBoardScroll(
     }
   }, [activeBoard, boards, activeClassName]);
 
-  const onPointerDown = (e) => {
-    // Garante que apenas o botão principal (esquerdo) inicie o arraste
-    if (e.button !== 0) return;
+  const onPointerDown = useCallback((e) => {
+    isDown.current = true;
+    startX.current = e.pageX - containerRef.current.offsetLeft;
+    scrollLeftStart.current = containerRef.current.scrollLeft;
+    dragDistance.current = 0;
+  }, []);
 
-    isDragging.current = false;
-    startX.current = e.clientX;
-    scrollLeftStart.current = containerRef.current
-      ? containerRef.current.scrollLeft
-      : 0;
-  };
+  const onPointerMove = useCallback(
+    (e) => {
+      if (!isDown.current) return;
 
-  const onPointerMove = (e) => {
-    // Fallback: se o ponteiro se mover sem botões pressionados, cancela o arraste
-    if (e.buttons === 0) {
-      startX.current = 0;
-      return;
-    }
+      const x = e.pageX - containerRef.current.offsetLeft;
+      const walk = x - startX.current;
+      dragDistance.current = Math.abs(walk);
 
-    if (startX.current === 0) return;
-
-    const x = e.clientX;
-    const walk = x - startX.current;
-
-    // Threshold de 7 pixels para evitar que cliques acidentais sejam interpretados como drag
-    if (Math.abs(walk) > 7) {
-      isDragging.current = true;
-      if (containerRef.current) {
+      // Threshold de 8px para ativar o estado de arraste
+      if (dragDistance.current > 8) {
+        if (!isDraggingActive) setIsDraggingActive(true);
         containerRef.current.scrollLeft = scrollLeftStart.current - walk;
       }
-    }
-  };
+    },
+    [isDraggingActive]
+  );
 
-  const onPointerUp = () => {
-    startX.current = 0;
-    // Pequeno delay para garantir que o evento de clique não dispare
-    // imediatamente após soltar um arraste longo
+  const onPointerUp = useCallback(() => {
+    isDown.current = false;
+    // Resetar o cursor sem interromper o evento de clique
     setTimeout(() => {
-      isDragging.current = false;
+      setIsDraggingActive(false);
     }, 50);
-  };
+  }, []);
 
-  /**
-   * Wrapper para cliques em itens dentro do scroll.
-   * Impede que a ação de clique ocorra se o usuário estiver apenas arrastando o container.
-   */
-  const handleItemClick = (action) => {
-    if (!isDragging.current) {
+  const handleItemClick = useCallback((e, action) => {
+    // Se o movimento foi menor que 10px, valida como clique
+    if (dragDistance.current < 10) {
       action();
     }
+  }, []);
+
+  const scrollEvents = {
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onPointerLeave: onPointerUp,
   };
 
   return {
     containerRef,
-    onPointerDown,
-    onPointerMove,
-    onPointerUp,
+    scrollEvents,
     handleItemClick,
+    isDraggingActive,
   };
 }

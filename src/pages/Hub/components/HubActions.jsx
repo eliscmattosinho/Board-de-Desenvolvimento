@@ -3,19 +3,22 @@ import { FaArrowCircleLeft } from "react-icons/fa";
 
 import ThemeToggle from "@components/ThemeToggle/ThemeToggle";
 
-import "./HubActions.css"
-
 export default function HubActions({ onBack, onNewBoard }) {
     return (
         <div className="hub-actions">
-            <button onClick={onBack} className="board-icon btn-back">
+            <button
+                type="button"
+                className="board-icon btn-back"
+                onClick={onBack}
+            >
                 <FaArrowCircleLeft size={30} />
             </button>
 
-            <div className="hub-sub-actions">
+            <div className="hub-subactions">
                 <ThemeToggle />
+
                 <button
-                    id="new-board"
+                    type="button"
                     className="btn btn-thematic"
                     onClick={onNewBoard}
                 >

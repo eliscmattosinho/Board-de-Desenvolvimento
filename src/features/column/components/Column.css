@@ -60,10 +60,6 @@
   opacity: 1;
 }
 
-.board-icon.trash-icon {
-  color: var(--global-red);
-}
-
 /* CARD PREVIEW */
 .col-items {
   display: flex;

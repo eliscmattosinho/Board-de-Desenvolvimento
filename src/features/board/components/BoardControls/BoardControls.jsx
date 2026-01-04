@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useBoardContext } from "@board/context/BoardContext";
-import { useModal } from "@/context/ModalContext";
+import { useModal } from "@context/ModalContext";
 import { useBoardSearch } from "@board/hooks/useBoardSearch";
 import { useBoardScroll } from "@board/hooks/useBoardScroll";
 import BoardSearch from "@board/components/BoardSearch/BoardSearch";
@@ -10,59 +10,53 @@ export default function BoardControls() {
   const { boards: boardsObj, activeBoard, setActiveBoard } = useBoardContext();
   const { isModalOpen } = useModal();
 
-  const { searchTerm, handleSelect, ...searchProps } = useBoardSearch();
-
-  const boards = useMemo(
-    () => Object.values(boardsObj || {}).filter(Boolean),
-    [boardsObj]
-  );
-
-  const { containerRef, ...scroll } = useBoardScroll(boards, activeBoard);
-
-  const filteredBoards = useMemo(() => {
-    return boards
-      .filter((b) =>
-        (b.title || "").toLowerCase().includes(searchTerm.toLowerCase())
-      )
+  // Prepara a lista base (array + ordenação)
+  const boardsBase = useMemo(() => {
+    return Object.values(boardsObj || {})
+      .filter(Boolean)
       .sort((a, b) => (a.groupId === b.groupId ? 0 : a.groupId ? -1 : 1));
-  }, [boards, searchTerm]);
+  }, [boardsObj]);
+
+  // Busca e filtragem
+  const search = useBoardSearch(boardsBase);
+
+  // Scroll configurado com a lista filtrada
+  const { containerRef, scrollEvents, handleItemClick, isDraggingActive } =
+    useBoardScroll(search.filteredBoards, activeBoard);
 
   return (
     <div className={`hub-boards-wrapper ${isModalOpen ? "modal-open" : ""}`}>
-      <BoardSearch
-        searchTerm={searchTerm}
-        handleSelect={handleSelect}
-        {...searchProps}
-      />
+      <BoardSearch search={search} />
 
       <div
-        className="hub-boards"
         ref={containerRef}
-        onPointerDown={scroll.onPointerDown}
-        onPointerMove={scroll.onPointerMove}
-        onPointerUp={scroll.onPointerUp}
-        onPointerLeave={scroll.onPointerUp}
-        onPointerCancel={scroll.onPointerUp}
+        className={`hub-boards 
+          ${isDraggingActive ? "is-grabbing" : ""}
+        `}
+        {...scrollEvents}
       >
-        {filteredBoards.map((board) => (
-          <button
-            key={board.id}
-            className={[
-              "btn",
-              "btn-board",
-              `btn-view-${board.id}`,
-              activeBoard === board.id ? "active" : "",
-              board.groupId ? "title-thematic" : "",
-            ].join(" ")}
-            onClick={() =>
-              scroll.handleItemClick(() =>
-                handleSelect(() => setActiveBoard(board.id))
-              )
-            }
-          >
-            {board.title || board.id}
-          </button>
-        ))}
+        {search.filteredBoards.length > 0 ? (
+          search.filteredBoards.map((board) => (
+            <button
+              type="button"
+              key={board.id}
+              className={`btn btn-board btn-view-${board.id} 
+                ${activeBoard === board.id ? "active" : ""} 
+                ${board.groupId ? "title-thematic" : ""}`}
+              onClick={(e) =>
+                handleItemClick(e, () =>
+                  search.handleSelect(() => setActiveBoard(board.id))
+                )
+              }
+            >
+              {board.title || board.id}
+            </button>
+          ))
+        ) : (
+          <span className="no-results-msg">
+            Nenhum board encontrado para "{search.searchTerm}"
+          </span>
+        )}
       </div>
     </div>
   );

@@ -207,6 +207,10 @@ a {
   background: var(--hover-gray);
 }
 
+.board-icon.trash-icon {
+  color: var(--global-red);
+}
+
 .modal-btn {
   font-weight: 600;
 }

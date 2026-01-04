@@ -1,17 +1,18 @@
 import React from "react";
 import { FiSearch } from "react-icons/fi";
-
 import "./BoardSearch.css";
 
-export default function BoardSearch({
-    searchOpen,
-    setSearchOpen,
-    searchTerm,
-    setSearchTerm,
-    searchRef,
-    iconRef,
-    inputRef,
-}) {
+export default function BoardSearch({ search }) {
+    const {
+        searchOpen,
+        setSearchOpen,
+        searchTerm,
+        setSearchTerm,
+        searchRef,
+        iconRef,
+        inputRef,
+    } = search;
+
     return (
         <div
             className={`search-overlay ${searchOpen ? "open" : ""}`}

@@ -36,17 +36,6 @@
     padding: 0.25rem 0.5rem;
 }
 
-/* Placeholder quando não tem boards */
-.no-boards-placeholder {
-    color: var(--global-gray);
-    font-size: var(--fs-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    min-width: 200px;
-}
-
 .hub-boards-wrapper.modal-open .search-overlay {
     z-index: 0;
     pointer-events: none;
